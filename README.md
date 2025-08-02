@@ -9,7 +9,7 @@ BookMyDoc serves as a centralized medical platform for both patients and doctors
 ---
 ##  Figma Design Link
 
-Click [BookMyDOC]([https://your-figma-link.com](https://l.messenger.com/l.php?u=https%3A%2F%2Fwww.figma.com%2Fmake%2F994TkDhNtf8183KcZZC36I%2FBookMyDoc-Wireframe-Platform%3Fnode-id%3D0-4%26t%3DBliFBvXRgIRKrXfj-1&h=AT2qUjlm_i2yH4XomLphGEeyQ5CzRevcYHLGG-GeYmMVQLvjrxwwM2wCm1KUEvCrn2r1XREpzMAcA2QwsLTgbzBibHm98l6VbPRmUeetxGO0d123hQJTwWSHWdgngcmsnIN4-A)) in Emergency
+Click [BookMyDOC](https://www.figma.com/make/994TkDhNtf8183KcZZC36I/BookMyDoc-Wireframe-Platform?node-id=0-4&t=BliFBvXRgIRKrXfj-1&fbclid=IwY2xjawL6-h9leHRuA2FlbQIxMQABHjauuUO6AIT16BZLomuvnlIXBjcTMr3vPRJQNttb2YIJPnx0oVXe18_rFtvn_aem_TdoETpIytd1hPyxTjWJiRA) in Emergency
 
 ---
 
@@ -19,7 +19,7 @@ Click [BookMyDOC]([https://your-figma-link.com](https://l.messenger.com/l.php?u=
 |--------------|------------------------------|-----------------------------------|-----------------------|
 | 20220204008  | Md. Asifuzzaman Shanto       | asifuzzaman2105@gmail.com         |                       |
 | 20220204021  | Md. Eousuf Abdullah Shameu   | eousuf.abdullah@gmail.com         |                       |
-| 20220204023  | Abdur Rafy Bhuiyan           | rafybhuiyan55@gmail.com           |                       |
+| 20220204023  | Abdur Rafy Bhuiyan           | rafybhuiyan23@gmail.com           |                       |
 
 ---
 ## wakatime Badges
