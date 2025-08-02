@@ -26,6 +26,8 @@
 1. Clone the repository:
 
    ```bash
+   git clone https://github.com/RafyBhuiyan/BookMyDoc.git
+   cd .\BookMyDoc\
    ```
 2. Install dependencies:
 
