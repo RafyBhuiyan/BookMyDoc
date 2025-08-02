@@ -2,9 +2,9 @@
 
 ##  About the Project
 
-**BookMyDOC** is an advanced healthcare appointment system designed to bridge the gap between patients and doctors through a seamless, intuitive web interface. It simplifies the process of booking consultations, accessing prescriptions, communicating with doctors, and managing health records — all from one place.
+**BookMyDOC** is an advanced healthcare appointment system designed to bridge the gap between patients and doctors through a seamless, intuitive web interface. It simplifies the process of booking consultations, accessing prescriptions from doctors, and managing health records — all from one place.
 
-BookMyDoc serves as a centralized medical platform for both patients and doctors. The project allows patients to search for nearby doctors, make appointments based on availability, communicate via live chat, and receive AI-based recommendations. Doctors can view upcoming appointments, maintain medical histories, generate digital prescriptions, and manage their schedules.
+BookMyDoc serves as a centralized medical platform for both patients and doctors. The project allows patients to search for nearby doctors, make appointments based on availability and receive AI-based recommendations. Doctors can view upcoming appointments, maintain medical histories, generate digital prescriptions, and manage their schedules.
 
 ---
 ##  Figma Design Link
@@ -32,6 +32,7 @@ Click [BookMyDOC](https://www.figma.com/make/994TkDhNtf8183KcZZC36I/BookMyDoc-Wi
 
 -- **Eousuf Abdullah**
 
+[![wakatime](https://wakatime.com/badge/user/ebb7cd30-f68a-4bca-bbaa-64776c6f5843/project/7b3829bf-8896-4254-aab4-3af2584c9134.svg)](https://wakatime.com/badge/user/ebb7cd30-f68a-4bca-bbaa-64776c6f5843/project/7b3829bf-8896-4254-aab4-3af2584c9134)
 
 ---
 
@@ -39,7 +40,6 @@ Click [BookMyDOC](https://www.figma.com/make/994TkDhNtf8183KcZZC36I/BookMyDoc-Wi
 
 - Role-based dashboards for both doctors and patients
 - AI-powered doctor recommendations based on symptoms
-- Real-time chat for doctor-patient interaction
 - Medical record uploads and prescription management
 - Appointment booking, rescheduling, and tracking
 
@@ -86,25 +86,19 @@ Click [BookMyDOC](https://www.figma.com/make/994TkDhNtf8183KcZZC36I/BookMyDoc-Wi
 - All documents are stored securely with encryption
 - Easy preview/download of records as PDFs
 
-### 6. Chat Page (Doctor & Patient)
-- End-to-end encrypted real-time messaging
-- Doctors can respond to patient questions live
-- Patients can upload images/files for discussion
-- Smart notifications for new messages
-
-### 7. AI Recommendation Page
+### 6. AI Recommendation Page
 - Patients describe symptoms using text input
 - AI suggests the most relevant doctors
 - Based on rule-based logic or symptom mapping
 - Enhances the discovery process for users
 
-### 8. Prescription Page (Doctor Side)
+### 7. Prescription Page (Doctor Side)
 - Doctors input diagnosis, medication, and instructions
 - Automatically generates professional PDF prescription
 - Can be downloaded or shared with patients securely
 - Digital signature support (optional)
 
-### 9. Contact & Support Page
+### 8. Contact & Support Page
 - Contact form with name, message, and email
 - Admin receives submissions via email or admin panel
 - Option to categorize feedback (bug, suggestion, issue)
@@ -152,9 +146,4 @@ Click [BookMyDOC](https://www.figma.com/make/994TkDhNtf8183KcZZC36I/BookMyDoc-Wi
 * View appointment history and patient details.
 * Generate and download prescription PDFs.
 
----
 
-
-## License
-
-This project is licensed under the MIT License.
