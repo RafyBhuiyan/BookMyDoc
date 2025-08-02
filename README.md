@@ -9,7 +9,7 @@ BookMyDoc serves as a centralized medical platform for both patients and doctors
 ---
 ##  Figma Design Link
 
-Click [BookMyDOC] in Emergency
+Click [BookMyDOC](https://data-ravel-60977088.figma.site/) in Emergency
 
 ---
 
