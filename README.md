@@ -1,12 +1,62 @@
-# React + Vite
+# BookMyDoc
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**BookMyDoc** is a web application that simplifies booking medical appointments and managing patient records.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+* Book appointments with doctors
+* View and manage patient profiles
+* Generate and download prescriptions
+* Handle billing and payments
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Tech Stack
+
+* **Frontend:** React, Tailwind CSS
+* **Backend:** Node.js, Express
+* **Database:** MySQL
+
+---
+
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   ```
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+3. Configure environment variables by copying `.env.example` to `.env` and filling in your details.
+4. Run the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+
+---
+
+## Usage
+
+* Sign up or log in as a user.
+* Search for available doctors and book a time slot.
+* View appointment history and patient details.
+* Generate and download prescription PDFs.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please fork the repo and submit a pull request.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
