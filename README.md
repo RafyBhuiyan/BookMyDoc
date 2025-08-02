@@ -3,7 +3,23 @@
 **BookMyDoc** is a web application that simplifies booking medical appointments and managing patient records.
 
 ---
+# Team members
+ - **Rafy Bhuiyan** (20220204023)
+ - **Asifuzzaman Shanto** (20220204008)
+ - **Eousuf Abdullah** (20220204021)
+---
+# wakatime Badges
+-- **Rafy Bhuiyan**
 
+[![wakatime](https://wakatime.com/badge/user/fcea2923-047d-4b59-8b66-6e342e0673aa/project/ab70b96f-2698-4f2c-8ff3-d9eeb5463f88.svg)](https://wakatime.com/badge/user/fcea2923-047d-4b59-8b66-6e342e0673aa/project/ab70b96f-2698-4f2c-8ff3-d9eeb5463f88)
+
+-- **Asifuzzaman Shanto**
+
+
+-- **Eousuf Abdullah**
+
+
+---
 ## Features
 
 * Book appointments with doctors
