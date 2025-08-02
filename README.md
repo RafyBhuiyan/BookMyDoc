@@ -1,12 +1,26 @@
-# BookMyDoc
+# BookMyDOC
 
-**BookMyDoc** is a web application that simplifies booking medical appointments and managing patient records.
+##  About the Project
+
+**BookMyDOC** is an advanced healthcare appointment system designed to bridge the gap between patients and doctors through a seamless, intuitive web interface. It simplifies the process of booking consultations, accessing prescriptions, communicating with doctors, and managing health records — all from one place.
+
+BookMyDoc serves as a centralized medical platform for both patients and doctors. The project allows patients to search for nearby doctors, make appointments based on availability, communicate via live chat, and receive AI-based recommendations. Doctors can view upcoming appointments, maintain medical histories, generate digital prescriptions, and manage their schedules.
 
 ---
-## Contributing
- - **Rafy Bhuiyan** (20220204023)
- - **Asifuzzaman Shanto** (20220204008)
- - **Eousuf Abdullah** (20220204021)
+##  Figma Design Link
+
+Click [BookMyDOC]([https://your-figma-link.com](https://l.messenger.com/l.php?u=https%3A%2F%2Fwww.figma.com%2Fmake%2F994TkDhNtf8183KcZZC36I%2FBookMyDoc-Wireframe-Platform%3Fnode-id%3D0-4%26t%3DBliFBvXRgIRKrXfj-1&h=AT2qUjlm_i2yH4XomLphGEeyQ5CzRevcYHLGG-GeYmMVQLvjrxwwM2wCm1KUEvCrn2r1XREpzMAcA2QwsLTgbzBibHm98l6VbPRmUeetxGO0d123hQJTwWSHWdgngcmsnIN4-A)) in Emergency
+
+---
+
+## 👨‍💻 Team Members
+
+| ID           | Name                         | Email                             | Role                  |
+|--------------|------------------------------|-----------------------------------|-----------------------|
+| 20220204008  | Md. Asifuzzaman Shanto       | asifuzzaman2105@gmail.com         |                       |
+| 20220204021  | Md. Eousuf Abdullah Shameu   | eousuf.abdullah@gmail.com         |                       |
+| 20220204023  | Abdur Rafy Bhuiyan           | rafybhuiyan55@gmail.com           |                       |
+
 ---
 ## wakatime Badges
 -- **Rafy Bhuiyan**
@@ -20,22 +34,93 @@
 
 
 ---
-## Features
 
-* Book appointments with doctors
-* View and manage patient profiles
-* Generate and download prescriptions
-* Handle billing and payments
+##  Core Features
+
+- Role-based dashboards for both doctors and patients
+- AI-powered doctor recommendations based on symptoms
+- Real-time chat for doctor-patient interaction
+- Medical record uploads and prescription management
+- Appointment booking, rescheduling, and tracking
+
+---
+##  Technology Stack
+
+| Layer     | Technology                        |
+|-----------|------------------------------------|
+| Frontend  | React (Vite) + Tailwind CSS        |
+| Backend   | Laravel (PHP)                      |
+| Database  | MySQL                              |
 
 ---
 
-## Tech Stack
+## UI Pages & Features
 
-* **Frontend:** React, Tailwind CSS
-* **Backend:** Node.js, Express
-* **Database:** MySQL
+### 1. Login / Signup Page
+- Secure login and signup for both roles (Doctor & Patient)
+- Token-based authentication with password hashing
+- Automatic redirection based on user role
+- Validations to prevent duplicate accounts
+
+### 2. Patient Dashboard
+- Shows appointment history and upcoming schedules
+- View AI-suggested doctors and start chats
+- Quick access to medical records and prescriptions
+- Easy cancellation/rescheduling options
+
+### 3. Doctor Dashboard
+- View appointment queue and pending requests
+- Manage time slots and availability
+- See patient history and previous interactions
+- Access prescription generation tools
+
+### 4. Appointment Booking Page
+- Search and filter doctors by specialty, location, availability
+- Book slots with confirmation status (pending/accepted)
+- Cancel or reschedule bookings with reason input
+- Shows real-time doctor availability
+
+### 5. Medical Records Page
+- Patients can upload reports, prescriptions, X-rays
+- Doctors can view full medical histories
+- All documents are stored securely with encryption
+- Easy preview/download of records as PDFs
+
+### 6. Chat Page (Doctor & Patient)
+- End-to-end encrypted real-time messaging
+- Doctors can respond to patient questions live
+- Patients can upload images/files for discussion
+- Smart notifications for new messages
+
+### 7. AI Recommendation Page
+- Patients describe symptoms using text input
+- AI suggests the most relevant doctors
+- Based on rule-based logic or symptom mapping
+- Enhances the discovery process for users
+
+### 8. Prescription Page (Doctor Side)
+- Doctors input diagnosis, medication, and instructions
+- Automatically generates professional PDF prescription
+- Can be downloaded or shared with patients securely
+- Digital signature support (optional)
+
+### 9. Contact & Support Page
+- Contact form with name, message, and email
+- Admin receives submissions via email or admin panel
+- Option to categorize feedback (bug, suggestion, issue)
+- Helpful FAQs for common problems
 
 ---
+
+## Theme & Design
+
+- Clean, minimal, and accessible layout for healthcare use
+- Consistent spacing, color palette, and UI components
+- Responsive design for all screen sizes
+- Tailwind CSS used for rapid prototyping and layout control
+
+---
+
 
 ## Installation
 
