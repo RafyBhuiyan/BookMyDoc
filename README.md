@@ -9,7 +9,7 @@ BookMyDoc serves as a centralized medical platform for both patients and doctors
 ---
 ##  Figma Design Link
 
-Click [BookMyDOC](https://l.messenger.com/l.php?u=https%3A%2F%2Fwww.figma.com%2Fdesign%2FTLaUl6ogcATwVxZXI811Xy%2FUntitled%3Fnode-id%3D2037-3%26t%3DJD8c8beMqiTV2wAS-1&h=AT14ycpvLuUTx92DN4qm031UTXB2eZqaOdbrmA5-kLKgBn-Uoae0vvijRNyo6fu62B3rezGBfdzAAiaMj70TB1-iVU00z6mG_6VJ9ZVQPdBpGM_gNFzoBTZrnJJ-O_gQpoifJQ) in Emergency
+Click [BookMyDOC](https://www.figma.com/proto/TLaUl6ogcATwVxZXI811Xy/Untitled?node-id=2133-369&p=f&t=JrEAcwQB1hCJg5K0-1&scaling=scale-down&content-scaling=fixed&page-id=2037%3A3&starting-point-node-id=2133%3A369) in Emergency
 
 ---
 
