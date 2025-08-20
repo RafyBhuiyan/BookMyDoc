@@ -29,6 +29,7 @@ Click [BookMyDOC](https://www.figma.com/make/hH4pT8vsA9S7fJjWcfkbdw/BookMyDoc-Wi
 
 -- **Asifuzzaman Shanto**
 
+[![wakatime](https://wakatime.com/badge/user/8e47db68-1502-4309-b657-785629e3abc9/project/06b70473-2e2d-4818-8199-c7f72e45fada.svg)](https://wakatime.com/badge/user/8e47db68-1502-4309-b657-785629e3abc9/project/06b70473-2e2d-4818-8199-c7f72e45fada)
 
 -- **Eousuf Abdullah**
 
