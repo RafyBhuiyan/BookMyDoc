@@ -9,7 +9,7 @@ import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { DemoProvider, useDemoRouter } from '@toolpad/core/internal';
 import SickSharpIcon from '@mui/icons-material/SickSharp';
 import CalendarMonthSharpIcon from '@mui/icons-material/CalendarMonthSharp';
-
+import '../index.css'
 import Find_Doctors from './Elements/Find_Doctors';
 import Appointments from './Elements/Appointments';
 import Symptom_checker from './Elements/Symptom_checker';
