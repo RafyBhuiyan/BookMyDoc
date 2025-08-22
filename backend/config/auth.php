@@ -36,11 +36,22 @@ return [
     */
 
     'guards' => [
-        'web' => [
+          'web' => [
             'driver' => 'session',
             'provider' => 'users',
+            ],
+
+         'doctor' => [
+            'driver' => 'session',
+           'provider' => 'doctors',
+             ],
+             
+         'api' => [
+                'driver' => 'token',
+                'provider' => 'users',
+                'hash' => false,
+          ],
         ],
-    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -59,17 +70,17 @@ return [
     |
     */
 
-    'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
-        ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+'providers' => [
+    'users' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\User::class,
     ],
+
+    'doctors' => [            
+        'driver' => 'eloquent',
+        'model' => App\Models\Doctor::class,
+    ],
+],
 
     /*
     |--------------------------------------------------------------------------
