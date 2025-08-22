@@ -1,16 +1,17 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import Contact from "./Pages/Contact";
+import { Box } from "@chakra-ui/react";
+import Homepage from "./Pages/HomePage";
+import DoctorDashboard from "./Doctors/Dashboard_Doc";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <BrowserRouter>
-      <Navbar />
+    <Box minH={"100vh"}>
       <Routes>
+       <Route path="/" element={<Homepage />} />
+       <Route path="/contact" element={<Contact />} />
+       <Route path="/Dashboard" element={<DoctorDashboard/>} />
       </Routes>
-    </BrowserRouter>
-  )
+    </Box>
+  );
 }
-
-export default App
