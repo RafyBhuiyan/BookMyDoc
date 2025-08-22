@@ -1,33 +1,17 @@
 import React from "react";
-import {
-  Box,
-  Container,
-  Heading,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  Button,
-  FormErrorMessage,
-  useToast,
-} from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import Navbar from "../Components/navbar";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../Components/navbar";
 
 export default function Contact() {
-  const toast = useToast();
   const navigate = useNavigate();
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
     email: Yup.string()
       .email("Invalid email")
-      .matches(
-        /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
-        "Email must be a Gmail address"
-      )
+      .matches(/^[a-zA-Z0-9._%+-]+@gmail\.com$/, "Email must be a Gmail address")
       .required("Email is required"),
     message: Yup.string().min(10, "Message must be at least 10 characters"),
   });
@@ -41,29 +25,19 @@ export default function Contact() {
   };
 
   return (
-    <Box minH="100vh" bg="white" color="black">
+    <div className="min-h-screen bg-white text-black">
       {/* Navbar */}
-      <Navbar scrollToHome={scrollToHome} scrollToHowItWorks={scrollToHowItWorks} />
+      <Navbar
+        scrollToHome={scrollToHome}
+        scrollToHowItWorks={scrollToHowItWorks}
+      />
 
       {/* Contact Form */}
-      <Container maxW="600px" py={20}>
-        <Box
-          p={8}
-          borderRadius="xl"
-          bg="white"
-          boxShadow="lg"
-          border="1px solid"
-          borderColor="gray.300"
-        >
-          <Heading
-            as="h2"
-            size="lg"
-            textAlign="center"
-            mb={8}
-            color="black"
-          >
+      <div className="max-w-xl mx-auto py-20 px-4">
+        <div className="p-8 rounded-xl bg-white shadow-lg border border-gray-300">
+          <h2 className="text-2xl font-bold text-center mb-8 text-black">
             Contact Us
-          </Heading>
+          </h2>
 
           <Formik
             initialValues={{ name: "", email: "", message: "" }}
@@ -71,82 +45,81 @@ export default function Contact() {
             onSubmit={(values, actions) => {
               console.log("Form submitted:", values);
               actions.resetForm();
-              toast({
-                title: "Message sent.",
-                description: "We will get back to you soon!",
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-                position: "bottom",
-              });
+              alert("✅ Message sent! We will get back to you soon.");
             }}
           >
             {({ errors, touched }) => (
-              <Form>
-                <FormControl mb={4} isInvalid={errors.name && touched.name}>
-                  <FormLabel>Name</FormLabel>
+              <Form className="space-y-6">
+                {/* Name */}
+                <div>
+                  <label className="block mb-1 font-medium">Name</label>
                   <Field
-                    as={Input}
                     name="name"
                     placeholder="Enter your name"
-                    bg="white"
-                    border="1px solid"
-                    borderColor="gray.400"
-                    color="black"
-                    _placeholder={{ color: "gray.500" }}
+                    className={`w-full px-4 py-2 border rounded-md bg-white text-black placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 ${
+                      errors.name && touched.name
+                        ? "border-red-500"
+                        : "border-gray-400"
+                    }`}
                   />
-                  <FormErrorMessage>{errors.name}</FormErrorMessage>
-                </FormControl>
+                  {errors.name && touched.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                  )}
+                </div>
 
-                <FormControl mb={4} isInvalid={errors.email && touched.email}>
-                  <FormLabel>Email</FormLabel>
+                {/* Email */}
+                <div>
+                  <label className="block mb-1 font-medium">Email</label>
                   <Field
-                    as={Input}
                     name="email"
                     type="email"
                     placeholder="Enter your email"
-                    bg="white"
-                    border="1px solid"
-                    borderColor="gray.400"
-                    color="black"
-                    _placeholder={{ color: "gray.500" }}
+                    className={`w-full px-4 py-2 border rounded-md bg-white text-black placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 ${
+                      errors.email && touched.email
+                        ? "border-red-500"
+                        : "border-gray-400"
+                    }`}
                   />
-                  <FormErrorMessage>{errors.email}</FormErrorMessage>
-                </FormControl>
+                  {errors.email && touched.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                  )}
+                </div>
 
-                <FormControl mb={6} isInvalid={errors.message && touched.message}>
-                  <FormLabel>Message</FormLabel>
+                {/* Message */}
+                <div>
+                  <label className="block mb-1 font-medium">Message</label>
                   <Field
-                    as={Textarea}
+                    as="textarea"
                     name="message"
                     placeholder="Enter your message"
-                    bg="white"
-                    border="1px solid"
-                    borderColor="gray.400"
-                    color="black"
-                    _placeholder={{ color: "gray.500" }}
+                    rows="4"
+                    className={`w-full px-4 py-2 border rounded-md bg-white text-black placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 ${
+                      errors.message && touched.message
+                        ? "border-red-500"
+                        : "border-gray-400"
+                    }`}
                   />
-                  <FormErrorMessage>{errors.message}</FormErrorMessage>
-                </FormControl>
+                  {errors.message && touched.message && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.message}
+                    </p>
+                  )}
+                </div>
 
-                <Button
-                  type="submit"
-                  colorScheme="blackAlpha"
-                  size="md"
-                  borderRadius="full"
-                  display="block"
-                  mx="auto"
-                  bg="black"
-                  color="white"
-                  _hover={{ bg: "gray.800" }}
-                >
-                  Submit
-                </Button>
+                {/* Submit Button */}
+                <div className="text-center">
+                  <button
+                    type="submit"
+                    className="px-6 py-2 rounded-full bg-black text-white font-medium hover:bg-gray-800 transition"
+                  >
+                    Submit
+                  </button>
+                </div>
               </Form>
             )}
           </Formik>
-        </Box>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -10,6 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/react-fontawesome": "^0.2.3",
+    "@toolpad/core": "^0.16.0",
+    "install": "^0.13.0",
+    "lucide": "^0.540.0",
+    "pnpm": "^10.15.0",
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.10.3",
     "@emotion/react": "^11.14.0",

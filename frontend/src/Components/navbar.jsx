@@ -125,7 +125,7 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
             </Button>
             <Button
               as={Link}
-              to="/register-patient"
+              to="/Patient/Dashboard"
               colorScheme="blue"
               size="md"
               rounded="full"
