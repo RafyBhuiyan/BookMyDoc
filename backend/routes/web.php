@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DoctorAuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ContactUsManager;
+use App\Http\Middleware\CorsMiddleware;
 
 Route::get('/', function () {
     return view('welcome');
@@ -38,5 +40,9 @@ Route::prefix('doctor')->name('doctor.')->group(function () {
         })->name('dashboard');
     });
 });
+
+
+Route::post('/contact', [ContactUsManager::class, 'store'])->middleware(CorsMiddleware::class);
+Route::get('/contact', [ContactUsManager::class, 'index'])->middleware(CorsMiddleware::class);
 
 require __DIR__.'/auth.php';

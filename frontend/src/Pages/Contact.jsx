@@ -3,6 +3,7 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/navbar";
+import axios from "axios";
 
 export default function Contact() {
   const navigate = useNavigate();
@@ -11,7 +12,10 @@ export default function Contact() {
     name: Yup.string().required("Name is required"),
     email: Yup.string()
       .email("Invalid email")
-      .matches(/^[a-zA-Z0-9._%+-]+@gmail\.com$/, "Email must be a Gmail address")
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+        "Email must be a Gmail address"
+      )
       .required("Email is required"),
     message: Yup.string().min(10, "Message must be at least 10 characters"),
   });
@@ -42,10 +46,40 @@ export default function Contact() {
           <Formik
             initialValues={{ name: "", email: "", message: "" }}
             validationSchema={validationSchema}
-            onSubmit={(values, actions) => {
-              console.log("Form submitted:", values);
-              actions.resetForm();
-              alert("✅ Message sent! We will get back to you soon.");
+            onSubmit={async (values, actions) => {
+              try {
+                const response = await axios.post(
+                  "http://localhost:8000/contact",
+                  values,
+                  {
+                    headers: {
+                      "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                    },
+                    withCredentials: true, // ensures cookies (session) are sent
+                  }
+                );
+
+                if (response.data.success) {
+                  alert("✅ Message sent! We will get back to you soon.");
+                  actions.resetForm();
+                } else {
+                  alert("❌ Something went wrong. Please try again.");
+                }
+              } catch (error) {
+                console.error(error);
+
+                if (error.response && error.response.data.errors) {
+                  // Laravel validation errors
+                  const messages = Object.values(error.response.data.errors)
+                    .flat()
+                    .join("\n");
+                  alert(`❌ Validation Error:\n${messages}`);
+                } else {
+                  alert("❌ Something went wrong. Please try again later.");
+                }
+              }
             }}
           >
             {({ errors, touched }) => (
