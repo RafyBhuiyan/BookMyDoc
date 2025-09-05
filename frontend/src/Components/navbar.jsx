@@ -105,7 +105,7 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
           <HStack spacing={4}>
             <Button
               as={Link}
-              to="/Dashboard"
+              to="/doctor/login"
               colorScheme="blue"
               size="md"
               rounded="full"
