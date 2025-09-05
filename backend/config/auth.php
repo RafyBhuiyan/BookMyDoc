@@ -36,22 +36,23 @@ return [
     */
 
     'guards' => [
-          'web' => [
+        'web' => [
             'driver' => 'session',
             'provider' => 'users',
-            ],
-
-         'doctor' => [
-            'driver' => 'session',
-           'provider' => 'doctors',
-             ],
-             
-         'api' => [
-                'driver' => 'token',
-                'provider' => 'users',
-                'hash' => false,
-          ],
         ],
+
+        // ✅ Add doctor guard
+        'doctor' => [
+            'driver' => 'session',
+            'provider' => 'doctors',
+        ],
+
+        // ✅ API guard for Sanctum (if you're using it)
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -70,17 +71,19 @@ return [
     |
     */
 
-'providers' => [
-    'users' => [
-        'driver' => 'eloquent',
-        'model' => App\Models\User::class,
-    ],
+    
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
 
-    'doctors' => [            
-        'driver' => 'eloquent',
-        'model' => App\Models\Doctor::class,
+        // ✅ Add doctor provider
+        'doctors' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Doctor::class,
+        ],
     ],
-],
 
     /*
     |--------------------------------------------------------------------------
@@ -108,8 +111,15 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-    ],
 
+        // ✅ Add password reset config for doctors (optional, if you want reset password for doctors too)
+        'doctors' => [
+            'provider' => 'doctors',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+    ],
     /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout
