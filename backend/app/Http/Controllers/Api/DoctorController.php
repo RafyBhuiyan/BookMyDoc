@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
-    /**
-     * Register Doctor
-     */
+
     public function register(Request $request)
     {
         try {
@@ -44,7 +42,7 @@ class DoctorController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Doctor Registered Successfully',
-                'token' => $doctor->createToken("DOCTOR_API_TOKEN")->plainTextToken
+               'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
             ], 200);
 
         } catch (\Throwable $th) {
@@ -55,9 +53,6 @@ class DoctorController extends Controller
         }
     }
 
-    /**
-     * Login Doctor
-     */
     public function login(Request $request)
     {
         try {
@@ -86,7 +81,7 @@ class DoctorController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Doctor Logged In Successfully',
-                'token' => $doctor->createToken("DOCTOR_API_TOKEN")->plainTextToken
+                'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
             ], 200);
 
         } catch (\Throwable $th) {

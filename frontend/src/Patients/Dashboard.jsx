@@ -11,9 +11,9 @@ import SickSharpIcon from '@mui/icons-material/SickSharp';
 import CalendarMonthSharpIcon from '@mui/icons-material/CalendarMonthSharp';
 import '../index.css'
 import Find_Doctors from './Elements/Find_Doctors';
-import Appointments from './Elements/Appointments';
 import Symptom_checker from './Elements/Symptom_checker';
 import Medical_reports from './Elements/Medical_reports';
+import MyAppointments from './Elements/MyAppointments';
 const demoTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'data-toolpad-color-scheme',
@@ -38,7 +38,7 @@ function DemoPageContent({ pathname }) {
       content = <Find_Doctors />;
       break;
     case '/appointments':
-      content = <Appointments />;
+      content = <MyAppointments />;
       break;
     case '/reports':
       content = <Medical_reports />;
