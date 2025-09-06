@@ -19,7 +19,7 @@ Click [BookMyDOC](https://www.figma.com/make/hH4pT8vsA9S7fJjWcfkbdw/BookMyDoc-Wi
 |--------------|------------------------------|-----------------------------------|-----------------------|
 | 20220204008  | Md. Asifuzzaman Shanto       | asifuzzaman2105@gmail.com         |                       |
 | 20220204021  | Md. Eousuf Abdullah Shameu   | eousuf.abdullah@gmail.com         |                       |
-| 20220204023  | Abdur Rafy Bhuiyan           | rafybhuiyan23@gmail.com           |                       |
+| 20220204023  | Rafy Bhuiyan                 | rafybhuiyan23@gmail.com           |                       |
 
 ---
 ## wakatime Badges
