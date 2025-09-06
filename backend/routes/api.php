@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\UserController;
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\MessageController;
+
+
 use App\Http\Controllers\Api\DoctorBrowseController;   // list/show/slots
 use App\Http\Controllers\Api\AvailabilityController;   // doctor availabilities
 use App\Http\Controllers\Api\AppointmentController;    // bookings
@@ -35,15 +39,16 @@ Route::get('/doctors/{doctor}',           [DoctorBrowseController::class, 'show'
 Route::get('/doctors/{doctor}/slots',     [DoctorBrowseController::class, 'slots']);     // ?date=YYYY-MM-DD
 Route::get('/doctors/{doctor}/slots/all', [DoctorBrowseController::class, 'allSlots']);
 
-/*
-|--------------------------------------------------------------------------
-| Doctor-only (Sanctum token with ability: doctor)
-|--------------------------------------------------------------------------
-*/
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/doctor/availabilities',                       [AvailabilityController::class, 'index']);
     Route::post('/doctor/availabilities',                      [AvailabilityController::class, 'store']);
     Route::delete('/doctor/availabilities/{availability}',     [AvailabilityController::class, 'destroy']);
+
+Route::post('/message', [MessageController::class, 'store']);
+
+Route::get('/message', [MessageController::class, 'index']);
+
 
     Route::patch('/doctor/appointments/{appointment}/accept',  [AppointmentController::class, 'accept']);
     Route::patch('/doctor/appointments/{appointment}/decline', [AppointmentController::class, 'decline']);

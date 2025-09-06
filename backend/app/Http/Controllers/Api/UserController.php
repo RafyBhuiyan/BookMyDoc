@@ -11,7 +11,13 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-   
+
+    /**
+     * Create User
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
     public function createUser(Request $request)
     {
         try {
