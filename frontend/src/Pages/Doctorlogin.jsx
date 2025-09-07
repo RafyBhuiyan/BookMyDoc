@@ -22,6 +22,7 @@ export default function DoctorLogin() {
     setError("");
 
     try {
+      localStorage.removeItem("patientToken");
       const { data } = await axios.post(
         "http://127.0.0.1:8000/api/doctor/login",
         formData,
@@ -32,7 +33,7 @@ export default function DoctorLogin() {
 
       if (data.status) {
         localStorage.setItem("doctorToken", data.token);
-        navigate("/Dashboard");
+        navigate("/doctor");
       } else {
         setError(data.message || "Login failed, please try again.");
       }

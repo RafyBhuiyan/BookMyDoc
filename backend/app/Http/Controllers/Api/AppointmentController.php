@@ -13,10 +13,7 @@ class AppointmentController extends Controller
 {
     use EnsuresRole;
 
-    /**
-     * Patient creates an appointment
-     * POST /api/appointments  (or your alias /api/user/appointment)
-     */
+
     public function store(Request $r)
     {
         $this->ensurePatient($r);
@@ -31,7 +28,6 @@ class AppointmentController extends Controller
 
         $start = Carbon::parse($data['starts_at'])->second(0);
 
-        // Must be within an availability window
         $win = Availability::where('doctor_id', $data['doctor_id'])
             ->where('date', $start->toDateString())
             ->where('start_time', '<=', $start->format('H:i:s'))
@@ -42,7 +38,6 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'Selected time is outside availability'], 422);
         }
 
-        // Block double booking only if there is a pending/accepted at that time
         $conflict = Appointment::where('doctor_id', $data['doctor_id'])
             ->where('starts_at', $start)
             ->whereIn('status', ['pending','accepted'])
@@ -71,7 +66,6 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Patient cancels: HARD DELETE (only pending)
      * PATCH /api/appointments/{appointment}/cancel
      */
     public function cancel(Request $r, Appointment $appointment)
@@ -85,13 +79,10 @@ class AppointmentController extends Controller
                 'message' => 'Only pending appointments can be cancelled by the patient.'
             ], 409);
         }
-
-        // optional: accept a cancel_reason but we’re deleting row anyway
         $r->validate(['cancel_reason' => ['nullable','string','max:1000']]);
 
         $appointment->delete();  // HARD DELETE
 
-        // 204 no content is fine; or return 200 with a message:
         return response()->json([
             'status'  => true,
             'message' => 'Appointment cancelled and removed.'
@@ -113,10 +104,12 @@ class AppointmentController extends Controller
                 'message' => 'Only pending appointments can be rescheduled by the patient.'
             ], 409);
         }
+$startsAt = str_replace('T', ' ', $r->starts_at); // 2025-09-08 18:30
+$r->merge(['starts_at' => $startsAt]);
+$data = $r->validate([
+    'starts_at' => ['required', 'date'],
+]);
 
-        $data = $r->validate([
-            'starts_at' => ['required', 'date'],
-        ]);
 
         $start = Carbon::parse($data['starts_at'])->second(0);
 

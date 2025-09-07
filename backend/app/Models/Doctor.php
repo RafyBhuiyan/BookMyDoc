@@ -46,18 +46,19 @@ class Doctor extends Authenticatable
     }
 
     
-    public function scopeSearch($query, ?string $term)
-    {
-        if (!$term) return $query;
+public function scopeSearch($query, ?string $term)
+{
+    if (!$term) return $query;
 
-        $s = strtolower($term);
-        return $query->where(function ($q) use ($s) {
-            $q->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"])
-              ->orWhereRaw('LOWER(email) LIKE ?', ["%{$s}%"])
-              ->orWhereRaw('LOWER(specialization) LIKE ?', ["%{$s}%"])
-              ->orWhereRaw('LOWER(city) LIKE ?', ["%{$s}%"]);
-        });
-    }
+    $s = strtolower($term);
+
+    return $query->where(function($q) use ($s) {
+        $q->whereRaw('LOWER(name) LIKE ?', ["{$s}%"])         // start with name
+          ->orWhereRaw('LOWER(specialization) LIKE ?', ["{$s}%"]) // start with specialization
+          ->orWhereRaw('LOWER(city) LIKE ?', ["{$s}%"]);     // start with city
+    });
+}
+
 
     /**
      * Filter by exact specialization.

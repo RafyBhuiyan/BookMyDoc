@@ -24,6 +24,7 @@ export default function PatientLogin() {
     setError("");
 
     try {
+      localStorage.removeItem("doctorToken");
       const { data } = await axios.post(
         `${API_BASE}/api/user/login`,
         formData,
@@ -32,7 +33,7 @@ export default function PatientLogin() {
 
       if (data.status) {
         localStorage.setItem("patientToken", data.token);
-        navigate("/user/Dashboard"); 
+        navigate("/user"); 
       } else {
         setError(data.message || "Login failed, please try again.");
       }

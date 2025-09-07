@@ -1,19 +1,28 @@
 import * as React from 'react';
+import { useNavigate, Outlet } from 'react-router-dom'; // Added Outlet
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import { createTheme } from '@mui/material/styles';
 import DescriptionIcon from '@mui/icons-material/Description';
-import { AppProvider } from '@toolpad/core/AppProvider';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { DemoProvider, useDemoRouter } from '@toolpad/core/internal';
 import SickSharpIcon from '@mui/icons-material/SickSharp';
 import CalendarMonthSharpIcon from '@mui/icons-material/CalendarMonthSharp';
-import '../index.css'
+import '../index.css';
 import Find_Doctors from './Elements/Find_Doctors';
 import Symptom_checker from './Elements/Symptom_checker';
 import Medical_reports from './Elements/Medical_reports';
 import MyAppointments from './Elements/MyAppointments';
+import SidebarDemo from "@/components/SidebarDemo";
+import {
+  FaUserMd,
+  FaUserInjured,
+  FaPills,
+  FaPrescriptionBottle,
+  FaFileMedical,
+  FaCalendarCheck,
+  FaClock,
+  FaSyringe,
+} from "react-icons/fa";
 const demoTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'data-toolpad-color-scheme',
@@ -31,7 +40,7 @@ const demoTheme = createTheme({
 });
 
 function DemoPageContent({ pathname }) {
-    let content;
+  let content;
 
   switch (pathname) {
     case '/doctors':
@@ -70,51 +79,34 @@ DemoPageContent.propTypes = {
 
 function PatientDashboard(props) {
   const { window } = props;
+  const navigate = useNavigate();
 
-  const router = useDemoRouter('/doctors');
+  // Check if patient is logged in
+  const patientToken = localStorage.getItem("patientToken");
 
-  const demoWindow = window !== undefined ? window() : undefined;
-          {/* 
-            kind: 'header',
-            title: 'Animals',
-          */}
+  if (!patientToken) {
+    navigate("/"); // redirect if not logged in
+    return null;
+  }
+
+  // fake user info (replace with real API/user state later)
+  const user = {
+    name: "John Doe",
+    role: "patient",
+  };
+
+  const links = [
+    { label: "Doctor List", href: "/user/doctors",icon: <FaUserMd className="h-5 w-5 shrink-0 rounded" /> },
+    { label: "Appointments", href: "/user/appointments", icon: <FaCalendarCheck className="h-5 w-5 shrink-0 rounded" /> },
+    { label: "Medical Report", href: "/user/reports", icon: <FaFileMedical className="h-5 w-5 shrink-0 rounded" /> },
+    { label: "Symptom Checker", href: "/user/symptom_checker" , icon: <FaSyringe className="h-5 w-5 shrink-0 rounded" /> },
+    { label: "Prescription", href: "/" , icon: <FaPrescriptionBottle className="h-5 w-5 shrink-0 rounded" /> },
+  ];
+
   return (
-    <DemoProvider window={demoWindow}>
-      <AppProvider
-        navigation={[
-
-          {
-            segment: 'doctors',
-            title: <span className="text-lg font-semibold">Find Doctors</span>,
-            icon: <PermIdentityIcon/>,
-          },
-          {
-            segment: 'appointments',
-            title:<span className="text-lg font-semibold">Appointments</span>,
-            icon: <CalendarMonthSharpIcon />,
-          },{
-            segment: 'reports',
-            title:<span className="text-lg font-semibold">Medical Reports</span>,
-            icon: <DescriptionIcon />,
-          },{
-            segment: 'symptom_checker',
-            title:<span className="text-lg font-semibold">Symptom Checker</span>,
-            icon: <SickSharpIcon />,
-          }
-        ]}
-        router={router}
-        theme={demoTheme}
-        window={demoWindow}
-        branding={{
-            title: 'Patient Dashboard',   
-             logo: <DescriptionIcon />,   
-          }}
-      >
-        <DashboardLayout  >
-          <DemoPageContent pathname={router.pathname} />
-        </DashboardLayout>
-      </AppProvider>
-    </DemoProvider>
+    <SidebarDemo links={links} user={user} defaultOpen={true}>
+      <Outlet />
+    </SidebarDemo>
   );
 }
 

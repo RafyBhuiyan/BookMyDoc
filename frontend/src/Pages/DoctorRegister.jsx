@@ -11,6 +11,8 @@ export default function DoctorRegister() {
     phone: "",
     specialization: "",
     password: "",
+    city: "",
+    clinic_address: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -128,7 +130,34 @@ export default function DoctorRegister() {
               required
             />
           </div>
-
+          <div>
+            <label htmlFor="city" className="block text-gray-700 mb-2 font-semibold">
+              City
+            </label>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              placeholder="Enter your City"
+              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="Clinic Address" className="block text-gray-700 mb-2 font-semibold">
+              Clinic Address
+            </label>
+            <input
+              type="text"
+              name="clinic_address"
+              value={formData.clinic_address}
+              onChange={handleChange}
+              placeholder="Enter your Clinic Address"
+              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+              required
+            />
+          </div>
           <div>
             <label htmlFor="password" className="block text-gray-700 mb-2 font-semibold">
               Password
@@ -143,7 +172,7 @@ export default function DoctorRegister() {
               required
             />
           </div>
-
+          
           <button
             type="submit"
             disabled={loading}
