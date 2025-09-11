@@ -22,6 +22,12 @@ class Doctor extends Authenticatable
         'phone',
         'specialization',
         'password',
+        'profile_picture',
+        'medical_school',
+        'education_certificates',
+        'medical_license_number',
+        'years_of_experience',
+        'bio',
     ];
 
     /**
@@ -41,5 +47,6 @@ class Doctor extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'education_certificates' => 'array', //this ensures certificates are arrays
     ];
 }
