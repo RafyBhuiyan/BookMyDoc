@@ -22,6 +22,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function medicalRecords()
+    {
+        return $this->hasMany(\App\Models\MedicalData::class);
+    }
+
     protected function casts(): array
     {
         return [

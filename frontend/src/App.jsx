@@ -25,7 +25,6 @@ export default function App() {
        <Route path="/Dashboard" element={<DoctorDashboard/>} />
        <Route path ='/user/Dashboard' element ={<PatientDashboard/>}/>
         <Route path="/doctors" element={<Find_Doctors />} />
-
         <Route path="/doctors/:id" element={<DoctorSlots />} />
         <Route path="/doctors/:id/book" element={<SlotsBooking/>} />
         <Route path="/user/appointments" element={<MyAppointments/>} />
