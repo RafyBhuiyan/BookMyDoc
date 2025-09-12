@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
-    /**
-     * Register Doctor
-     */
+
     public function register(Request $request)
     {
         try {
@@ -22,13 +20,7 @@ class DoctorController extends Controller
                 'email' => 'required|email|unique:doctors,email',
                 'phone' => 'required|string|unique:doctors,phone',
                 'specialization' => 'required|string|max:255',
-                'password' => 'required|string|min:6',
-                'medical_school' => 'nullable|string|max:255',
-                'medical_license_number' => 'nullable|string|unique:doctors,medical_license_number',
-                'years_of_experience' => 'nullable|integer',
-                'bio' => 'nullable|string',
-                'profile_picture' => 'nullable|file|image|max:2048',
-                'education_certificates.*' => 'nullable|file|mimes:pdf,jpg,png|max:4096',
+                'password' => 'required|string|min:6'
             ]);
 
             if ($validateDoctor->fails()) {
@@ -39,40 +31,18 @@ class DoctorController extends Controller
                 ], 401);
             }
 
-            // Handle profile picture upload
-            $profilePicPath = null;
-            if ($request->hasFile('profile_picture')) {
-                $profilePicPath = $request->file('profile_picture')
-                                          ->store('doctors/profile_pictures', 'public');
-            }
-
-            // Handle multiple certificates upload
-            $certificates = [];
-            if ($request->hasFile('education_certificates')) {
-                foreach ($request->file('education_certificates') as $file) {
-                    $certificates[] = $file->store('doctors/certificates', 'public');
-                }
-            }
-
-            // Create doctor
             $doctor = Doctor::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'specialization' => $request->specialization,
                 'password' => Hash::make($request->password),
-                'medical_school' => $request->medical_school,
-                'medical_license_number' => $request->medical_license_number,
-                'years_of_experience' => $request->years_of_experience,
-                'bio' => $request->bio,
-                'profile_picture' => $profilePicPath,
-                'education_certificates' => json_encode($certificates),
             ]);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Doctor Registered Successfully',
-                'token' => $doctor->createToken("DOCTOR_API_TOKEN")->plainTextToken
+               'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
             ], 200);
 
         } catch (\Throwable $th) {
@@ -83,9 +53,6 @@ class DoctorController extends Controller
         }
     }
 
-    /**
-     * Login Doctor
-     */
     public function login(Request $request)
     {
         try {
@@ -114,8 +81,7 @@ class DoctorController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Doctor Logged In Successfully',
-                'token' => $doctor->createToken("DOCTOR_API_TOKEN")->plainTextToken,
-                'doctor' => $doctor
+                'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
             ], 200);
 
         } catch (\Throwable $th) {
@@ -126,9 +92,6 @@ class DoctorController extends Controller
         }
     }
 
-    /**
-     * Logout Doctor
-     */
     public function logout(Request $request)
     {
         try {
@@ -146,4 +109,5 @@ class DoctorController extends Controller
             ], 500);
         }
     }
+    
 }
