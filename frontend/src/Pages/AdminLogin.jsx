@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function DoctorLogin() {
+export default function AdminLogin() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -23,7 +23,7 @@ export default function DoctorLogin() {
 
     try {
       const { data } = await axios.post(
-        "http://127.0.0.1:8000/api/doctor/login",
+        "http://127.0.0.1:8000/api/admin/login",
         formData,
         {
           headers: { "Content-Type": "application/json" },
@@ -31,31 +31,16 @@ export default function DoctorLogin() {
       );
 
       if (data.status) {
-        // ✅ login success
-        localStorage.setItem("doctorToken", data.token);
-        navigate("/Dashboard");
+        localStorage.setItem("adminToken", data.token);
+        navigate("/admin/dashboard");
       } else {
-        // ✅ backend returned status=false
         setError(data.message || "Login failed, please try again.");
       }
     } catch (err) {
       console.error(err);
-
-      if (err.response) {
-        // Backend returned a response
-        if (err.response.status === 401) {
-          setError("Account not found or wrong password."); // ❌ no account
-        } else if (err.response.status === 403) {
-          setError("Your account is not approved yet. Please wait for admin approval."); // ⏳ not approved
-        } else if (err.response.status === 422) {
-          setError("Validation failed. Please check your inputs.");
-        } else {
-          setError(err.response.data.message || "Something went wrong.");
-        }
-      } else {
-        // Network or other error
-        setError("Server unreachable. Please try again later.");
-      }
+      setError(
+        err.response?.data?.message || "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -64,19 +49,16 @@ export default function DoctorLogin() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="bg-white shadow-xl rounded-2xl p-10 w-full max-w-lg">
-        {/* Title */}
         <h1 className="text-xl font-bold text-center text-gray-800 mb-8">
-          Doctor Login
+          Admin Login
         </h1>
 
-        {/* Error Alert */}
         {error && (
           <div className="bg-red-100 text-red-700 px-4 py-3 rounded-md mb-6 text-center font-medium">
             {error}
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label
@@ -129,7 +111,7 @@ export default function DoctorLogin() {
           Don't have an account?{" "}
           <span
             className="text-indigo-600 hover:underline cursor-pointer"
-            onClick={() => navigate("/doctor/register")}
+            onClick={() => navigate("/admin/register")}
           >
             Sign up
           </span>

@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Validator;
 class DoctorController extends Controller
 {
     /**
-     * Register Doctor
+     * Doctor Registration
+     * New doctors are created with is_approved = false.
      */
     public function register(Request $request)
     {
@@ -22,13 +23,7 @@ class DoctorController extends Controller
                 'email' => 'required|email|unique:doctors,email',
                 'phone' => 'required|string|unique:doctors,phone',
                 'specialization' => 'required|string|max:255',
-                'password' => 'required|string|min:6',
-                'medical_school' => 'nullable|string|max:255',
-                'medical_license_number' => 'nullable|string|unique:doctors,medical_license_number',
-                'years_of_experience' => 'nullable|integer',
-                'bio' => 'nullable|string',
-                'profile_picture' => 'nullable|file|image|max:2048',
-                'education_certificates.*' => 'nullable|file|mimes:pdf,jpg,png|max:4096',
+                'password' => 'required|string|min:6'
             ]);
 
             if ($validateDoctor->fails()) {
@@ -36,43 +31,22 @@ class DoctorController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateDoctor->errors()
-                ], 401);
+                ], 422); // <-- proper status code for validation errors
             }
 
-            // Handle profile picture upload
-            $profilePicPath = null;
-            if ($request->hasFile('profile_picture')) {
-                $profilePicPath = $request->file('profile_picture')
-                                          ->store('doctors/profile_pictures', 'public');
-            }
-
-            // Handle multiple certificates upload
-            $certificates = [];
-            if ($request->hasFile('education_certificates')) {
-                foreach ($request->file('education_certificates') as $file) {
-                    $certificates[] = $file->store('doctors/certificates', 'public');
-                }
-            }
-
-            // Create doctor
             $doctor = Doctor::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'specialization' => $request->specialization,
                 'password' => Hash::make($request->password),
-                'medical_school' => $request->medical_school,
-                'medical_license_number' => $request->medical_license_number,
-                'years_of_experience' => $request->years_of_experience,
-                'bio' => $request->bio,
-                'profile_picture' => $profilePicPath,
-                'education_certificates' => json_encode($certificates),
+                'is_approved' => false, // <-- default to false
             ]);
 
             return response()->json([
                 'status' => true,
-                'message' => 'Doctor Registered Successfully',
-                'token' => $doctor->createToken("DOCTOR_API_TOKEN")->plainTextToken
+                'message' => 'Doctor Registered Successfully. Waiting for admin approval.',
+                'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
             ], 200);
 
         } catch (\Throwable $th) {
@@ -84,7 +58,8 @@ class DoctorController extends Controller
     }
 
     /**
-     * Login Doctor
+     * Doctor Login
+     * Only approved doctors can log in.
      */
     public function login(Request $request)
     {
@@ -99,23 +74,30 @@ class DoctorController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateDoctor->errors()
-                ], 401);
+                ], 422);
             }
 
-            if (!Auth::guard('doctor')->attempt($request->only(['email', 'password']))) {
+            $doctor = Doctor::where('email', $request->email)->first();
+
+            if (!$doctor || !Auth::guard('doctor')->attempt($request->only(['email', 'password']))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password do not match our records.',
                 ], 401);
             }
 
-            $doctor = Doctor::where('email', $request->email)->first();
+            // Prevent login if not approved
+            if (!$doctor->is_approved) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Your account is pending admin approval.'
+                ], 403);
+            }
 
             return response()->json([
                 'status' => true,
                 'message' => 'Doctor Logged In Successfully',
-                'token' => $doctor->createToken("DOCTOR_API_TOKEN")->plainTextToken,
-                'doctor' => $doctor
+                'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
             ], 200);
 
         } catch (\Throwable $th) {
@@ -127,7 +109,7 @@ class DoctorController extends Controller
     }
 
     /**
-     * Logout Doctor
+     * Doctor Logout
      */
     public function logout(Request $request)
     {

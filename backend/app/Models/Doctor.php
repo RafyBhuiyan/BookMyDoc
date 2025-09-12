@@ -11,42 +11,81 @@ class Doctor extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'phone',
         'specialization',
         'password',
-        'profile_picture',
-        'medical_school',
-        'education_certificates',
-        'medical_license_number',
-        'years_of_experience',
-        'bio',
+        'city',            // optional: used for filtering
+        'clinic_address',
+        'is_approved',  // optional: display only
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'education_certificates' => 'array', //this ensures certificates are arrays
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+    public function availabilities()
+    {
+        return $this->hasMany(\App\Models\Availability::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    
+    public function scopeSearch($query, ?string $term)
+    {
+        if (!$term) return $query;
+
+        $s = strtolower($term);
+        return $query->where(function ($q) use ($s) {
+            $q->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"])
+              ->orWhereRaw('LOWER(email) LIKE ?', ["%{$s}%"])
+              ->orWhereRaw('LOWER(specialization) LIKE ?', ["%{$s}%"])
+              ->orWhereRaw('LOWER(city) LIKE ?', ["%{$s}%"]);
+        });
+    }
+
+    /**
+     * Filter by exact specialization.
+     */
+    public function scopeSpecialization($query, ?string $spec)
+    {
+        return $spec ? $query->where('specialization', $spec) : $query;
+    }
+
+    /**
+     * Filter by exact city.
+     */
+    public function scopeCity($query, ?string $city)
+    {
+        return $city ? $query->where('city', $city) : $query;
+    }
+
+    /**
+     * Only doctors that have at least one availability on a given date (YYYY-MM-DD).
+     */
+    public function scopeHasAvailabilityOn($query, ?string $date)
+    {
+        if (!$date) return $query;
+
+        return $query->whereHas('availabilities', function ($w) use ($date) {
+            $w->where('date', $date);
+        });
+    }
 }
