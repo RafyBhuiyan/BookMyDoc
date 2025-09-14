@@ -104,7 +104,7 @@ export default function DoctorSlots() {
               {doctor ? (doctor.name || doctor.full_name) : `Doctor #${id}`}
             </p>
           </div>
-          <Link to="/doctors" className="text-blue-600 hover:underline">Back to Doctors</Link>
+          <Link to="/doctor" className="text-blue-600 hover:underline">Back to Doctors</Link>
         </div>
 
         <div className="bg-white rounded-2xl shadow p-4 mb-4">
@@ -181,9 +181,9 @@ export default function DoctorSlots() {
                   {d.slots.length === 0 ? (
                     <p className="text-sm text-gray-500">No slots.</p>
                   ) : (<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-  {d.slots.map((s) => {
-    const disabled = s.status !== "available";
-    console.log(s);
+                  {d.slots.map((s) => {
+               const disabled = s.status !== "available";
+         console.log(s);
 
     if (s.status !== "available") {
       return (

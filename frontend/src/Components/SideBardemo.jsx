@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-
+import logo from "../assets/logo_white.png"; 
+import icon1 from "../assets/iconlogo.png"// Adjust the path as necessary
 export default function SidebarDemo({
   links = [],
   user = null,
@@ -34,6 +35,7 @@ export default function SidebarDemo({
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="min-h-0 justify-between gap-10 bg-black">
           <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            {open ? <Logo /> : <LogoIcon />}
             <div className="mt-8 flex flex-col gap-2">
               {finalLinks.map((link, idx) => {
                 const active = pathname === link.href || pathname.startsWith(link.href);
@@ -79,18 +81,37 @@ export default function SidebarDemo({
 }
 
 export const Logo = () => (
-  <a href="#" className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black">
-    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="whitespace-pre font-medium text-black dark:text-white">
-      Acet Labs
-    </motion.span>
-  </a>
+<a
+  href="/"
+  className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
+>
+  {/* The small black/white box (keep if needed as design accent) */}
+  <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+  {/* Replace text with PNG */}
+  <motion.img
+    src={logo}
+    alt="BookMydoc"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    className="h-15 w-auto pt-1.5"
+  />
+</a>
+
 );
 
 export const LogoIcon = () => (
-  <a href="#" className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black">
-    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-  </a>
+    <a
+      href="#"
+      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
+    >
+       <motion.img
+       src={icon1} 
+         alt="BookMydoc"
+           initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+                 className="h-10 w-auto pt-1.5"
+  />
+    </a>
 );
 
 function PlaceholderDashboard({ className }) {

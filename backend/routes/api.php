@@ -22,7 +22,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/logout',   [UserController::class, 'logout']);
 });
 
-
+Route::get('/health', fn() => response()->json(['ok' => true], 200));
+Route::middleware('auth:sanctum')->get('/auth-check', function () {
+    return response()->json(['auth' => true, 'user' => auth()->user()], 200);
+});
 Route::get('/doctors',                    [DoctorBrowseController::class, 'index']);
 Route::get('/doctors/{doctor}',           [DoctorBrowseController::class, 'show']);
 Route::get('/doctors/{doctor}/slots',     [DoctorBrowseController::class, 'slots']);    
@@ -42,7 +45,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::patch('/doctor/appointments/{appointment}/decline', [AppointmentController::class, 'decline']);
     Route::get('/doctor/appointments',                         [AppointmentController::class, 'myForDoctor']);
 
-    
+    Route::get('/doctor/appointments/accepted',                     [AppointmentController::class, 'accepted']);
     Route::post('/user/appointments',                                 [AppointmentController::class, 'store']);
     Route::patch('/user/appointments/{appointment}/cancel',           [AppointmentController::class, 'cancel']);
     Route::patch('/user/appointments/{appointment}/reschedule',       [AppointmentController::class, 'reschedule']);

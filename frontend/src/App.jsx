@@ -19,6 +19,7 @@ import AppointmentPage from "./Doctors/appoinment";
 import Medical_reports from "./Patients/Elements/Medical_reports";
 import Symptom_checker from "./Patients/Elements/Symptom_checker";
 
+
 export default function App() {
   //        <Route path="/user/appointments" element={<PrivateRoute element={<MyAppointments />} allowedRole="patient" />} />
   //        <Route path="/doctors" element={<PrivateRoute element={<Find_Doctors />} allowedRole="patient" />} />
@@ -56,7 +57,7 @@ export default function App() {
 
         <Route path="/doctors/:id" element={<PrivateRoute element={<DoctorSlots />} allowedRole="patient" />} />
         <Route path="/doctors/:id/book" element={<PrivateRoute element={<SlotsBooking />} allowedRole="patient" />} />
-
+  
 
       </Routes>
     </Box>

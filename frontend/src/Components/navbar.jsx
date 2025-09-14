@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaHeart, FaUserMd, FaUser } from "react-icons/fa";
-
+import logo from "../assets/logo_white.png"; // Adjust the path as necessary
 const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
   const navigate = useNavigate();
 
@@ -50,25 +50,13 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
         <Flex alignItems="center" justifyContent="space-between">
           {/* Logo */}
           <HStack spacing={2}>
-            <Box
-              bg="blue.100"
-              p={2}
-              borderRadius="full"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <FaHeart color="#3182CE" size="18px" />
-            </Box>
-            <Text
-              fontSize="24px"
-              fontWeight="extrabold"
-              color="blue.600"
-              fontFamily="Poppins, sans-serif"
-              letterSpacing="tight"
-            >
-              <Link to="/">BookMyDoc</Link>
-            </Text>
+<Box as={Link} to="/" display="flex" alignItems="center">
+  <img 
+    src={logo} 
+    alt="BookMyDoc1" 
+    style={{ height: "50px", objectFit: "contain" }} 
+  />
+</Box>
           </HStack>
 
           <Spacer />

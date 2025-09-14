@@ -13,7 +13,10 @@ class AppointmentController extends Controller
 {
     use EnsuresRole;
 
-
+    /**
+     * Patient creates an appointment
+     * POST /api/appointments  (or your alias /api/user/appointment)
+     */
     public function store(Request $r)
     {
         $this->ensurePatient($r);
@@ -28,6 +31,7 @@ class AppointmentController extends Controller
 
         $start = Carbon::parse($data['starts_at'])->second(0);
 
+        // Must be within an availability window
         $win = Availability::where('doctor_id', $data['doctor_id'])
             ->where('date', $start->toDateString())
             ->where('start_time', '<=', $start->format('H:i:s'))
@@ -38,6 +42,7 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'Selected time is outside availability'], 422);
         }
 
+        // Block double booking only if there is a pending/accepted at that time
         $conflict = Appointment::where('doctor_id', $data['doctor_id'])
             ->where('starts_at', $start)
             ->whereIn('status', ['pending','accepted'])
@@ -66,6 +71,7 @@ class AppointmentController extends Controller
     }
 
     /**
+     * Patient cancels: HARD DELETE (only pending)
      * PATCH /api/appointments/{appointment}/cancel
      */
     public function cancel(Request $r, Appointment $appointment)
@@ -79,10 +85,13 @@ class AppointmentController extends Controller
                 'message' => 'Only pending appointments can be cancelled by the patient.'
             ], 409);
         }
+
+        // optional: accept a cancel_reason but we’re deleting row anyway
         $r->validate(['cancel_reason' => ['nullable','string','max:1000']]);
 
         $appointment->delete();  // HARD DELETE
 
+        // 204 no content is fine; or return 200 with a message:
         return response()->json([
             'status'  => true,
             'message' => 'Appointment cancelled and removed.'
@@ -104,12 +113,10 @@ class AppointmentController extends Controller
                 'message' => 'Only pending appointments can be rescheduled by the patient.'
             ], 409);
         }
-$startsAt = str_replace('T', ' ', $r->starts_at); // 2025-09-08 18:30
-$r->merge(['starts_at' => $startsAt]);
-$data = $r->validate([
-    'starts_at' => ['required', 'date'],
-]);
 
+        $data = $r->validate([
+            'starts_at' => ['required', 'date'],
+        ]);
 
         $start = Carbon::parse($data['starts_at'])->second(0);
 
@@ -204,39 +211,47 @@ $data = $r->validate([
     /**
      * Doctor’s queue (default = upcoming pending+accepted)
      */
-    public function myForDoctor(Request $r)
-    {
-        $this->ensureDoctor($r);
+public function myForDoctor(Request $r)
+{
+    $this->ensureDoctor($r);
 
-        $status = $r->query('status', 'inbox'); // inbox|pending|accepted|cancelled|declined|all
-        $q = Appointment::where('doctor_id', $r->user()->id);
+    $status = $r->query('status', 'inbox'); // inbox|pending|accepted|declined|all
 
-        switch ($status) {
-            case 'pending':
-                $q->where('status','pending')->where('starts_at','>=', now());
-                break;
-            case 'accepted':
-                $q->where('status','accepted')->where('starts_at','>=', now());
-                break;
-            case 'declined':
-                $q->where('status','declined');
-                break;
-            case 'inbox': // default
-                $q->whereIn('status',['pending','accepted'])->where('starts_at','>=', now());
-                break;
-            case 'all':
-            default:
-                // no extra filters
-                break;
-        }
+    // eager-load patient details
+    $q = \App\Models\Appointment::with([
+            'patient:id,name,email'
+        ])
+        ->where('doctor_id', $r->user()->id);
 
-        return $q->orderBy('starts_at')->paginate(20)->appends(['status'=>$status]);
+    switch ($status) {
+        case 'pending':
+            $q->where('status','pending')->where('starts_at','>=', now());
+            break;
+        case 'accepted':
+            $q->where('status','accepted')->where('starts_at','>=', now());
+            break;
+        case 'declined':
+            $q->where('status','declined');
+            break;
+        case 'inbox': // default: upcoming pending + accepted
+            $q->whereIn('status',['pending','accepted'])->where('starts_at','>=', now());
+            break;
+        case 'all':
+        default:
+            // no extra filter
+            break;
     }
+
+    return $q->orderBy('starts_at')
+        ->paginate(min(max((int)$r->integer('per_page', 20), 1), 100))
+        ->appends(['status'=>$status] + $r->query());
+}
+
 
     /**
      * Patient’s history
      */
-   public function myForPatient(Request $r)
+public function myForPatient(Request $r)
 {
     $this->ensurePatient($r);
 
@@ -251,5 +266,36 @@ $data = $r->validate([
         'appointments' => $appointments->items(),
     ]);
 }
+
+public function accepted(Request $r)
+{
+    $this->ensureDoctor($r);
+
+    $includePast = (bool) $r->boolean('include_past', false);
+
+    // eager-load patient details
+    $q = \App\Models\Appointment::with([
+            'patient:id,name,email' // add more columns if your users table has them (e.g., phone)
+        ])
+        ->where('doctor_id', $r->user()->id)
+        ->where('status', 'accepted');
+
+    if (!$includePast) {
+        $q->where('starts_at', '>=', now());
+    }
+
+    if ($r->filled('date')) {
+        $q->whereDate('starts_at', $r->query('date'));
+    }
+    if ($r->filled('patient_id')) {
+        $q->where('patient_id', (int)$r->query('patient_id'));
+    }
+
+    return $q->orderBy('starts_at')
+        ->paginate(min(max((int)$r->integer('per_page', 20), 1), 100))
+        ->appends($r->query());
+}
+
+
 
 }

@@ -72,7 +72,7 @@ const handleReschedule = async () => {
       {error && <p className="text-red-600">{error}</p>}
 
       {appointment && (
-        <div>
+        <div className="h-auto">
           <p><strong>Doctor:</strong> {appointment.doctor.name}</p>
           <p><strong>Original Date:</strong> {new Date(appointment.starts_at).toLocaleString()}</p>
           <label className="block text-sm font-medium text-gray-700 mb-2">New Date & Time</label>

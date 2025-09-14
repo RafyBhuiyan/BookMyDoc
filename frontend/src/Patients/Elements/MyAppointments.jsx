@@ -26,7 +26,6 @@ export default function MyAppointments() {
         const { data } = await axios.get(`${API_BASE}/api/my/appointments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         if (Array.isArray(data.appointments)) {
           setAppointments(data.appointments);
         } else {
