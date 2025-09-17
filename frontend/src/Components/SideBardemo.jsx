@@ -33,7 +33,7 @@ export default function SidebarDemo({
       )}
     >
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="min-h-0 justify-between gap-10 bg-black">
+        <SidebarBody className="min-h-0 justify-between gap-10 bg-black ">
           <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto">
             {open ? <Logo /> : <LogoIcon />}
             <div className="mt-8 flex flex-col gap-2">
@@ -47,7 +47,7 @@ export default function SidebarDemo({
                       e.preventDefault();
                       navigate(link.href); // route change
                     }}
-                    className="rounded-md px-2 bg-transparent hover:bg-transparent focus:bg-transparent"
+                    className="rounded-md px-2 bg-transparent hover:bg-gray-300 focus:bg-transparent"
                     labelClassName={cn("!text-white", active && "font-semibold")}
                     iconClassName="!text-white"
                     aria-current={active ? "page" : undefined}
@@ -71,8 +71,8 @@ export default function SidebarDemo({
       </Sidebar>
 
       {/* Right content area (renders <Outlet /> that the parent passes as children) */}
-      <div className="flex min-h-0 flex-1 overflow-hidden bg-neutral-900">
-        <div className="min-h-0 flex w-full flex-1 flex-col gap-4 overflow-y-auto bg-neutral-900 p-4 md:p-10">
+      <div className="flex min-h-0 flex-1 overflow-hidden bg-black">
+        <div className="min-h-0 flex w-full flex-1 flex-col gap-4 overflow-y-auto bg-neutral p-4 md:p-10">
           {children}
         </div>
       </div>

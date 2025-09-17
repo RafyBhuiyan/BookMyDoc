@@ -68,7 +68,7 @@ export const DesktopSidebar = ({
           className
         )}
         animate={{
-          width: animate ? (open ? "300px" : "60px") : "300px",
+          width: animate ? (open ? "300px" : "80px") : "300px",
         }}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
@@ -78,85 +78,106 @@ export const DesktopSidebar = ({
     </>
   );
 };
-
 export const MobileSidebar = ({
   className,
   children,
+  mobileLogo,     // ← NEW: pass a React node (img/SVG) from the dashboard
+  brandHref = "/",// ← optional brand link
   ...props
 }) => {
   const { open, setOpen } = useSidebar();
+
   return (
     <>
+      {/* Fixed top app bar (does NOT consume row width) */}
       <div
         className={cn(
-          "h-10 px-4 py-4 flex flex-row md:hidden  items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full"
+          "fixed inset-x-0 top-0 h-12 md:hidden flex items-center justify-between px-4",
+          "bg-neutral-100/80 dark:bg-neutral-800/80 backdrop-blur z-[60]"
         )}
-        {...props}>
-        <div className="flex justify-end z-20 w-full">
-          <IconMenu2
-            className="text-neutral-800 dark:text-neutral-200"
-            onClick={() => setOpen(!open)} />
-        </div>
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ x: "-100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "-100%", opacity: 0 }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-              }}
-              className={cn(
-                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
-                className
-              )}>
-              <div
-                className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
-                onClick={() => setOpen(!open)}>
-                <IconX />
-              </div>
-              {children}
-            </motion.div>
+        {...props}
+      >
+        <a href={brandHref} className="flex items-center gap-2">
+          {mobileLogo ?? (
+            <span className="text-sm font-semibold tracking-wide text-neutral-800 dark:text-neutral-200">
+              BOOKMYDOC
+            </span>
           )}
-        </AnimatePresence>
+        </a>
+
+        <button
+          className="grid place-items-center rounded p-1.5"
+          onClick={() => setOpen(!open)}
+          aria-label="Open menu"
+        >
+          <IconMenu2 className="text-neutral-800 dark:text-neutral-200" />
+        </button>
       </div>
+
+      {/* Full-screen overlay drawer */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ x: "-100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "-100%", opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className={cn(
+              "fixed inset-0 z-[100] md:hidden bg-white dark:bg-neutral-900 p-10 flex flex-col justify-between",
+              className
+            )}
+          >
+            <div
+              className="absolute right-6 top-3 z-50 text-neutral-800 dark:text-neutral-200"
+              onClick={() => setOpen(false)}
+              role="button"
+              aria-label="Close menu"
+            >
+              <IconX />
+            </div>
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
 
+
+// Sidebar.jsx
 export const SidebarLink = ({
-  link,
+  link,            // { href, icon, label, active? }
   className,
-  labelClassName,
-  iconClassName,
   ...props
 }) => {
   const { open, animate } = useSidebar();
+  const isActive = Boolean(link?.active);
+
   return (
     <a
       href={link.href}
+      aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex items-center justify-start gap-2 group/sidebar py-2 rounded-md px-2 hover:bg-neutral-700/50",
+        "w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium cursor-pointer transition-colors",
+        // text color
+        "text-neutral-700 dark:text-neutral-200",
+        // ENTIRE BOX turns grey on hover/focus
+        "hover:bg-neutral-200 dark:hover:bg-neutral-700",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-600",
+        // ACTIVE = grey box
+        isActive && "bg-neutral-200 dark:bg-neutral-700",
         className
       )}
       {...props}
     >
-      {/* icon */}
-      <span className={cn("text-white", iconClassName)}>
-        {link.icon}
-      </span>
+      {link.icon}
 
-      {/* label */}
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className={cn(
-          "text-white dark:text-neutral-200 text-sm transition duration-150 whitespace-pre inline-block !p-0 !m-0",
-          labelClassName
-        )}
+        className="whitespace-pre"
       >
         {link.label}
       </motion.span>

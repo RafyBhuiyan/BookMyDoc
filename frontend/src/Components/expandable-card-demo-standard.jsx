@@ -5,23 +5,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Link } from "react-router-dom";
 
-/**
- * Expandable card tailored for DOCTOR objects.
- * Props:
- *  - doctor: {
- *      id, name, email, phone, specialization, city, clinic_address,
- *      photo_url?, bio?, availabilities?: [{ date: 'YYYY-MM-DD', from?: 'HH:mm', to?: 'HH:mm' }]
- *    }
- *  - onViewProfile?: (doctor) => void
- *  - onBook?: (doctor) => void
- */
+
 export default function ExpandableDoctorCard({ doctor, onViewProfile, onBook }) {
   const [active, setActive] = useState(null);
   const ref = useRef(null);
   const id = useId();
   const MotionLink=motion(Link);
 
-  // Build a "card" object once from the doctor fields (keeps compatibility with the original layoutId scheme)
   const card = React.useMemo(() => {
     if (!doctor) return null;
 
@@ -64,7 +54,7 @@ export default function ExpandableDoctorCard({ doctor, onViewProfile, onBook }) 
                   key={`${doctor.id || title}-slot-${i}`}
                   className="rounded-lg border border-white/10 bg-white/5 dark:bg-neutral-800/50 px-3 py-2"
                 >
-                  <div className="text-neutral-800 dark:text-neutral-200 text-sm">
+                  <div className="text-neutral-800 dark:text-neutral-200 text-sm ">
                     {slot.date}
                     {(slot.from || slot.to) && (
                       <span className="text-neutral-500 dark:text-neutral-400">
@@ -211,9 +201,9 @@ export default function ExpandableDoctorCard({ doctor, onViewProfile, onBook }) 
 <motion.div
   layoutId={`card-${card.title}-${id}`}
   onClick={() => setActive(true)}
-  className="group p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer"
+  className="group p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 rounded-xl cursor-pointer"
 >
-  <div className="flex gap-4 flex-col md:flex-row w-full m-1">
+  <div className="flex gap-4 flex-col md:flex-row w-full m-1 ">
     <motion.div layoutId={`image-${card.title}-${id}`}>
       <img
         width={100}

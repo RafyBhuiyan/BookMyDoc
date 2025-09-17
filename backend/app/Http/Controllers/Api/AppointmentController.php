@@ -70,6 +70,34 @@ class AppointmentController extends Controller
         ], 201);
     }
 
+
+    public function day(Request $r)
+    {
+        $this->ensureDoctor($r);
+
+        // If ?date is missing, default to "today" in app timezone
+        $date = $r->query('date');
+        if (!$date) {
+            $date = now(config('app.timezone'))->toDateString();
+        }
+
+        // Normalize to a date string (handles random inputs safely)
+        $d = \Carbon\Carbon::parse($date, config('app.timezone'))->toDateString();
+
+        // Fetch every appointment that starts on that calendar date, any status
+        $items = \App\Models\Appointment::with(['patient:id,name,email'])
+            ->where('doctor_id', $r->user()->id)
+            ->whereDate('starts_at', $d)
+            ->orderBy('starts_at')
+            ->get(['id','doctor_id','patient_id','starts_at','ends_at','status','reason']);
+
+        return response()->json([
+            'status' => true,
+            'date'   => $d,
+            'count'  => $items->count(),
+            'data'   => $items,     // each item includes its current `status`
+        ]);
+    }
     /**
      * Patient cancels: HARD DELETE (only pending)
      * PATCH /api/appointments/{appointment}/cancel

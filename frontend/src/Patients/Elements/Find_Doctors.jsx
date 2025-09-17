@@ -134,18 +134,9 @@ export default function Find_Doctors() {
             </h1>
             <p className="text-white/70">Find and book the right specialist.</p>
             <p className="text-white/40 text-sm mt-1">
-              {loading ? "Loading…" : `Found ${doctors.length} doctor(s)`}
+              {loading ? "Loading…" : ` `}
             </p>
           </div>
-
-          {/* Debug toggle */}
-          <button
-            type="button"
-            onClick={() => setShowDebug((s) => !s)}
-            className="rounded-xl border border-white/20 bg-white/5 px-3 py-2 hover:bg-white/10 text-sm"
-          >
-            {showDebug ? "Hide" : "Show"} debug
-          </button>
         </header>
 
         {/* Debug panel */}
@@ -155,69 +146,75 @@ export default function Find_Doctors() {
           </pre>
         )}
 
-        {/* Filters */}
-        <form
-          onSubmit={handleApplyFilters}
-          className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-5"
-        >
-          <input
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none placeholder:text-white/50"
-            placeholder="Search name/specialization/city"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+  <form
+  onSubmit={handleApplyFilters}
+  className="
+    mb-6 grid gap-3 items-start
+    grid-cols-1
+    sm:grid-cols-2
+    lg:grid-cols-5   /* change to 4 if you only have 4 fields total */
+  "
+>
+  {/* search */}
+  <input
+    className="
+      w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none
+      placeholder:text-white/60
+      focus:ring-2 focus:ring-white/20
+      sm:col-span-2          /* make search wider on small/tablet */
+      lg:col-span-2
+    "
+    placeholder="Search name/specialization/city"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    type="search"
+    aria-label="Search doctors"
+  />
 
-          <select
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
-            value={specialization}
-            onChange={(e) => setSpecialization(e.target.value)}
-          >
-            <option value="">All specializations</option>
-            {uniqueSpecializations.map((sp) => (
-              <option key={sp} value={sp}>
-                {sp}
-              </option>
-            ))}
-          </select>
+  {/* date */}
+  <input
+    type="date"
+    className="
+      w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none
+      focus:ring-2 focus:ring-white/20
+    "
+    value={availableOn}
+    onChange={(e) => setAvailableOn(e.target.value)}
+    aria-label="Available on"
+  />
 
-          <select
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          >
-            <option value="">All cities</option>
-            {uniqueCities.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="date"
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
-            value={availableOn}
-            onChange={(e) => setAvailableOn(e.target.value)}
-          />
-
-          <div className="flex gap-2 ">
-            <button
-              type="submit"
-              className="flex-1 rounded-xl bg-white/90 px-3 py-2 font-medium text-white hover:bg-white"
-              disabled={loading}
-            >
-              {loading ? "Loading..." : "Apply"}
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="rounded-xl border border-white/20 bg-white/5 px-3 py-2 hover:bg-white/10"
-              disabled={loading}
-            >
-              Reset
-            </button>
-          </div>
-        </form>
+  {/* actions */}
+  <div
+    className="
+      col-span-1 sm:col-span-2 lg:col-span-1
+      flex gap-2 w-full
+    "
+  >
+    <button
+      type="submit"
+      className="
+        flex-1 w-full rounded-xl border border-white/20 bg-white/5 px-3 py-2
+        hover:bg-white/10
+        disabled:opacity-50
+      "
+      disabled={loading}
+    >
+      {loading ? "Loading..." : "Apply"}
+    </button>
+    <button
+      type="button"
+      onClick={handleReset}
+      className="
+        flex-1 w-full rounded-xl border border-white/20 bg-white/5 px-3 py-2
+        hover:bg-white/10
+        disabled:opacity-50
+      "
+      disabled={loading}
+    >
+      Reset
+    </button>
+  </div>
+</form>
 
         {err && (
           <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
