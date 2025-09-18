@@ -8,10 +8,21 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetFooter
+  SheetFooter,
 } from "@/components/ui/sheet";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@radix-ui/react-label";
-import { Trash2, Plus, RefreshCw } from "lucide-react";
+import { Trash2, Plus } from "lucide-react";
+
 const API_BASE = "http://127.0.0.1:8000";
 
 const authHeaders = () => {
@@ -23,13 +34,14 @@ export default function AvailabilityManager() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [errorDialog, setErrorDialog] = useState(""); // instead of plain error
+  const [confirmId, setConfirmId] = useState(null); // for delete confirm
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const tomorrow = useMemo(() => {
-  const d = new Date();
-  d.setDate(d.getDate() + 1); 
-  return d.toISOString().slice(0, 10);
-}, []);
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().slice(0, 10);
+  }, []);
   const [date, setDate] = useState(tomorrow);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
@@ -38,13 +50,18 @@ export default function AvailabilityManager() {
   const load = async () => {
     try {
       setLoading(true);
-      setError("");
-      const { data } = await axios.get(`${API_BASE}/api/doctor/availabilities`, {
-        headers: authHeaders(),
-      });
+      setErrorDialog("");
+      const { data } = await axios.get(
+        `${API_BASE}/api/doctor/availabilities`,
+        {
+          headers: authHeaders(),
+        }
+      );
       setItems(Array.isArray(data) ? data : []);
     } catch (e) {
-      setError(e?.response?.data?.message || "Failed to load availability");
+      setErrorDialog(
+        e?.response?.data?.message || "Failed to load availability"
+      );
     } finally {
       setLoading(false);
     }
@@ -54,73 +71,61 @@ export default function AvailabilityManager() {
     load();
   }, []);
 
-const createAvailability = async (e) => {
-  e.preventDefault();
-  setError("");
+  const createAvailability = async (e) => {
+    e.preventDefault();
+    setErrorDialog("");
 
-  // Convert times to minutes for easier comparison
-  const toMinutes = (timeStr) => {
-    const [h, m] = timeStr.split(":").map(Number);
-    return h * 60 + m;
-  };
-
-  const newStart = toMinutes(startTime);
-  const newEnd = toMinutes(endTime);
-
-  // Check for overlapping slots on the same date
-  const overlap = items.some((slot) => {
-    if (slot.date !== date) return false; // different date, ignore
-    const existingStart = toMinutes(slot.start_time);
-    const existingEnd = toMinutes(slot.end_time);
-
-    // Overlap condition
-    return newStart < existingEnd && newEnd > existingStart;
-  });
-
-  if (overlap) {
-    setError("This time slot overlaps with an existing availability.");
-    return; // stop creation
-  }
-
-  try {
-    setBusy(true);
-    const payload = {
-      date,
-      start_time: startTime,
-      end_time: endTime,
-      ...(slotMinutes ? { slot_minutes: Number(slotMinutes) } : {}),
+    const toMinutes = (timeStr) => {
+      const [h, m] = timeStr.split(":").map(Number);
+      return h * 60 + m;
     };
-    const { data } = await axios.post(`${API_BASE}/api/doctor/availabilities`, payload, {
-      headers: { "Content-Type": "application/json", ...authHeaders() },
+
+    const newStart = toMinutes(startTime);
+    const newEnd = toMinutes(endTime);
+
+    const overlap = items.some((slot) => {
+      if (slot.date !== date) return false;
+      const existingStart = toMinutes(slot.start_time);
+      const existingEnd = toMinutes(slot.end_time);
+      return newStart < existingEnd && newEnd > existingStart;
     });
-    setItems((prev) => [data, ...prev]);
-  } catch (e) {
-    setError(e?.response?.data?.message || "Failed to create availability");
-    return;
-  } finally {
-    setBusy(false);
-  }
 
-  // Close sheet on success
-  const closeBtn = document.getElementById("close-sheet-avail");
-  closeBtn?.click();
-};
+    if (overlap) {
+      setErrorDialog("This time slot overlaps with an existing availability.");
+      return;
+    }
 
-
-  const remove = async (id) => {
-    const ok = window.confirm("Delete this availability?");
-    if (!ok) return;
     try {
       setBusy(true);
-      await axios.delete(`${API_BASE}/api/doctor/availabilities/${id}`, {
-        headers: authHeaders(),
-      });
-      setItems((prev) => prev.filter((x) => x.id !== id));
+      const payload = {
+        date,
+        start_time: startTime,
+        end_time: endTime,
+        ...(slotMinutes ? { slot_minutes: Number(slotMinutes) } : {}),
+      };
+      const { data } = await axios.post(
+        `${API_BASE}/api/doctor/availabilities`,
+        payload,
+        {
+          headers: { "Content-Type": "application/json", ...authHeaders() },
+        }
+      );
+      setItems((prev) => [data, ...prev]);
     } catch (e) {
-      setError(e?.response?.data?.message || "Failed to delete");
+      setErrorDialog(
+        e?.response?.data?.message || "Failed to create availability"
+      );
+      return;
     } finally {
       setBusy(false);
     }
+
+    const closeBtn = document.getElementById("close-sheet-avail");
+    closeBtn?.click();
+  };
+
+  const remove = async (id) => {
+    setConfirmId(id);
   };
 
   return (
@@ -184,30 +189,31 @@ const createAvailability = async (e) => {
                   </div>
                 </div>
                 <div className="flex justify-between">
-                <div className="space-y-2">
-                  <Label className="text-neutral-300">Slot minutes (optional)</Label>
-                  <input
-                    type="number"
-                    min={10}
-                    max={120}
-                    step={5}
-                    value={slotMinutes}
-                    onChange={(e) => setSlotMinutes(e.target.value)}
-                    className="w-full rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:ring-2 focus:ring-neutral-600"
-                    placeholder="e.g. 30"
-                  />
+                  <div className="space-y-2">
+                    <Label className="text-neutral-300">
+                      Slot minutes (optional)
+                    </Label>
+                    <input
+                      type="number"
+                      min={10}
+                      max={120}
+                      step={5}
+                      value={slotMinutes}
+                      onChange={(e) => setSlotMinutes(e.target.value)}
+                      className="w-full rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2 outline-none focus:ring-2 focus:ring-neutral-600"
+                      placeholder="e.g. 30"
+                    />
+                  </div>
+                  <SheetFooter className="mt-2 flex items-center gap-2">
+                    <button
+                      type="submit"
+                      disabled={busy}
+                      className="inline-flex items-center gap-2 rounded-lg border border-emerald-500 bg-emerald-600 px-3 py-2 text-sm text-white hover:bg-emerald-500 disabled:opacity-50"
+                    >
+                      Save
+                    </button>
+                  </SheetFooter>
                 </div>
-                <SheetFooter className="mt-2 flex items-center gap-2">
-                  <button
-                    type="submit"
-                    disabled={busy}
-                    className="inline-flex items-center gap-2 rounded-lg border border-emerald-500 bg-emerald-600 px-3 py-2 text-sm text-white hover:bg-emerald-500 disabled:opacity-50"
-                  >
-                    Save
-                  </button>
-                </SheetFooter>
-                </div>
-                 {error && <p className="text-sm text-red-400">{error}</p>}
               </form>
               <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-3">
                 {loading ? (
@@ -247,6 +253,62 @@ const createAvailability = async (e) => {
           </SheetContent>
         </Sheet>
       </div>
+
+      {/* Error Dialog */}
+      <AlertDialog open={!!errorDialog} onOpenChange={() => setErrorDialog("")}>
+        <AlertDialogContent className="bg-neutral-900 text-neutral-100 border border-neutral-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Error</AlertDialogTitle>
+            <AlertDialogDescription>{errorDialog}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setErrorDialog("")}>
+              OK
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm Delete */}
+      <AlertDialog open={!!confirmId} onOpenChange={() => setConfirmId(null)}>
+        <AlertDialogContent className="bg-neutral-900 text-neutral-100 border border-neutral-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Availability</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this availability?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmId(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-500 text-white"
+              onClick={async () => {
+                try {
+                  setBusy(true);
+                  await axios.delete(
+                    `${API_BASE}/api/doctor/availabilities/${confirmId}`,
+                    { headers: authHeaders() }
+                  );
+                  setItems((prev) =>
+                    prev.filter((x) => x.id !== confirmId)
+                  );
+                } catch (e) {
+                  setErrorDialog(
+                    e?.response?.data?.message || "Failed to delete"
+                  );
+                } finally {
+                  setBusy(false);
+                  setConfirmId(null);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

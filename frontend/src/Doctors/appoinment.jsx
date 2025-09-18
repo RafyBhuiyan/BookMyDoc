@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   useReactTable,
   getCoreRowModel,
@@ -33,7 +45,7 @@ const AppointmentPage = () => {
     try {
       const token = localStorage.getItem("doctorToken");
       if (!token) {
-        alert("Please log in first.");
+        // Replaced alert with redirect
         navigate("/user/login");
         return;
       }
@@ -72,15 +84,14 @@ const AppointmentPage = () => {
       );
       fetchAppointments();
     } catch (err) {
-      alert(err?.response?.data?.message || "Failed to accept appointment.");
+      setError(err?.response?.data?.message || "Failed to accept appointment.");
     } finally {
       setBusyIds((prev) => prev.filter((bid) => bid !== id));
     }
   };
 
-  const handleDecline = async (id) => {
+  const handleDecline = async (id, reason = "") => {
     if (busyIds.includes(id)) return;
-    const reason = prompt("Optional: Enter reason for declining this appointment:");
     setBusyIds((prev) => [...prev, id]);
     try {
       const token = localStorage.getItem("doctorToken");
@@ -91,7 +102,7 @@ const AppointmentPage = () => {
       );
       fetchAppointments();
     } catch (err) {
-      alert(err?.response?.data?.message || "Failed to decline appointment.");
+      setError(err?.response?.data?.message || "Failed to decline appointment.");
     } finally {
       setBusyIds((prev) => prev.filter((bid) => bid !== id));
     }
@@ -99,47 +110,69 @@ const AppointmentPage = () => {
 
   const columns = useMemo(
     () => [
-      {
-        accessorKey: "patientName",
-        header: "Patient",
-      },
-      {
-        accessorKey: "status",
-        header: "Status",
-      },
-      {
-        accessorKey: "startsAt",
-        header: "Starts At",
-      },
-      {
-        accessorKey: "reason",
-        header: "Reason",
-      },
+      { accessorKey: "patientName", header: "Patient" },
+      { accessorKey: "status", header: "Status" },
+      { accessorKey: "startsAt", header: "Starts At" },
+      { accessorKey: "reason", header: "Reason" },
       {
         accessorKey: "actions",
         header: "Accept / Decline",
-        cell: ({ row }) => (
+        cell: ({ row }) =>
           row.original.status === "pending" && (
             <div className="flex gap-2">
               <Button
                 size="sm"
-                className="bg-green-500 text-white hover:bg-green-600"
+                className="bg-emerald-600 text-white hover:bg-emerald-500"
                 onClick={() => handleAccept(row.original.id)}
                 disabled={busyIds.includes(row.original.id)}
               >
                 Accept
               </Button>
-              <Button
-                size="sm"
-                className="bg-red-500 text-white hover:bg-red-600"
-                onClick={() => handleDecline(row.original.id)}
-                disabled={busyIds.includes(row.original.id)}
-              >
-                Decline
-              </Button>
+
+              {/* Decline wrapped with AlertDialog */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    size="sm"
+                    className="bg-red-600 text-white hover:bg-red-500"
+                    disabled={busyIds.includes(row.original.id)}
+                  >
+                    Decline
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-neutral-900 border border-neutral-700 text-neutral-100">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Decline Appointment</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Do you want to decline this appointment?  
+                      You can optionally provide a reason.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <textarea
+                    placeholder="Reason (optional)"
+                    className="w-full mt-3 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-red-600"
+                    id={`decline-reason-${row.original.id}`}
+                  />
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="bg-neutral-800 border border-neutral-700 hover:bg-neutral-700">
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        const reason = document.getElementById(
+                          `decline-reason-${row.original.id}`
+                        )?.value;
+                        handleDecline(row.original.id, reason);
+                      }}
+                      className="bg-red-600 hover:bg-red-500"
+                    >
+                      Confirm Decline
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
-          )
-        ),
+          ),
       },
     ],
     [busyIds]
@@ -180,15 +213,15 @@ const AppointmentPage = () => {
       {error && <p className="text-red-400">{error}</p>}
 
       {!loading && !error && (
-        <div >
-          <Table className="min-w-full text-gray-100">
-            <TableHeader className="bg-gray-900" >
+        <div>
+          <Table className="min-w-full text-gray-100 border border-neutral-800 rounded-xl overflow-hidden">
+            <TableHeader className="bg-gradient-to-r from-neutral-900 to-neutral-800">
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} >
+                <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="cursor-pointer select-none hover:text-blue-400  "
+                      className="cursor-pointer select-none hover:text-blue-400"
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {flexRender(
@@ -196,10 +229,10 @@ const AppointmentPage = () => {
                         header.getContext()
                       )}
                       <span className="ml-1 text-gray-400">
-                      {{
-                        asc: " 🔼",
-                        desc: " 🔽",
-                      }[header.column.getIsSorted()] ?? null}
+                        {{
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted()] ?? null}
                       </span>
                     </TableHead>
                   ))}
@@ -211,18 +244,24 @@ const AppointmentPage = () => {
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    className="hover:bg-gradient-to-r hover:from-gray-800 hover:via-gray-850 hover:to-gray-800 transition-colors"
+                    className="hover:bg-gradient-to-r hover:from-neutral-800 hover:via-neutral-900 hover:to-neutral-800 transition-colors"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="text-center text-gray-400"
+                  >
                     No appointments found.
                   </TableCell>
                 </TableRow>
@@ -236,6 +275,7 @@ const AppointmentPage = () => {
               size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
+              className="bg-neutral-800 border border-neutral-700 hover:bg-neutral-700 text-white"
             >
               Prev
             </Button>
@@ -243,10 +283,11 @@ const AppointmentPage = () => {
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
+              className="bg-neutral-800 border border-neutral-700 hover:bg-neutral-700 text-white"
             >
               Next
             </Button>
-            <span className="text-gray-300 ml-4">
+            <span className="text-gray-400 ml-4">
               Page {table.getState().pagination.pageIndex + 1} of{" "}
               {table.getPageCount()}
             </span>

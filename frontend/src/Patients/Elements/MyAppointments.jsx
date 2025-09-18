@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 const API_BASE = "http://127.0.0.1:8000";
 
 export default function MyAppointments() {
@@ -115,43 +122,55 @@ return (
         ) : (
           <ul className="space-y-6">
             {appointments.map((appt) => (
-              <li
-                key={appt.id}
-                className="p-5 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg hover:shadow-xl transition"
-              >
-                <div className="space-y-2">
-                  <p><span className="font-semibold text-indigo-400">Doctor:</span> {appt.doctor.name}</p>
-                  <p><span className="font-semibold text-indigo-400">Specialization:</span> {appt.doctor.specialization}</p>
-                  <p><span className="font-semibold text-indigo-400">Date:</span> {new Date(appt.starts_at).toLocaleString()}</p>
-                  <p>
-                    <span className="font-semibold text-indigo-400">Status:</span>{" "}
-                    <span
-                      className={`px-2 py-1 rounded-md text-sm ${
-                        appt.status === "confirmed"
-                          ? "bg-green-600/20 text-green-400"
-                          : "bg-yellow-600/20 text-yellow-400"
-                      }`}
-                    >
-                      {appt.status}
-                    </span>
-                  </p>
+<li key={appt.id}>
+  <Card className="flex flex-row items-start justify-between p-5 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg hover:shadow-xl transition">
+    {/* Left Side: Appointment Details */}
+    <CardContent className="flex-1 space-y-2 text-white">
+      <p>
+        <span className="font-semibold text-indigo-400">Doctor:</span>{" "}
+        {appt.doctor.name}
+      </p>
+      <p>
+        <span className="font-semibold text-indigo-400">Specialization:</span>{" "}
+        {appt.doctor.specialization}
+      </p>
+      <p>
+        <span className="font-semibold text-indigo-400">Date:</span>{" "}
+        {new Date(appt.starts_at).toLocaleString()}
+      </p>
+      <p>
+        <span className="font-semibold text-indigo-400">Status:</span>{" "}
+        <span
+          className={`px-2 py-1 rounded-md text-sm ${
+            appt.status === "confirmed"
+              ? "bg-green-600/20 text-green-400"
+              : "bg-yellow-600/20 text-yellow-400"
+          }`}
+        >
+          {appt.status}
+        </span>
+      </p>
+    </CardContent>
 
-                  <div className="mt-4 flex flex-wrap gap-4">
-                    <button
-                      onClick={() => handleCancel(appt.id)}
-                      className="flex-1 min-w-[120px] px-4 py-2 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600/40 transition font-medium"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => handleReschedule(appt.id)}
-                      className="flex-1 min-w-[120px] px-4 py-2 rounded-lg bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/40 transition font-medium"
-                    >
-                      Reschedule
-                    </button>
-                  </div>
-                </div>
-              </li>
+    {/* Right Side: Buttons */}
+    <CardFooter className="flex flex-col gap-3">
+      <Button
+        onClick={() => handleCancel(appt.id)}
+        variant="ghost"
+        className="w-32 bg-red-600/20 text-red-400 hover:bg-red-600/40 transition"
+      >
+        Cancel
+      </Button>
+      <Button
+        onClick={() => handleReschedule(appt.id)}
+        variant="ghost"
+        className="w-32 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/40 transition"
+      >
+        Reschedule
+      </Button>
+    </CardFooter>
+  </Card>
+</li>
             ))}
           </ul>
         )}
