@@ -12,6 +12,10 @@ import SlotsBooking from "./Patients/Elements/SlotsBooking.jsx";
 import PatientLogin from "./Pages/PatientLogin.jsx";
 import PatientRegister from "./Pages/PatientRegister.jsx";
 import MyAppointments from "./Patients/Elements/MyAppointments.jsx";
+
+import AdminLogin from "./Pages/AdminLogin.jsx"
+import AdminDashboard from "./Pages/AdminDashboard.jsx"
+
 export default function App() {
   return (
     <Box minH={"100vh"}>
@@ -25,10 +29,12 @@ export default function App() {
        <Route path="/Dashboard" element={<DoctorDashboard/>} />
        <Route path ='/user/Dashboard' element ={<PatientDashboard/>}/>
         <Route path="/doctors" element={<Find_Doctors />} />
-
+         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/doctors/:id" element={<DoctorSlots />} />
         <Route path="/doctors/:id/book" element={<SlotsBooking/>} />
         <Route path="/user/appointments" element={<MyAppointments/>} />
+         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
       </Routes>
     </Box>
   );

@@ -28,7 +28,7 @@ class DoctorController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateDoctor->errors()
-                ], 401);
+                ], 422); // <-- proper status code for validation errors
             }
 
             $doctor = Doctor::create([
@@ -37,12 +37,15 @@ class DoctorController extends Controller
                 'phone' => $request->phone,
                 'specialization' => $request->specialization,
                 'password' => Hash::make($request->password),
+                'is_approved' => false, // <-- default to false
             ]);
 
             return response()->json([
                 'status' => true,
-                'message' => 'Doctor Registered Successfully',
-               'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
+
+                'message' => 'Doctor Registered Successfully. Waiting for admin approval.',
+                'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
+
             ], 200);
 
         } catch (\Throwable $th) {
@@ -52,6 +55,12 @@ class DoctorController extends Controller
             ], 500);
         }
     }
+
+
+    /**
+     * Doctor Login
+     * Only approved doctors can log in.
+     */
 
     public function login(Request $request)
     {
@@ -66,17 +75,25 @@ class DoctorController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateDoctor->errors()
-                ], 401);
+                ], 422);
             }
 
-            if (!Auth::guard('doctor')->attempt($request->only(['email', 'password']))) {
+            $doctor = Doctor::where('email', $request->email)->first();
+
+            if (!$doctor || !Auth::guard('doctor')->attempt($request->only(['email', 'password']))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password do not match our records.',
                 ], 401);
             }
 
-            $doctor = Doctor::where('email', $request->email)->first();
+            // Prevent login if not approved
+            if (!$doctor->is_approved) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Your account is pending admin approval.'
+                ], 403);
+            }
 
             return response()->json([
                 'status' => true,
@@ -92,6 +109,9 @@ class DoctorController extends Controller
         }
     }
 
+    /**
+     * Doctor Logout
+     */
     public function logout(Request $request)
     {
         try {
@@ -109,6 +129,4 @@ class DoctorController extends Controller
             ], 500);
         }
     }
-    
 }
-

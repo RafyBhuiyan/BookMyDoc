@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AdminController;
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MessageController;
 
 
@@ -77,3 +78,42 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $r) {
         'abilities' => $user?->currentAccessToken()?->abilities,
     ]);
 });
+
+
+Route::prefix('admin')->group(function () {
+
+    // Public routes (no token needed)
+    Route::post('/login', [AdminController::class, 'login']);
+
+    // Protected routes (require admin token)
+    Route::middleware('auth:sanctum')->group(function () {
+
+        // Logout
+        Route::post('/logout', [AdminController::class, 'logout']);
+
+        // Dashboard (example)
+        Route::get('/dashboard', function (Request $request) {
+            if ($request->user() instanceof \App\Models\Admin) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Welcome to the Admin Dashboard',
+                    'admin' => $request->user()->only('id', 'name', 'email')
+                ]);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        });
+
+        // List pending doctors
+        Route::get('/pending-doctors', [AdminController::class, 'pendingDoctors']);
+
+        // List approved doctors (NEW)
+        Route::get('/approved-doctors', [AdminController::class, 'approvedDoctors']);
+
+        // Approve a doctor
+        Route::post('/approve-doctor/{id}', [AdminController::class, 'approveDoctor']);
+    });
+});
+
