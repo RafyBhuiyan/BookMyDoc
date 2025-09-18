@@ -38,11 +38,11 @@ class DoctorController extends Controller
                 'specialization' => $request->specialization,
                 'password' => Hash::make($request->password),
                 'is_approved' => false, // <-- default to false
+
             ]);
 
             return response()->json([
                 'status' => true,
-
                 'message' => 'Doctor Registered Successfully. Waiting for admin approval.',
                 'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
 
@@ -56,11 +56,6 @@ class DoctorController extends Controller
         }
     }
 
-
-    /**
-     * Doctor Login
-     * Only approved doctors can log in.
-     */
 
     public function login(Request $request)
     {
@@ -109,9 +104,7 @@ class DoctorController extends Controller
         }
     }
 
-    /**
-     * Doctor Logout
-     */
+
     public function logout(Request $request)
     {
         try {
@@ -129,4 +122,5 @@ class DoctorController extends Controller
             ], 500);
         }
     }
+    
 }

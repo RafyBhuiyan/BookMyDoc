@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-
+use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AdminController;
+
 
 use App\Http\Controllers\Api\MessageController;
 
@@ -14,13 +15,21 @@ use App\Http\Controllers\Api\DoctorBrowseController;   // list/show/slots
 use App\Http\Controllers\Api\AvailabilityController;   // doctor availabilities
 use App\Http\Controllers\Api\AppointmentController;    // bookings
 
-/*
-|--------------------------------------------------------------------------
-| Auth (existing)
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\Api\DoctorProfileController;
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/doctor/profile', [DoctorProfileController::class, 'show']);
+    Route::put('/doctor/profile', [DoctorProfileController::class, 'update']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user/profile', [UserProfileController::class, 'getProfile']);
+    Route::put('/user/profile', [UserProfileController::class, 'updateProfile']);
+});
+
 Route::post('/doctor/register', [DoctorController::class, 'register']);
 Route::post('/doctor/login',    [DoctorController::class, 'login']);
+
 
 Route::post('/user/register',   [UserController::class, 'createUser']);
 Route::post('/user/login',      [UserController::class, 'loginUser']);
@@ -80,6 +89,7 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $r) {
 });
 
 
+
 Route::prefix('admin')->group(function () {
 
     // Public routes (no token needed)
@@ -116,4 +126,5 @@ Route::prefix('admin')->group(function () {
         Route::post('/approve-doctor/{id}', [AdminController::class, 'approveDoctor']);
     });
 });
+
 
