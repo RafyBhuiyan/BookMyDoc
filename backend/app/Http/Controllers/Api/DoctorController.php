@@ -11,10 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
-    /**
-     * Doctor Registration
-     * New doctors are created with is_approved = false.
-     */
+
     public function register(Request $request)
     {
         try {
@@ -45,8 +42,10 @@ class DoctorController extends Controller
 
             return response()->json([
                 'status' => true,
+
                 'message' => 'Doctor Registered Successfully. Waiting for admin approval.',
                 'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
+
             ], 200);
 
         } catch (\Throwable $th) {
@@ -57,10 +56,12 @@ class DoctorController extends Controller
         }
     }
 
+
     /**
      * Doctor Login
      * Only approved doctors can log in.
      */
+
     public function login(Request $request)
     {
         try {

@@ -20,11 +20,11 @@ return [
             'driver' => 'session',
             'provider' => 'doctors',
         ],
-
         'admin' => [
             'driver' => 'session',
             'provider' => 'admins',
          ],
+
 
         'api' => [
             'driver' => 'sanctum',

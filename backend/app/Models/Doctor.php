@@ -20,6 +20,7 @@ class Doctor extends Authenticatable
         'city',            // optional: used for filtering
         'clinic_address',
         'is_approved',  // optional: display only
+
     ];
 
     protected $hidden = [

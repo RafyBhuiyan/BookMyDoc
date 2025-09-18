@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AdminController;
+
 use App\Http\Controllers\Api\MessageController;
 
 
@@ -77,6 +79,7 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $r) {
     ]);
 });
 
+
 Route::prefix('admin')->group(function () {
 
     // Public routes (no token needed)
@@ -113,3 +116,4 @@ Route::prefix('admin')->group(function () {
         Route::post('/approve-doctor/{id}', [AdminController::class, 'approveDoctor']);
     });
 });
+
