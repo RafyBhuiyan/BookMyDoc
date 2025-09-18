@@ -18,7 +18,9 @@ class Doctor extends Authenticatable
         'specialization',
         'password',
         'city',            // optional: used for filtering
-        'clinic_address',  // optional: display only
+        'clinic_address',
+        'is_approved',  // optional: display only
+
     ];
 
     protected $hidden = [
@@ -28,6 +30,7 @@ class Doctor extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'education_certificates' => 'array', //this ensures certificates are arrays
     ];
 
     /*

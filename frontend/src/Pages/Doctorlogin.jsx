@@ -32,20 +32,38 @@ export default function DoctorLogin() {
       );
 
       if (data.status) {
+        // ✅ login success
         localStorage.setItem("doctorToken", data.token);
         navigate("/doctor");
       } else {
+        // ✅ backend returned status=false
         setError(data.message || "Login failed, please try again.");
       }
     } catch (err) {
       console.error(err);
-      setError("Something went wrong. Please try again.");
+
+      if (err.response) {
+        // Backend returned a response
+        if (err.response.status === 401) {
+          setError("Account not found or wrong password."); // ❌ no account
+        } else if (err.response.status === 403) {
+          setError("Your account is not approved yet. Please wait for admin approval."); // ⏳ not approved
+        } else if (err.response.status === 422) {
+          setError("Validation failed. Please check your inputs.");
+        } else {
+          setError(err.response.data.message || "Something went wrong.");
+        }
+      } else {
+        // Network or other error
+        setError("Server unreachable. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
+
     <div className="min-h-screen flex items-center justify-center bg-black">
       <div className="shadow-input mx-auto w-full max-w-md rounded-none bg-white p-6 md:rounded-2xl md:p-8">
         <h2 className="text-xl font-bold text-neutral-900">Doctor Login</h2>
@@ -53,13 +71,17 @@ export default function DoctorLogin() {
           Please enter your email and password to login.
         </p>
 
+
+        {/* Error Alert */}
         {error && (
           <div className="bg-red-100 text-red-700 px-4 py-3 rounded-md my-4 text-center font-medium">
             {error}
           </div>
         )}
 
+
         <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+
           <div>
             <Label className ="text-black">Email</Label>
             <Input

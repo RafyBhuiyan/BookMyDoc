@@ -3,16 +3,33 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
+use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\UserController;
+
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\DoctorBrowseController;   // list/show/slots
 use App\Http\Controllers\Api\AvailabilityController;   // doctor availabilities
 use App\Http\Controllers\Api\AppointmentController;    // bookings
 
 
+use App\Http\Controllers\Api\DoctorProfileController;
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/doctor/profile', [DoctorProfileController::class, 'show']);
+    Route::put('/doctor/profile', [DoctorProfileController::class, 'update']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user/profile', [UserProfileController::class, 'getProfile']);
+    Route::put('/user/profile', [UserProfileController::class, 'updateProfile']);
+});
+
+
 Route::post('/doctor/register', [DoctorController::class, 'register']);
 Route::post('/doctor/login',    [DoctorController::class, 'login']);
+
 
 Route::post('/user/register',   [UserController::class, 'createUser']);
 Route::post('/user/login',      [UserController::class, 'loginUser']);
@@ -63,3 +80,44 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
 });
+
+
+
+Route::prefix('admin')->group(function () {
+
+    // Public routes (no token needed)
+    Route::post('/login', [AdminController::class, 'login']);
+
+    // Protected routes (require admin token)
+    Route::middleware('auth:sanctum')->group(function () {
+
+        // Logout
+        Route::post('/logout', [AdminController::class, 'logout']);
+
+        // Dashboard (example)
+        Route::get('/dashboard', function (Request $request) {
+            if ($request->user() instanceof \App\Models\Admin) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Welcome to the Admin Dashboard',
+                    'admin' => $request->user()->only('id', 'name', 'email')
+                ]);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        });
+
+        // List pending doctors
+        Route::get('/pending-doctors', [AdminController::class, 'pendingDoctors']);
+
+        // List approved doctors (NEW)
+        Route::get('/approved-doctors', [AdminController::class, 'approvedDoctors']);
+
+        // Approve a doctor
+        Route::post('/approve-doctor/{id}', [AdminController::class, 'approveDoctor']);
+    });
+});
+
+

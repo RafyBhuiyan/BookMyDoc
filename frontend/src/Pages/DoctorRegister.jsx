@@ -20,17 +20,20 @@ export default function DoctorRegister() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); // general error
+  const [fieldErrors, setFieldErrors] = useState({}); // per-field errors
   const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFieldErrors({ ...fieldErrors, [e.target.name]: "" }); // clear field error on change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setFieldErrors({});
     setSuccess("");
 
     try {
@@ -43,12 +46,21 @@ export default function DoctorRegister() {
       if (data.status) {
         setSuccess(data.message || "Registered successfully!");
         navigate("/doctor/login");
+
       } else {
-        setError(data.message || "Registration failed, please try again.");
+        setError(data.message || "Registration failed. Please try again.");
       }
     } catch (err) {
       console.error(err);
-      setError("Something went wrong. Please try again.");
+
+      // ✅ Correct: Laravel sends 422 for validation errors
+      if (err.response?.status === 422 && err.response.data?.errors) {
+        setFieldErrors(err.response.data.errors);
+      } else {
+        setError(
+          err.response?.data?.message || "Something went wrong. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -200,6 +212,7 @@ export default function DoctorRegister() {
         </span>
       </p>
     </div>
+
     </div>
   );
 }
