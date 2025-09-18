@@ -1,6 +1,10 @@
+"use client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export default function DoctorRegister() {
   const navigate = useNavigate();
@@ -11,6 +15,8 @@ export default function DoctorRegister() {
     phone: "",
     specialization: "",
     password: "",
+    city: "",
+    clinic_address: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -34,16 +40,13 @@ export default function DoctorRegister() {
       const { data } = await axios.post(
         "http://127.0.0.1:8000/api/doctor/register",
         formData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
 
       if (data.status) {
         setSuccess(data.message || "Registered successfully!");
-        setTimeout(() => {
-          navigate("/doctor/login");
-        }, 1000);
+        navigate("/doctor/login");
+
       } else {
         setError(data.message || "Registration failed. Please try again.");
       }
@@ -64,137 +67,171 @@ export default function DoctorRegister() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="bg-white shadow-xl rounded-2xl p-10 w-full max-w-lg">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-8">
-          Doctor Registration
-        </h1>
+    <div className="min-h-screen flex items-center justify-center bg-black">
+    <div className="shadow-input mx-auto w-full max-w-md rounded-none bg-white p-6 md:rounded-2xl md:p-8 ">
+      
+      <h2 className="text-xl font-bold text-neutral-800 ">
+        Doctor Registration
+      </h2>
+      <p className="mt-2 max-w-sm text-sm text-neutral-600">
+        Please fill in your details to create your account.
+      </p>
 
-        {error && (
-          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-md mb-6 text-center font-medium">
-            {error}
-          </div>
-        )}
+      {error && (
+        <div className="mt-4 rounded-md bg-red-100 px-4 py-2 text-center text-sm font-medium text-red-700 ">
+          {error}
+        </div>
+      )}
 
-        {success && (
-          <div className="bg-green-100 text-green-700 px-4 py-3 rounded-md mb-6 text-center font-medium">
-            {success}
-          </div>
-        )}
+      {success && (
+        <div className="mt-4 rounded-md bg-green-100 px-4 py-2 text-center text-sm font-medium text-green-700">
+          {success}
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Full Name */}
-          <div>
-            <label className="block text-gray-700 mb-2 font-semibold">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              required
-            />
-            {fieldErrors.name && (
-              <p className="text-red-600 mt-1 text-sm">{fieldErrors.name[0]}</p>
-            )}
-          </div>
+      <form className="my-6 space-y-4 " onSubmit={handleSubmit}>
+        <LabelInputContainer>
+          <Label htmlFor="name" >Full Name</Label>
+          <Input
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Dr. John Doe"
+            type="text"
+            required
+            className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
+          />
+        </LabelInputContainer>
+        <div className="flex">
+        <LabelInputContainer>
+          <Label htmlFor="email">Email Address</Label>
+          <Input
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="doctor@example.com"
+            type="email"
+            required
+            className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
+          />
+        </LabelInputContainer>
 
-          {/* Email */}
-          <div>
-            <label className="block text-gray-700 mb-2 font-semibold">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              required
-            />
-            {fieldErrors.email && (
-              <p className="text-red-600 mt-1 text-sm">{fieldErrors.email[0]}</p>
-            )}
-          </div>
+        <LabelInputContainer>
+          <Label htmlFor="phone">Phone</Label>
+          <Input
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="+880123456789"
+            type="text"
+            required
+            className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
+          />
+        </LabelInputContainer>
+        </div>
+        <LabelInputContainer>
+          <Label htmlFor="specialization">Specialization</Label>
+          <Input 
+            id="specialization"
+            name="specialization"
+            value={formData.specialization}
+            onChange={handleChange}
+            placeholder="Cardiologist"
+            type="text"
+            className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
+            required
+          />
+        </LabelInputContainer>
+        <div className="flex">
+        <LabelInputContainer>
+          <Label htmlFor="city">City</Label>
+          <Input
+            id="city"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            placeholder="Dhaka"
+            type="text"
+            required
+            className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
+          />
+        </LabelInputContainer>
 
-          {/* Phone */}
-          <div>
-            <label className="block text-gray-700 mb-2 font-semibold">Phone</label>
-            <input
-              type="text"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Enter your phone number"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              required
-            />
-            {fieldErrors.phone && (
-              <p className="text-red-600 mt-1 text-sm">{fieldErrors.phone[0]}</p>
-            )}
-          </div>
+        <LabelInputContainer>
+          <Label htmlFor="clinic_address">Clinic Address</Label>
+          <Input
+            id="clinic_address"
+            name="clinic_address"
+            value={formData.clinic_address}
+            onChange={handleChange}
+            placeholder="123 Clinic Road"
+            type="text"
+            required
+            className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
+          />
+        </LabelInputContainer>
+        </div>
+        <LabelInputContainer>
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            type="password"
+            required
+            className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
+          />
+        </LabelInputContainer>
 
-          {/* Specialization */}
-          <div>
-            <label className="block text-gray-700 mb-2 font-semibold">
-              Specialization
-            </label>
-            <input
-              type="text"
-              name="specialization"
-              value={formData.specialization}
-              onChange={handleChange}
-              placeholder="Enter your specialization"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              required
-            />
-            {fieldErrors.specialization && (
-              <p className="text-red-600 mt-1 text-sm">
-                {fieldErrors.specialization[0]}
-              </p>
-            )}
-          </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={cn(
+            "group/btn relative block h-11 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white transition hover:opacity-90",
+            "dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900",
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          )}
+        >
+          {loading ? "Registering..." : "Register"}
+          <BottomGradient />
+        </button>
+      </form>
 
-          {/* Password */}
-          <div>
-            <label className="block text-gray-700 mb-2 font-semibold">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-              required
-            />
-            {fieldErrors.password && (
-              <p className="text-red-600 mt-1 text-sm">{fieldErrors.password[0]}</p>
-            )}
-          </div>
+      <p className="mt-4 text-center text-sm text-neutral-600 dark:text-neutral-400">
+        Already have an account?{" "}
+        <span
+          className="cursor-pointer text-indigo-600 hover:underline dark:text-indigo-400"
+          onClick={() => navigate("/doctor/login")}
+        >
+          Login
+        </span>
+      </p>
+    </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full h-14 rounded-xl text-white font-semibold bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-gray-500 text-sm">
-          Already have an account?{" "}
-          <span
-            className="text-indigo-600 hover:underline cursor-pointer"
-            onClick={() => navigate("/doctor/login")}
-          >
-            Login
-          </span>
-        </p>
-      </div>
     </div>
   );
 }
+
+// 🔹 Gradient hover effect for button
+const BottomGradient = () => {
+  return (
+    <>
+      <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
+      <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
+    </>
+  );
+};
+
+// 🔹 Wrapper for each input field
+const LabelInputContainer = ({ children, className }) => {
+  return (
+    <div className={cn("flex w-full flex-col space-y-2", className)}>
+      {children}
+    </div>
+  );
+};

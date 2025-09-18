@@ -20,7 +20,9 @@ class DoctorController extends Controller
                 'email' => 'required|email|unique:doctors,email',
                 'phone' => 'required|string|unique:doctors,phone',
                 'specialization' => 'required|string|max:255',
-                'password' => 'required|string|min:6'
+                'password' => 'required|string|min:6',
+                'city' => 'nullable|string|max:255',  // Making city optional
+                'clinic_address' => 'nullable|string|max:255', 
             ]);
 
             if ($validateDoctor->fails()) {
@@ -37,6 +39,8 @@ class DoctorController extends Controller
                 'phone' => $request->phone,
                 'specialization' => $request->specialization,
                 'password' => Hash::make($request->password),
+                'city' => $request->city ?? null,  
+                'clinic_address' => $request->clinic_address ?? null               
                 'is_approved' => false, // <-- default to false
 
             ]);

@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 const API_BASE = "http://127.0.0.1:8000";
 
 export default function MyAppointments() {
@@ -21,12 +28,11 @@ export default function MyAppointments() {
         if (!token) {
           alert("Please log in first.");
           navigate("/user/login");
+          return;
         }
         const { data } = await axios.get(`${API_BASE}/api/my/appointments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        // Ensure appointments is an array
         if (Array.isArray(data.appointments)) {
           setAppointments(data.appointments);
         } else {
@@ -42,31 +48,28 @@ export default function MyAppointments() {
     fetchAppointments();
   }, [navigate]);
 
-  const handleCancel = (appointmentId) => {
-    if (window.confirm("Are you sure you want to cancel this appointment?")) {
-      cancelAppointment(appointmentId);
-    }
-  };
+  const handleCancel = async (appointmentId) => {
+    if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
 
-  const handleReschedule = (appointmentId) => {
-    setSelectedAppointment(appointmentId);
-  };
-
-  const cancelAppointment = async (appointmentId) => {
     try {
       const token = localStorage.getItem("patientToken");
       if (!token) {
         alert("Please log in first.");
         navigate("/user/login");
+        return;
       }
       await axios.patch(`${API_BASE}/api/user/appointments/${appointmentId}/cancel`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAppointments(appointments.filter((appt) => appt.id !== appointmentId)); // Remove from list
+      setAppointments(appointments.filter((appt) => appt.id !== appointmentId));
       alert("Appointment cancelled successfully.");
     } catch (err) {
       setError("Failed to cancel appointment.");
     }
+  };
+
+  const handleReschedule = (appointmentId) => {
+    setSelectedAppointment(appointmentId);
   };
 
   const handleRescheduleSubmit = async () => {
@@ -80,6 +83,7 @@ export default function MyAppointments() {
       if (!token) {
         alert("Please log in first.");
         navigate("/user/login");
+        return;
       }
 
       await axios.patch(
@@ -87,13 +91,14 @@ export default function MyAppointments() {
         { starts_at: newDateTime },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       alert("Appointment rescheduled successfully.");
       setSelectedAppointment(null);
       setNewDateTime("");
       setAppointments((prevAppointments) =>
         prevAppointments.map((appt) =>
           appt.id === selectedAppointment
-            ? { ...appt, starts_at: newDateTime } // Update the starts_at of the rescheduled appointment
+            ? { ...appt, starts_at: newDateTime }
             : appt
         )
       );
@@ -101,63 +106,96 @@ export default function MyAppointments() {
       setError("Failed to reschedule appointment.");
     }
   };
+return (
+  <div className="min-h-screen w-full bg-neutral-900 text-white flex justify-center px-4 py-8">
+    <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-6">
+      
+      {/* Appointments List */}
+      <div className={`flex-1 transition-all duration-300 ${selectedAppointment ? "lg:w-2/3" : "lg:w-full"}`}>
+        <h1 className="text-2xl font-bold mb-6 text-center lg:text-left">My Appointments</h1>
 
-  return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-xl font-semibold mb-4">My Appointments</h1>
+        {loading && <p className="text-neutral-400">Loading your appointments...</p>}
+        {error && <p className="text-red-400">{error}</p>}
 
-      {loading && <p>Loading your appointments...</p>}
-      {error && <p className="text-red-600">{error}</p>}
+        {appointments.length === 0 ? (
+          <p className="text-neutral-400 text-center">No appointments found.</p>
+        ) : (
+          <ul className="space-y-6">
+            {appointments.map((appt) => (
+<li key={appt.id}>
+  <Card className="flex flex-row items-start justify-between p-5 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg hover:shadow-xl transition">
+    {/* Left Side: Appointment Details */}
+    <CardContent className="flex-1 space-y-2 text-white">
+      <p>
+        <span className="font-semibold text-indigo-400">Doctor:</span>{" "}
+        {appt.doctor.name}
+      </p>
+      <p>
+        <span className="font-semibold text-indigo-400">Specialization:</span>{" "}
+        {appt.doctor.specialization}
+      </p>
+      <p>
+        <span className="font-semibold text-indigo-400">Date:</span>{" "}
+        {new Date(appt.starts_at).toLocaleString()}
+      </p>
+      <p>
+        <span className="font-semibold text-indigo-400">Status:</span>{" "}
+        <span
+          className={`px-2 py-1 rounded-md text-sm ${
+            appt.status === "confirmed"
+              ? "bg-green-600/20 text-green-400"
+              : "bg-yellow-600/20 text-yellow-400"
+          }`}
+        >
+          {appt.status}
+        </span>
+      </p>
+    </CardContent>
 
-      {appointments.length === 0 ? (
-        <p>No appointments found.</p>
-      ) : (
-        <ul>
-          {appointments.map((appt) => (
-            <li key={appt.id} className="border-b py-4">
-              <div>
-                <strong>Doctor: </strong> {appt.doctor.name} <br />
-                <strong>Specialization: </strong> {appt.doctor.specialization} <br />
-                <strong>Date: </strong> {new Date(appt.starts_at).toLocaleString()} <br />
-                <strong>Status: </strong> {appt.status} <br />
-                <div className="mt-3">
-                  <button
-                    onClick={() => handleCancel(appt.id)}
-                    className="mr-4 text-red-600 hover:text-red-800"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => handleReschedule(appt.id)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Reschedule
-                  </button>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+    {/* Right Side: Buttons */}
+    <CardFooter className="flex flex-col gap-3">
+      <Button
+        onClick={() => handleCancel(appt.id)}
+        variant="ghost"
+        className="w-32 bg-red-600/20 text-red-400 hover:bg-red-600/40 transition"
+      >
+        Cancel
+      </Button>
+      <Button
+        onClick={() => handleReschedule(appt.id)}
+        variant="ghost"
+        className="w-32 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/40 transition"
+      >
+        Reschedule
+      </Button>
+    </CardFooter>
+  </Card>
+</li>
+            ))}
+          </ul>
+        )}
+      </div>
 
+      {/* Side Panel for Reschedule */}
       {selectedAppointment && (
-        <div className="mt-6 p-4 bg-white rounded-xl shadow">
-          <h2 className="text-lg font-semibold">Reschedule Appointment</h2>
-          <p className="mb-4">Select a new date and time:</p>
+        <div className="flex-1 lg:w-1/3 p-6 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg transition-all duration-300">
+          <h2 className="text-lg font-bold mb-3">Reschedule Appointment</h2>
+          <p className="mb-4 text-neutral-400">Select a new date and time:</p>
           <input
             type="datetime-local"
             value={newDateTime}
             onChange={(e) => setNewDateTime(e.target.value)}
-            className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+            className="w-full h-14 px-5 text-lg bg-neutral-900/80 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white backdrop-blur-sm"
           />
           <button
             onClick={handleRescheduleSubmit}
-            className="w-full h-14 mt-4 rounded-xl text-white font-semibold bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+            className="w-full h-14 mt-5 rounded-xl font-semibold bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
           >
             Reschedule Appointment
           </button>
         </div>
       )}
     </div>
-  );
+  </div>
+);
 }

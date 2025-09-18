@@ -2,37 +2,30 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_BASE = "http://127.0.0.1:8000";
-
-export default function PatientLogin() {
+export default function DoctorLogin() {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
+      localStorage.removeItem("doctorToken");
       const { data } = await axios.post(
-        `${API_BASE}/api/user/login`,
+        "http://127.0.0.1:8000/api/user/login",
         formData,
         { headers: { "Content-Type": "application/json" } }
       );
 
       if (data.status) {
         localStorage.setItem("patientToken", data.token);
-        navigate("/user/Dashboard"); 
+        navigate("/user");
       } else {
         setError(data.message || "Login failed, please try again.");
       }
@@ -45,19 +38,27 @@ export default function PatientLogin() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="bg-white shadow-xl rounded-2xl p-10 w-full max-w-lg">
-        <h1 className="text-xl font-bold text-center text-gray-800 mb-8">Patient Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="shadow-input mx-auto w-full max-w-md rounded-none bg-white p-6 md:rounded-2xl md:p-8">
+        <h2 className="text-xl font-bold text-neutral-900 ">
+         Patient Login
+        </h2>
+        <p className="mt-2 max-w-sm text-sm text-neutral-700">
+          Please enter your credentials to access your account.
+        </p>
 
         {error && (
-          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-md mb-6 text-center font-medium">
+          <div className="bg-red-200 text-red-800 px-4 py-2 rounded-md my-4 text-center">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="email" className="block text-gray-700 mb-2 font-semibold">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-neutral-900"
+            >
               Email
             </label>
             <input
@@ -66,13 +67,16 @@ export default function PatientLogin() {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
               required
+              className="w-full h-12 px-4 border border-black bg-white text-black rounded-md focus:border-black focus:ring-0 mt-0.5"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-gray-700 mb-2 font-semibold">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-neutral-900"
+            >
               Password
             </label>
             <input
@@ -81,15 +85,15 @@ export default function PatientLogin() {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
               required
+              className="w-full h-12 px-4 border border-black bg-white text-black rounded-md focus:border-black focus:ring-0"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className={`w-full h-14 rounded-xl text-white font-semibold bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${
+            className={`w-full h-12 rounded-md text-white font-semibold bg-indigo-600 hover:bg-indigo-700 transition ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -97,11 +101,11 @@ export default function PatientLogin() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-500 text-sm">
-          Don't have an account?{" "}
+        <p className="mt-6 text-center text-neutral-900 text-sm">
+          Don’t have an account?{" "}
           <span
-            className="text-indigo-600 hover:underline cursor-pointer"
-            onClick={() => navigate("/user/register")}
+            onClick={() => navigate("/doctor/register")}
+            className="text-indigo-400 hover:underline cursor-pointer"
           >
             Sign up
           </span>

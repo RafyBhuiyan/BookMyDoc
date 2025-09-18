@@ -13,7 +13,6 @@ trait EnsuresRole
         if (! $u || ! ($u instanceof Doctor)) {
             abort(403, 'Doctor token required');
         }
-        // If you are issuing abilities, optionally also check them:
         if ($u->currentAccessToken() && ! $u->tokenCan('doctor')) {
             abort(403, 'Doctor ability required');
         }
