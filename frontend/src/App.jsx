@@ -12,6 +12,7 @@ import SlotsBooking from "./Patients/Elements/SlotsBooking.jsx";
 import PatientLogin from "./Pages/PatientLogin.jsx";
 import PatientRegister from "./Pages/PatientRegister.jsx";
 import MyAppointments from "./Patients/Elements/MyAppointments.jsx";
+import PrescriptionPage from "./Pages/prescriptionlist.jsx";
 export default function App() {
   return (
     <Box minH={"100vh"}>
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/doctors/:id" element={<DoctorSlots />} />
         <Route path="/doctors/:id/book" element={<SlotsBooking/>} />
         <Route path="/user/appointments" element={<MyAppointments/>} />
+        <Route path="/user/Prescriptions" element={<PrescriptionPage/>} />
       </Routes>
     </Box>
   );

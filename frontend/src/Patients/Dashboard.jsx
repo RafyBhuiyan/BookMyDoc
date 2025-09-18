@@ -12,8 +12,9 @@ import CalendarMonthSharpIcon from '@mui/icons-material/CalendarMonthSharp';
 import '../index.css'
 import Find_Doctors from './Elements/Find_Doctors';
 import Symptom_checker from './Elements/Symptom_checker';
-import Medical_reports from './Elements/Medical_reports';
 import MyAppointments from './Elements/MyAppointments';
+import Medical_reports from '../Components/prescriptions';
+
 const demoTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'data-toolpad-color-scheme',
@@ -30,7 +31,7 @@ const demoTheme = createTheme({
   },
 });
 
-function DemoPageContent({ pathname }) {
+function DemoPageContent({ pathname ,user}) {
     let content;
 
   switch (pathname) {
@@ -41,7 +42,7 @@ function DemoPageContent({ pathname }) {
       content = <MyAppointments />;
       break;
     case '/reports':
-      content = <Medical_reports />;
+      content = <Medical_reports user={user} />;
       break;
     case '/symptom_checker':
       content = <Symptom_checker />;
@@ -78,6 +79,7 @@ function PatientDashboard(props) {
             kind: 'header',
             title: 'Animals',
           */}
+  const user = JSON.parse(localStorage.getItem('user'));
   return (
     <DemoProvider window={demoWindow}>
       <AppProvider
@@ -111,7 +113,7 @@ function PatientDashboard(props) {
           }}
       >
         <DashboardLayout  >
-          <DemoPageContent pathname={router.pathname} />
+          <DemoPageContent pathname={router.pathname} user={user}/>
         </DashboardLayout>
       </AppProvider>
     </DemoProvider>

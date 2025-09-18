@@ -21,7 +21,6 @@ class MedicalDataController extends Controller
             'temperature_c' => 'nullable|numeric',
             'symptoms' => 'nullable|string',
             'diagnosis' => 'nullable|string',
-            'prescription' => 'nullable|string',
             'tests' => 'nullable|array',
             'notes' => 'nullable|string',
             'is_confidential' => 'nullable|boolean',

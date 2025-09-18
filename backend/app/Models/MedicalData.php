@@ -20,7 +20,6 @@ class MedicalData extends Model
         'temperature_c',
         'symptoms',
         'diagnosis',
-        'prescription',
         'tests',
         'notes',
         'is_confidential',

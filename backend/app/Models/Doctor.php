@@ -44,18 +44,23 @@ class Doctor extends Authenticatable
     {
         return $this->hasMany(Appointment::class);
     }
+    public function issuedPrescriptions()
+    {
+        return $this->hasMany(\App\Models\Prescription::class, 'doctor_id', 'id');
+    }
 
-    
+
     public function scopeSearch($query, ?string $term)
     {
-        if (!$term) return $query;
+        if (!$term)
+            return $query;
 
         $s = strtolower($term);
         return $query->where(function ($q) use ($s) {
             $q->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"])
-              ->orWhereRaw('LOWER(email) LIKE ?', ["%{$s}%"])
-              ->orWhereRaw('LOWER(specialization) LIKE ?', ["%{$s}%"])
-              ->orWhereRaw('LOWER(city) LIKE ?', ["%{$s}%"]);
+                ->orWhereRaw('LOWER(email) LIKE ?', ["%{$s}%"])
+                ->orWhereRaw('LOWER(specialization) LIKE ?', ["%{$s}%"])
+                ->orWhereRaw('LOWER(city) LIKE ?', ["%{$s}%"]);
         });
     }
 
@@ -80,7 +85,8 @@ class Doctor extends Authenticatable
      */
     public function scopeHasAvailabilityOn($query, ?string $date)
     {
-        if (!$date) return $query;
+        if (!$date)
+            return $query;
 
         return $query->whereHas('availabilities', function ($w) use ($date) {
             $w->where('date', $date);

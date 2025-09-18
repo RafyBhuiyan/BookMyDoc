@@ -10,12 +10,8 @@ use App\Http\Controllers\MedicalReportController;
 use App\Http\Controllers\Api\DoctorBrowseController;   // list/show/slots
 use App\Http\Controllers\Api\AvailabilityController;   // doctor availabilities
 use App\Http\Controllers\Api\AppointmentController;    // bookings
+use App\Http\Controllers\PrescriptionController;
 
-/*
-|--------------------------------------------------------------------------
-| Auth (existing)
-|--------------------------------------------------------------------------
-*/
 Route::post('/doctor/register', [DoctorController::class, 'register']);
 Route::post('/doctor/login', [DoctorController::class, 'login']);
 
@@ -26,9 +22,25 @@ Route::post('/user/login', [UserController::class, 'loginUser']);
 //     ->post('/medical-report/generate', [MedicalReportController::class, 'generate'])
 //     ->name('medical.report.generate');
 
-Route::post('/medical-report/generate', [MedicalReportController::class, 'generate'])
+Route::get('/medical-report/generate', [MedicalReportController::class, 'generate'])
     ->name('medical.report.generate');
 
+Route::middleware('auth:sanctum')->group(function () {
+ 
+    Route::post('/prescriptions', [PrescriptionController::class, 'store'])
+        ->name('prescriptions.store');
+
+    Route::get('/users/{user}/prescriptions', [PrescriptionController::class, 'apiIndexForUser'])
+        ->name('prescriptions.indexForUser');
+
+    Route::get('/prescriptions/{prescription}', [PrescriptionController::class, 'apiShow'])
+        ->name('prescriptions.show');
+
+    Route::get('/prescriptions/{prescription}/pdf', [PrescriptionController::class, 'pdf'])
+        ->name('prescriptions.pdf');
+});
+Route::get('/users/{user}/prescriptions', [PrescriptionController::class, 'apiIndexForUser']);
+    
 Route::middleware(['auth'])->group(function () {
     Route::post('/medical-data', [MedicalDataController::class, 'store'])->name('medical-data.store');
     Route::get('/medical-data/{medicalData}', [MedicalDataController::class, 'show'])->name('medical-data.show');

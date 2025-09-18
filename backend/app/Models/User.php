@@ -27,6 +27,10 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\MedicalData::class);
     }
 
+    public function prescriptions()
+    {
+        return $this->hasMany(\App\Models\Prescription::class, 'user_id', 'id');
+    }
     protected function casts(): array
     {
         return [
