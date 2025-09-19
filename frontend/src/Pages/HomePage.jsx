@@ -9,13 +9,16 @@ import WhyChoose from "../Components/WhyChoose";
 
 const Homepage = () => {
   const location = useLocation();
-  const homeRef = useRef(null); 
+
+  const homeRef = useRef(null);
   const howItWorksRef = useRef(null);
+
   const scrollToHome = () => {
     if (homeRef.current) homeRef.current.scrollIntoView({ behavior: "smooth" });
   };
   const scrollToHowItWorks = () => {
-    if (howItWorksRef.current) howItWorksRef.current.scrollIntoView({ behavior: "smooth" });
+    if (howItWorksRef.current)
+      howItWorksRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -26,16 +29,32 @@ const Homepage = () => {
       scrollToHowItWorks();
     }
   }, [location.state]);
-  localStorage.removeItem("chakra-ui-color-mode");
+
+  // ❌ Remove this — it can cause flashes and overrides.
+  // localStorage.removeItem("chakra-ui-color-mode");
+
   return (
-    <Box bg="white" minH="100vh">
-      <Navbar scrollToHome={scrollToHome} scrollToHowItWorks={scrollToHowItWorks} />
+    <Box
+      // Give the whole page a dark gradient so the glassy navbar looks right
+      bgGradient="linear(to-r, #0b1220, #101a2b)"
+      color="#e6e8ee"
+      minH="100vh"
+      // Make sure the background shows through blur
+      // (no need for overflow hidden here)
+    >
+      <Navbar
+        scrollToHome={scrollToHome}
+        scrollToHowItWorks={scrollToHowItWorks}
+      />
+
       <div ref={homeRef}>
         <HeroSection />
       </div>
+
       <div ref={howItWorksRef}>
         <HowItWorks />
       </div>
+
       <WhoCanJoin />
       <WhyChoose />
     </Box>

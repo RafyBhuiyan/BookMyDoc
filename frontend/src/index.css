@@ -2,3 +2,10 @@
 
 /* load the plugin properly */
 @plugin "tailwindcss-animate";
+
+html, body, #root {
+  margin: 0;
+  min-height: 100%;
+  background: linear-gradient(90deg, #0b1220, #101a2b);
+  color-scheme: dark; /* better scrollbars on some browsers */
+}

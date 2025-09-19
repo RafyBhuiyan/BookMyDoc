@@ -24,6 +24,8 @@ import PrescriptionForm from "./Doctors/CreatePrescription.jsx"
 import AdminLogin from "./Pages/AdminLogin.jsx"
 import AdminDashboard from "./Pages/AdminDashboard.jsx"
 import MyPrescriptions from "./Patients/Elements/MyPrescription";
+import Profile from "./Patients/Elements/Profile";
+import DoctorProfile from "./Doctors/DcotorProfile";
 
 
 export default function App() {
@@ -51,6 +53,7 @@ export default function App() {
                path="prescription/:userId/:appointmentId"
                element={<PrescriptionForm />}
                />
+           < Route path="profile" element={<DoctorProfile/>  }/>
           </Route>
         
         <Route 
@@ -60,6 +63,8 @@ export default function App() {
             <Route path="doctors" element={<Find_Doctors  />} />
             <Route path="appointments" element={<MyAppointments />} />
             <Route path="prescription" element={<MyPrescriptions />} />
+            <Route path="profile" element={<Profile/>  }/>
+
           </Route>
         
 

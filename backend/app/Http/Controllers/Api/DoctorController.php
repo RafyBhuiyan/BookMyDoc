@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Doctor;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Doctor;
 
 class DoctorController extends Controller
 {
-
+    /**
+     * Register a new doctor.
+     */
     public function register(Request $request)
     {
         try {
@@ -33,6 +34,7 @@ class DoctorController extends Controller
                 ], 422); // <-- proper status code for validation errors
             }
 
+            // Creating a new doctor (password hashed)
             $doctor = Doctor::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -40,91 +42,51 @@ class DoctorController extends Controller
                 'specialization' => $request->specialization,
                 'password' => Hash::make($request->password),
                 'city' => $request->city ?? null,  
-                'clinic_address' => $request->clinic_address ?? null ,              
+                'clinic_address' => $request->clinic_address ?? null,              
                 'is_approved' => false, // <-- default to false
-
             ]);
 
             return response()->json([
-                'status' => true,
-                'message' => 'Doctor Registered Successfully. Waiting for admin approval.',
-                'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
-
+                'status'  => true,
+                'message' => 'Doctor registered successfully',
+                'data'    => $doctor, // Return doctor details (but not password)
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-
-    public function login(Request $request)
-    {
-        try {
-            $validateDoctor = Validator::make($request->all(), [
-                'email' => 'required|email',
-                'password' => 'required|string|min:6',
-            ]);
-
-            if ($validateDoctor->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validateDoctor->errors()
-                ], 422);
-            }
-
-            $doctor = Doctor::where('email', $request->email)->first();
-
-            if (!$doctor || !Auth::guard('doctor')->attempt($request->only(['email', 'password']))) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Email & Password do not match our records.',
-                ], 401);
-            }
-
-            // Prevent login if not approved
-            if (!$doctor->is_approved) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Your account is pending admin approval.'
-                ], 403);
-            }
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Doctor Logged In Successfully',
-                'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
-            ], 200);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-
-    public function logout(Request $request)
-    {
-        try {
-            $request->user()->currentAccessToken()->delete();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Logged out successfully',
-            ], 200);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => $th->getMessage(),
             ], 500);
         }
     }
-    
+
+    /**
+     * Authenticate doctor login.
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        $doctor = Doctor::where('email', $request->email)->first();
+
+        if (!$doctor || !Hash::check($request->password, $doctor->password)) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+
+        $token = $doctor->createToken('DoctorApp')->plainTextToken;
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Login successful',
+            'data'    => [
+                'doctor' => $doctor,
+                'token' => $token
+            ],
+        ], 200);
+    }
 }

@@ -1,10 +1,11 @@
 // PatientDashboard.jsx
 "use client";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+
 import {
   FaUserDoctor,
   FaCalendarPlus,
@@ -14,11 +15,30 @@ import {
 } from "react-icons/fa6";
 import logo_white from "@/assets/logo_white.png";
 import iconlogo from "@/assets/iconlogo.png";
-
+const API_BASE = "http://127.0.0.1:8000";
 export default function PatientDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [profileName, setProfileName] = useState(""); // ← footer label
+
+  useEffect(() => {
+    const token = localStorage.getItem("patientToken");
+    if (!token) return;
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json().catch(() => ({}));
+        const name = data?.profile?.name;
+        if (name && typeof name === "string") setProfileName(name);
+      } catch {
+        // ignore; keep default "Patient"
+      }
+    })();
+  }, []);
+  //console.log(profileName);
 
   const handleLogout = () => {
     localStorage.removeItem("patientToken");
@@ -86,7 +106,7 @@ export default function PatientDashboard() {
             <div>
               <SidebarLink
                 link={{
-                  label: "Patient",
+                  label: profileName,
                   href: "/user/profile",
                   icon: (
                     <img
