@@ -104,7 +104,7 @@ export default function DoctorLogin() {
         <p className="mt-6 text-center text-neutral-900 text-sm">
           Don’t have an account?{" "}
           <span
-            onClick={() => navigate("/doctor/register")}
+            onClick={() => navigate("/user/register")}
             className="text-indigo-400 hover:underline cursor-pointer"
           >
             Sign up

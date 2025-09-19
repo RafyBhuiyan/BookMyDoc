@@ -47,56 +47,65 @@ class PrescriptionController extends Controller
      | POST /api/prescriptions   (approved Doctor only)
      | Body: user_id, issued_date?, notes?, medicines?[], duration_days?, refill_count?, is_private?, appointment_id?
      | ---------------------------------------------------- */
-    public function store(Request $request): JsonResponse
-    {
-        $doctor = $this->actingDoctor($request);
-        if (!$doctor) {
-            return response()->json(['message' => 'Only doctors can issue prescriptions.'], 403);
-        }
-        if (!($doctor->is_approved ?? false)) {
-            return response()->json(['message' => 'Doctor is not approved.'], 403);
+public function store(Request $request): JsonResponse
+{
+    $doctor = $this->actingDoctor($request);
+    if (!$doctor) {
+        return response()->json(['message' => 'Only doctors can issue prescriptions.'], 403);
+    }
+    if (!($doctor->is_approved ?? false)) {
+        return response()->json(['message' => 'Doctor is not approved.'], 403);
+    }
+
+    $data = $request->validate([
+        'user_id'              => 'required|exists:users,id',
+        'appointment_id'       => 'nullable|exists:appointments,id',
+        'issued_date'          => 'nullable|date',
+        'notes'                => 'nullable|string',
+        'medicines'            => 'nullable|array',
+        'medicines.*.name'     => 'required_with:medicines|string',
+        'medicines.*.dose'     => 'nullable|string',
+        'medicines.*.schedule' => 'nullable|string',
+        'medicines.*.days'     => 'nullable|integer|min:0',
+        'duration_days'        => 'nullable|integer|min:0',
+        'refill_count'         => 'nullable|integer|min:0',
+        'is_private'           => 'nullable|boolean',
+    ]);
+
+    // If appointment_id provided, verify it belongs to this doctor + patient
+    if (!empty($data['appointment_id'])) {
+        $appt = Appointment::find($data['appointment_id']);
+        $apptPatientId = $appt ? $this->apptPatientId($appt) : null;
+
+        if (
+            !$appt ||
+            (int) $appt->doctor_id !== (int) $doctor->id ||
+            (int) $apptPatientId !== (int) $data['user_id']
+        ) {
+            return response()->json(['message' => 'Invalid appointment for this doctor/patient.'], 422);
         }
 
-        $data = $request->validate([
-            'user_id'              => 'required|exists:users,id',
-            'appointment_id'       => 'nullable|exists:appointments,id',
-            'issued_date'          => 'nullable|date',
-            'notes'                => 'nullable|string',
-            'medicines'            => 'nullable|array',
-            'medicines.*.name'     => 'required_with:medicines|string',
-            'medicines.*.dose'     => 'nullable|string',
-            'medicines.*.schedule' => 'nullable|string',
-            'medicines.*.days'     => 'nullable|integer|min:0',
-            'duration_days'        => 'nullable|integer|min:0',
-            'refill_count'         => 'nullable|integer|min:0',
-            'is_private'           => 'nullable|boolean',
+        // Check if prescription already exists for this appointment
+        $existingPrescription = Prescription::where('appointment_id', $data['appointment_id'])
+            ->where('doctor_id', $doctor->id)
+            ->first();
+
+        if ($existingPrescription) {
+            return response()->json(['message' => 'A prescription already exists for this appointment.'], 422);
+        }
+    }
+
+    $data['doctor_id'] = $doctor->id;
+
+    $prescription = Prescription::create($data)
+        ->load([
+            'patient:id,name,email',
+            'doctor:id,name,specialization,city',
+            'appointment:id,patient_id,doctor_id,starts_at,status',
         ]);
 
-        // If appointment_id provided, verify it belongs to this doctor + patient
-        if (!empty($data['appointment_id'])) {
-            $appt = Appointment::find($data['appointment_id']);
-            $apptPatientId = $appt ? $this->apptPatientId($appt) : null;
-
-            if (
-                !$appt ||
-                (int) $appt->doctor_id !== (int) $doctor->id ||
-                (int) $apptPatientId !== (int) $data['user_id']
-            ) {
-                return response()->json(['message' => 'Invalid appointment for this doctor/patient.'], 422);
-            }
-        }
-
-        $data['doctor_id'] = $doctor->id;
-
-        $prescription = Prescription::create($data)
-            ->load([
-                'patient:id,name,email',
-                'doctor:id,name,specialization,city',
-'appointment:id,patient_id,doctor_id,starts_at,status',
-            ]);
-
-        return response()->json($prescription, 201);
-    }
+    return response()->json($prescription, 201);
+}
 
     /* ----------------------------------------------------
      | GET /api/appointments/{appointment}/prescriptions
@@ -251,6 +260,4 @@ class PrescriptionController extends Controller
         ], 500);
     }
 }
-
-
 }

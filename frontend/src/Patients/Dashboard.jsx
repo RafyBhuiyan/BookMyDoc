@@ -30,8 +30,7 @@ export default function PatientDashboard() {
   const links = [
     { label: "Browse Doctors",  href: "/user/doctors",         icon: <FaUserDoctor className="h-5 w-5 shrink-0" /> },
     { label: "Appointments",    href: "/user/appointments",    icon: <FaCalendarPlus className="h-5 w-5 shrink-0" /> },
-    { label: "Reports",         href: "/user/reports",         icon: <FaFileLines className="h-5 w-5 shrink-0" /> },
-    { label: "Symptom Checker", href: "/user/symptom_checker", icon: <FaStethoscope className="h-5 w-5 shrink-0" /> },
+    { label: "Precription",         href: "/user/prescription",         icon: <FaFileLines className="h-5 w-5 shrink-0" /> },
     { label: "Logout",          href: "/", icon: <FaArrowLeft className="h-5 w-5 shrink-0" />, onClick: handleLogout },
   ];
 

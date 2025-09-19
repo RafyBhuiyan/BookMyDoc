@@ -81,10 +81,7 @@
         <div class="section">
             <h3>Appointment</h3>
             <div>
-                <strong>Patient ID:</strong> {{ $prescription->appointment->patient_id ?? 'N/A' }}<br>
-                <strong>Doctor ID:</strong> {{ $prescription->appointment->doctor_id ?? 'N/A' }}<br>
                 <strong>Starts At:</strong> {{ $prescription->appointment->starts_at ?? 'N/A' }}<br>
-                <strong>Status:</strong> {{ $prescription->appointment->status ?? 'N/A' }}
             </div>
         </div>
     @endif

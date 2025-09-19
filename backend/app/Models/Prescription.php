@@ -47,28 +47,16 @@ class Prescription extends Model
         return $this->belongsTo(\App\Models\Doctor::class, 'doctor_id');
     }
 
-    // If/when you add the FK column:
-    // public function appointment()
-    // {
-    //     return $this->belongsTo(\App\Models\Appointment::class, 'appointment_id');
-    // }
     public function appointment()
 {
     return $this->belongsTo(\App\Models\Appointment::class, 'appointment_id');
 }
-
-    // public function medicalData()
-    // {
-    //     return $this->belongsTo(\App\Models\MedicalData::class, 'medical_data_id');
-    // }
-
-    // --- Route key (keep p_id binding) ---
     public function getRouteKeyName()
     {
         return $this->getKeyName(); // 'p_id'
     }
 
-    // --- Scopes ---
+
     public function scopeForPatient($q, int $userId)
     {
         return $q->where('user_id', $userId);

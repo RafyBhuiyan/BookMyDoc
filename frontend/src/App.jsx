@@ -17,15 +17,13 @@ import PrivateRoute from "./PrivateRoute";
 import PatientPage from "./Doctors/Patient";
 import PrescriptionPage from "./Doctors/prescription";
 import AppointmentPage from "./Doctors/appoinment";
-import Medical_reports from "./Patients/Elements/Medical_reports";
-import Symptom_checker from "./Patients/Elements/Symptom_checker";
 
-
-
+import PrescriptionForm from "./Doctors/CreatePrescription.jsx"
 
 
 import AdminLogin from "./Pages/AdminLogin.jsx"
 import AdminDashboard from "./Pages/AdminDashboard.jsx"
+import MyPrescriptions from "./Patients/Elements/MyPrescription";
 
 
 export default function App() {
@@ -49,6 +47,10 @@ export default function App() {
             <Route path="patients" element={<PatientPage />} />
             <Route path="prescription" element={<PrescriptionPage />} />
             <Route path="appointment" element={<AppointmentPage />} />
+             <Route
+               path="prescription/:userId/:appointmentId"
+               element={<PrescriptionForm />}
+               />
           </Route>
         
         <Route 
@@ -57,8 +59,7 @@ export default function App() {
             <Route index element={<Navigate to ="doctors" replace />} />
             <Route path="doctors" element={<Find_Doctors  />} />
             <Route path="appointments" element={<MyAppointments />} />
-            <Route path="reports" element={<Medical_reports />} />
-            <Route path="symptom_checker" element={<Symptom_checker  />} />
+            <Route path="prescription" element={<MyPrescriptions />} />
           </Route>
         
 
