@@ -40,7 +40,7 @@ class DoctorController extends Controller
                 'specialization' => $request->specialization,
                 'password' => Hash::make($request->password),
                 'city' => $request->city ?? null,  
-                'clinic_address' => $request->clinic_address ?? null               
+                'clinic_address' => $request->clinic_address ?? null ,              
                 'is_approved' => false, // <-- default to false
 
             ]);

@@ -18,22 +18,25 @@ class Prescription extends Model
     protected $fillable = [
         'user_id',
         'doctor_id',
+        'appointment_id',
         'issued_date',
         'notes',
         'medicines',
         'duration_days',
         'refill_count',
         'is_private',
+      // 'medical_data_id',   // if you add later
     ];
 
     protected $casts = [
-        'issued_date' => 'date',
-        'medicines' => 'array',
-        'is_private' => 'boolean',
+        'issued_date'   => 'date',
+        'medicines'     => 'array',
+        'is_private'    => 'boolean',
         'duration_days' => 'integer',
-        'refill_count' => 'integer',
+        'refill_count'  => 'integer',
     ];
 
+    // --- Relationships ---
     public function patient()
     {
         return $this->belongsTo(\App\Models\User::class, 'user_id');
@@ -43,13 +46,36 @@ class Prescription extends Model
     {
         return $this->belongsTo(\App\Models\Doctor::class, 'doctor_id');
     }
+
+    // If/when you add the FK column:
+    // public function appointment()
+    // {
+    //     return $this->belongsTo(\App\Models\Appointment::class, 'appointment_id');
+    // }
+    public function appointment()
+{
+    return $this->belongsTo(\App\Models\Appointment::class, 'appointment_id');
+}
+
+    // public function medicalData()
+    // {
+    //     return $this->belongsTo(\App\Models\MedicalData::class, 'medical_data_id');
+    // }
+
+    // --- Route key (keep p_id binding) ---
     public function getRouteKeyName()
     {
-        return $this->getKeyName(); // will use your primary key (p_id)
+        return $this->getKeyName(); // 'p_id'
     }
 
-    public function medicalData()
+    // --- Scopes ---
+    public function scopeForPatient($q, int $userId)
     {
-        return $this->belongsTo(\App\Models\MedicalData::class, 'medical_data_id');
+        return $q->where('user_id', $userId);
+    }
+
+    public function scopeForDoctor($q, int $doctorId)
+    {
+        return $q->where('doctor_id', $doctorId);
     }
 }

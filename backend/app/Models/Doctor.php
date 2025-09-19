@@ -47,10 +47,7 @@ class Doctor extends Authenticatable
     {
         return $this->hasMany(Appointment::class);
     }
-    public function issuedPrescriptions()
-    {
-        return $this->hasMany(\App\Models\Prescription::class, 'doctor_id', 'id');
-    }
+   
 
     public function scopeSearch($query, ?string $term)
     {
@@ -95,4 +92,8 @@ class Doctor extends Authenticatable
             $w->where('date', $date);
         });
     }
+    public function prescriptions()
+{
+    return $this->hasMany(\App\Models\Prescription::class, 'doctor_id');
+}
 }

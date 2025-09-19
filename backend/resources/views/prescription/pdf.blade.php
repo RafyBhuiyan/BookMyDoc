@@ -1,93 +1,96 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>Prescription #{{ $prescription->p_id }}</title>
-  <style>
-    /* Use a safe font for DOMPDF (DejaVu for Unicode) */
-    body { font-family: "DejaVu Sans", sans-serif; font-size: 12px; color:#111; margin: 20px; }
-    .header { text-align: center; margin-bottom: 12px; }
-    .clinic { font-size: 18px; font-weight: 700; }
-    .meta { margin-top: 8px; display:flex; justify-content:space-between; }
-    .section { margin-top: 12px; }
-    table { width:100%; border-collapse: collapse; margin-top:8px; }
-    th, td { padding:8px; border: 1px solid #ccc; text-align:left; }
-    th { background:#f4f4f4; }
-    .notes { margin-top:12px; }
-    .signature { margin-top:30px; display:flex; justify-content:space-between; }
-    .footer { position: fixed; bottom: 20px; width: 100%; text-align:center; font-size: 10px; color:#666; }
-  </style>
+    <meta charset="utf-8">
+    <title>Prescription #{{ $prescription->p_id ?? '' }}</title>
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+        h2 { margin: 0 0 8px 0; }
+        .section { margin: 14px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: left; }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <div class="clinic">Clinic / Hospital Name</div>
-    <div>Address · Phone · Email</div>
-    <div style="margin-top:6px;"><strong>Prescription</strong></div>
-  </div>
+    <h2>Prescription</h2>
 
-  <div class="meta">
-    <div>
-      <strong>Patient:</strong> {{ $prescription->patient->name ?? '—' }} <br>
-      <strong>Patient ID:</strong> {{ $prescription->user_id }} <br>
-      @if($prescription->medicalData)
-        <strong>Visit:</strong> {{ $prescription->medicalData->visit_date?->toDateString() ?? '—' }}
-      @endif
+    <div class="section">
+        <strong>Issued Date:</strong>
+        @php
+            $d = $prescription->issued_date ?? null;
+            // $issued_date is Carbon due to casts; if not, try parsing
+            if (is_string($d)) { try { $d = \Carbon\Carbon::parse($d); } catch (\Exception $e) { $d = null; } }
+        @endphp
+        {{ $d ? $d->format('Y-m-d') : 'N/A' }}
     </div>
 
-    <div style="text-align:right;">
-      <strong>Doctor:</strong> {{ $prescription->doctor->name ?? '—' }} <br>
-      <strong>Issued:</strong> {{ $prescription->issued_date?->toDateString() ?? $prescription->created_at->toDateString() }} <br>
-      <strong>Prescription ID:</strong> {{ $prescription->p_id }}
+    <div class="section">
+        <h3>Patient</h3>
+        <div>
+            <strong>Name:</strong> {{ $prescription->patient->name ?? 'N/A' }}<br>
+            <strong>Email:</strong> {{ $prescription->patient->email ?? 'N/A' }}
+        </div>
     </div>
-  </div>
 
-  <div class="section">
-    <h4>Medicines</h4>
-    @if(empty($prescription->medicines))
-      <p>No medicines listed.</p>
-    @else
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Medicine</th>
-            <th>Dose</th>
-            <th>Frequency</th>
-            <th>Duration (days)</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach($prescription->medicines as $i => $med)
+    <div class="section">
+        <h3>Doctor</h3>
+        <div>
+            <strong>Name:</strong> {{ $prescription->doctor->name ?? 'N/A' }}<br>
+            <strong>Specialization:</strong> {{ $prescription->doctor->specialization ?? 'N/A' }}<br>
+            <strong>City:</strong> {{ $prescription->doctor->city ?? 'N/A' }}
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Notes</h3>
+        <div>{{ $prescription->notes ?? 'No notes provided.' }}</div>
+    </div>
+
+    <div class="section">
+        <h3>Medicines</h3>
+        <table>
+            <thead>
             <tr>
-              <td>{{ $i + 1 }}</td>
-              <td>{{ $med['name'] ?? '-' }}</td>
-              <td>{{ $med['dose'] ?? '-' }}</td>
-              <td>{{ $med['frequency'] ?? '-' }}</td>
-              <td>{{ $med['duration'] ?? '-' }}</td>
+                <th>Name</th><th>Dose</th><th>Schedule</th><th>Days</th>
             </tr>
-          @endforeach
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+            @php
+                $meds = $prescription->medicines ?? [];
+                if (is_string($meds)) { // just in case JSON string slipped through
+                    try { $meds = json_decode($meds, true) ?: []; } catch (\Exception $e) { $meds = []; }
+                }
+            @endphp
+            @if(is_array($meds) && count($meds))
+                @foreach($meds as $m)
+                    <tr>
+                        <td>{{ $m['name'] ?? '' }}</td>
+                        <td>{{ $m['dose'] ?? '-' }}</td>
+                        <td>{{ $m['schedule'] ?? '-' }}</td>
+                        <td>{{ $m['days'] ?? '-' }}</td>
+                    </tr>
+                @endforeach
+            @else
+                <tr><td colspan="4">No medicines recorded.</td></tr>
+            @endif
+            </tbody>
+        </table>
+    </div>
+
+    @if(!empty($prescription->appointment))
+        <div class="section">
+            <h3>Appointment</h3>
+            <div>
+                <strong>Patient ID:</strong> {{ $prescription->appointment->patient_id ?? 'N/A' }}<br>
+                <strong>Doctor ID:</strong> {{ $prescription->appointment->doctor_id ?? 'N/A' }}<br>
+                <strong>Starts At:</strong> {{ $prescription->appointment->starts_at ?? 'N/A' }}<br>
+                <strong>Status:</strong> {{ $prescription->appointment->status ?? 'N/A' }}
+            </div>
+        </div>
     @endif
-  </div>
 
-  <div class="notes">
-    <strong>Notes / Instructions</strong>
-    <p>{!! nl2br(e($prescription->notes ?? '—')) !!}</p>
-  </div>
-
-  <div class="signature">
-    <div>
-      <strong>Pharmacist notes:</strong>
-      <div style="height:48px;border-bottom:1px dotted #ccc;width:280px;"></div>
+    <div class="section" style="text-align:center;">
+        <small>Confidential — For medical use only</small>
     </div>
-    <div style="text-align:center;">
-      <div style="height:48px;"></div>
-      <div>__________________________</div>
-      <div>Doctor signature</div>
-    </div>
-  </div>
-
-  <div class="footer">Confidential — medical record. Generated {{ \Carbon\Carbon::now()->toDateString() }}</div>
 </body>
 </html>
