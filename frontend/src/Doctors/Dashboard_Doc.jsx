@@ -1,6 +1,5 @@
-// DoctorDashboard.jsx
-"use client";
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { motion } from "motion/react";
@@ -9,24 +8,45 @@ import { FaUserInjured, FaPrescriptionBottle, FaClock, FaArrowLeft } from "react
 import logo_white from "@/assets/logo_white.png";
 import iconlogo from "@/assets/iconlogo.png";
 
+const API_BASE = "http://127.0.0.1:8000";
+
 export default function DoctorDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
+  // footer name
+  const [profileName, setProfileName] = useState("Doctor");
+
+  useEffect(() => {
+    const token = localStorage.getItem("doctorToken");
+    if (!token) return;
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/doctor/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json().catch(() => ({}));
+        const name = data?.data?.name;
+        if (name && typeof name === "string") setProfileName(name);
+      } catch {
+        // ignore; keep default
+      }
+    })();
+  }, []);
+
   const handleLogout = () => {
-    localStorage.removeItem("doctorToken"); // only doctor token
+    localStorage.removeItem("doctorToken");
     navigate("/");
   };
 
   // NOTE: Logout has onClick -> treated as action (never active)
   const links = [
-    { label: "Confirmed",     href: "/doctor/patients",    icon: <FaUserInjured className="h-5 w-5 shrink-0" /> },
+    { label: "Confirmed",    href: "/doctor/patients",    icon: <FaUserInjured className="h-5 w-5 shrink-0" /> },
     { label: "Appointment",  href: "/doctor/appointment", icon: <FaClock className="h-5 w-5 shrink-0" /> },
     { label: "Prescription", href: "/doctor/prescription",icon: <FaPrescriptionBottle className="h-5 w-5 shrink-0" /> },
     { label: "Logout",       href: "/", icon: <FaArrowLeft className="h-5 w-5 shrink-0 rounded" />, onClick: handleLogout },
   ];
-
   return (
     <div className="min-h-dvh w-full bg-neutral-900">
       <div className="flex h-dvh w-full overflow-hidden">
@@ -70,12 +90,12 @@ export default function DoctorDashboard() {
               </div>
             </div>
 
-            {/* Footer Avatar Link */}
+            {/* Footer Avatar Link with dynamic name */}
             <div>
               <SidebarLink
                 link={{
-                  label: "Shanto",
-                  href: "/organizers/me",
+                  label: profileName, // <-- dynamic doctor name
+                  href: "/doctor/profile",
                   icon: (
                     <img
                       src="https://37assets.37signals.com/svn/765-default-avatar.png"
@@ -83,7 +103,7 @@ export default function DoctorDashboard() {
                       alt="Avatar"
                     />
                   ),
-                  active: location.pathname.startsWith("/organizers/me"),
+                  active: location.pathname.startsWith("/doctor/profile"),
                 }}
                 className="text-neutral-200 hover:text-white"
               />

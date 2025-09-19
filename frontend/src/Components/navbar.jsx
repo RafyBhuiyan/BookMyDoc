@@ -3,7 +3,6 @@ import {
   Box,
   Container,
   Flex,
-  Text,
   Button,
   HStack,
   Spacer,
@@ -11,52 +10,59 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaHeart, FaUserMd, FaUser } from "react-icons/fa";
-import logo from "../assets/logo_white.png"; // Adjust the path as necessary
+import { FaUserMd, FaUser } from "react-icons/fa";
+import logo from "../assets/logo_white.png";
+
 const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
   const navigate = useNavigate();
 
-  // Check if doctorToken or patientToken is present
+  // Tokens
   const doctorToken = localStorage.getItem("doctorToken");
   const patientToken = localStorage.getItem("patientToken");
 
-    // Determine the correct dashboard URL
+  // Dashboard link
   let dashboardLink = null;
   if (doctorToken) {
-    dashboardLink = "/doctor"; // Doctor's Dashboard
+    dashboardLink = "/doctor";
   } else if (patientToken) {
-    dashboardLink = "/user"; // Patient's Dashboard
+    dashboardLink = "/user";
   }
 
   const handleLogout = () => {
-    localStorage.clear(); // Clear the token from localStorage
-    navigate("/"); // Redirect to the home page
+    localStorage.clear();
+    navigate("/");
   };
 
   return (
     <Box
-      bg="white"
-      borderBottom="1px solid"
-      borderColor="gray.200"
       position="sticky"
       top="0"
       zIndex="1000"
+      mt={4}
+      mx="auto"
+      w="95%"
       py={3}
-      boxShadow="sm"
+      px={6}
+      bg="rgba(15, 23, 42, 0.55)" // dark slate with opacity
+      backdropFilter="blur(12px)"  // frosted blur effect
+      border="1px solid"
+      borderColor="rgba(255,255,255,0.1)"
+      borderRadius="2xl"
+      boxShadow="0 8px 24px rgba(0,0,0,0.4)"
       transition="all 0.3s ease"
-      _hover={{ boxShadow: "md" }}
+      _hover={{ boxShadow: "0 12px 28px rgba(0,0,0,0.55)" }}
     >
-      <Container maxW="1140px" px={6}>
+      <Container maxW="1140px">
         <Flex alignItems="center" justifyContent="space-between">
           {/* Logo */}
           <HStack spacing={2}>
-<Box as={Link} to="/" display="flex" alignItems="center">
-  <img 
-    src={logo} 
-    alt="BookMyDoc1" 
-    style={{ height: "50px", objectFit: "contain" }} 
-  />
-</Box>
+            <Box as={Link} to="/" display="flex" alignItems="center">
+              <img
+                src={logo}
+                alt="BookMyDoc"
+                style={{ height: "50px", objectFit: "contain" }}
+              />
+            </Box>
           </HStack>
 
           <Spacer />
@@ -73,8 +79,8 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
               onClick={scrollToHome}
               cursor="pointer"
               fontWeight="500"
-              color="gray.700"
-              _hover={{ color: "blue.500", textDecoration: "none" }}
+              color="#e6e8ee"
+              _hover={{ color: "#3b82f6", textDecoration: "none" }}
               fontSize="16px"
               fontFamily="Poppins, sans-serif"
             >
@@ -85,8 +91,8 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
               onClick={scrollToHowItWorks}
               cursor="pointer"
               fontWeight="500"
-              color="gray.700"
-              _hover={{ color: "blue.500", textDecoration: "none" }}
+              color="#e6e8ee"
+              _hover={{ color: "#3b82f6", textDecoration: "none" }}
               fontSize="16px"
               fontFamily="Poppins, sans-serif"
             >
@@ -97,8 +103,8 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
               as={Link}
               to="/contact"
               fontWeight="500"
-              color="gray.700"
-              _hover={{ color: "blue.500", textDecoration: "none" }}
+              color="#e6e8ee"
+              _hover={{ color: "#3b82f6", textDecoration: "none" }}
               fontSize="16px"
               fontFamily="Poppins, sans-serif"
             >
@@ -108,94 +114,77 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
 
           <Spacer />
 
-          {/* Conditional Render for Login/Logout */}
+          {/* Auth Buttons */}
           <HStack spacing={4}>
             {doctorToken || patientToken ? (
               <>
-                {/* Dashboard Button - Only show if the user is logged in */}
                 {dashboardLink && (
                   <Button
                     as={Link}
-                    to={dashboardLink} // Navigate to the correct dashboard
-                    colorScheme="blue"
+                    to={dashboardLink}
                     size="md"
                     rounded="full"
                     fontFamily="Poppins, sans-serif"
                     fontWeight="700"
                     px={6}
                     leftIcon={<Icon as={FaUserMd} />}
-                    bg="white"
-                    color="blue.600"
-                    _hover={{
-                      bg: "white",
-                      transform: "scale(1.05)",
-                    }}
+                    bg="rgba(59,130,246,0.15)"
+                    color="#e6e8ee"
+                    border="1px solid rgba(255,255,255,0.1)"
+                    _hover={{ bg: "rgba(59,130,246,0.25)", transform: "scale(1.03)" }}
                     boxShadow="md"
                   >
                     Dashboard
                   </Button>
                 )}
-                {/* Logout Button */}
                 <Button
-                  onClick={handleLogout} // Trigger logout
-                  colorScheme="red"
+                  onClick={handleLogout}
                   size="md"
                   rounded="full"
                   fontFamily="Poppins, sans-serif"
                   fontWeight="700"
                   px={6}
                   leftIcon={<Icon as={FaUser} />}
-                  bg="white"
-                  color="blue.600"
-                  _hover={{
-                    bg: "white",
-                    transform: "scale(1.05)",
-                  }}
+                  bg="#3b82f6"
+                  color="#0b1220"
+                  _hover={{ bg: "#3270d1", transform: "scale(1.03)" }}
                   boxShadow="md"
                 >
                   Logout
                 </Button>
               </>
             ) : (
-              // If not logged in, show login buttons for doctor and patient
               <>
                 <Button
                   as={Link}
                   to="/doctor/login"
-                  colorScheme="blue"
                   size="md"
                   rounded="full"
                   fontFamily="Poppins, sans-serif"
                   fontWeight="700"
                   px={6}
                   leftIcon={<Icon as={FaUserMd} />}
-                  bg="white" 
-                  color="blue.600" 
-                  _hover={{
-                    bg: "white", 
-                    transform: "scale(1.05)", 
-                  }}
-                  boxShadow="md" 
+                  bg="rgba(59,130,246,0.15)"
+                  color="#e6e8ee"
+                  border="1px solid rgba(255,255,255,0.1)"
+                  _hover={{ bg: "rgba(59,130,246,0.25)", transform: "scale(1.03)" }}
+                  boxShadow="md"
                 >
                   Doctor
                 </Button>
                 <Button
                   as={Link}
                   to="/user/login"
-                  colorScheme="blue"
                   size="md"
                   rounded="full"
                   fontFamily="Poppins, sans-serif"
                   fontWeight="700"
                   px={6}
                   leftIcon={<Icon as={FaUser} />}
-                  bg="blue.500" 
-                  color="white" 
-                  _hover={{
-                    bg: "blue.600", 
-                    transform: "scale(1.05)", 
-                  }}
-                  boxShadow="md" 
+                  bg="#3b82f6"
+                  color="#0b1220"
+                  _hover={{ bg: "#3270d1", transform: "scale(1.03)" }}
+                  boxShadow="md"
                 >
                   Patient
                 </Button>

@@ -10,22 +10,33 @@ const features = [
 
 const WhyChoose = () => {
   return (
-    <Box py={20} bg="gray.900" color="white">
+    <Box py={20} bg="#0b1220" color="#e6e8ee">
       <Container maxW="1100px">
         <VStack spacing={2} mb={12} textAlign="center">
           <Text fontSize="3xl" fontWeight="bold">Why Choose BookMyDoc?</Text>
-          <Text fontSize="lg" color="gray.300">
+          <Text fontSize="lg" color="#a9b1c6">
             Experience healthcare that puts you first with our comprehensive platform features.
           </Text>
         </VStack>
 
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8}>
           {features.map((feature, index) => (
-            <Card key={index} variant="outline" textAlign="center" p={6} bg="gray.800" color="white" boxShadow="lg">
+            <Card
+              key={index}
+              variant="outline"
+              textAlign="center"
+              p={6}
+              bg="#101a2b"
+              color="#e6e8ee"
+              boxShadow="lg"
+              border="1px solid"
+              borderColor="#1f2b44"
+              _hover={{ bg: "#0e1726" }}
+            >
               <VStack spacing={4}>
-                <Icon as={feature.icon} boxSize={10} color="teal.400" />
+                <Icon as={feature.icon} boxSize={10} color="#14b8a6" />
                 <Text fontSize="xl" fontWeight="bold">{feature.title}</Text>
-                <Text color="gray.300">{feature.description}</Text>
+                <Text color="#a9b1c6">{feature.description}</Text>
               </VStack>
             </Card>
           ))}

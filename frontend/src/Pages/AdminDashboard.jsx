@@ -152,7 +152,6 @@ export default function AdminDashboard() {
                     <span className="font-semibold">Specialization:</span>{" "}
                     {doc.specialization}
                   </p>
-                  <p className="text-gray-500 text-sm">ID: {doc.id}</p>
                 </div>
                 {activeTab === "pending" && (
                   <button

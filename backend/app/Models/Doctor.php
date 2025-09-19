@@ -17,10 +17,13 @@ class Doctor extends Authenticatable
         'phone',
         'specialization',
         'password',
-        'city',            // optional: used for filtering
+        'city',
         'clinic_address',
-        'is_approved',  // optional: display only
-
+        'medical_school',
+        'medical_license_number',
+        'years_of_experience',
+        'bio',
+        'is_approved',
     ];
 
     protected $hidden = [
@@ -29,8 +32,9 @@ class Doctor extends Authenticatable
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'education_certificates' => 'array', //this ensures certificates are arrays
+        'email_verified_at'   => 'datetime',
+        'is_approved'         => 'boolean',
+        'years_of_experience' => 'integer',
     ];
 
     /*
@@ -45,43 +49,45 @@ class Doctor extends Authenticatable
 
     public function appointments()
     {
-        return $this->hasMany(Appointment::class);
+        return $this->hasMany(\App\Models\Appointment::class);
     }
 
-    
-public function scopeSearch($query, ?string $term)
-{
-    if (!$term) return $query;
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
+    public function scopeApproved($q)
+    {
+        return $q->where('is_approved', true);
+    }
 
-    $s = strtolower($term);
+    public function scopeSearch($query, ?string $term)
+    {
+        if (!$term) return $query;
 
-    return $query->where(function($q) use ($s) {
-        $q->whereRaw('LOWER(name) LIKE ?', ["{$s}%"])         // start with name
-          ->orWhereRaw('LOWER(specialization) LIKE ?', ["{$s}%"]) // start with specialization
-          ->orWhereRaw('LOWER(city) LIKE ?', ["{$s}%"]);     // start with city
-    });
-}
+        $s = mb_strtolower($term, 'UTF-8');
 
+        return $query->where(function ($q) use ($s) {
+            $q->whereRaw('LOWER(name) LIKE ?', ["{$s}%"])
+              ->orWhereRaw('LOWER(specialization) LIKE ?', ["{$s}%"])
+              ->orWhereRaw('LOWER(city) LIKE ?', ["{$s}%"]);
+        });
+    }
 
-    /**
-     * Filter by exact specialization.
-     */
+    /** Filter by exact specialization. */
     public function scopeSpecialization($query, ?string $spec)
     {
         return $spec ? $query->where('specialization', $spec) : $query;
     }
 
-    /**
-     * Filter by exact city.
-     */
+    /** Filter by exact city. */
     public function scopeCity($query, ?string $city)
     {
         return $city ? $query->where('city', $city) : $query;
     }
 
-    /**
-     * Only doctors that have at least one availability on a given date (YYYY-MM-DD).
-     */
+    /** Only doctors that have at least one availability on a given date (YYYY-MM-DD). */
     public function scopeHasAvailabilityOn($query, ?string $date)
     {
         if (!$date) return $query;

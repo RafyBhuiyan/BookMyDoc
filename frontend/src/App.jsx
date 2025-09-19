@@ -25,6 +25,8 @@ import Symptom_checker from "./Patients/Elements/Symptom_checker";
 
 import AdminLogin from "./Pages/AdminLogin.jsx"
 import AdminDashboard from "./Pages/AdminDashboard.jsx"
+import Profile from "./Patients/Elements/Profile";
+import DoctorProfile from "./Doctors/DcotorProfile";
 
 
 export default function App() {
@@ -48,6 +50,7 @@ export default function App() {
             <Route path="patients" element={<PatientPage />} />
             <Route path="prescription" element={<PrescriptionPage />} />
             <Route path="appointment" element={<AppointmentPage />} />
+           < Route path="profile" element={<DoctorProfile/>  }/>
           </Route>
         
         <Route 
@@ -58,6 +61,7 @@ export default function App() {
             <Route path="appointments" element={<MyAppointments />} />
             <Route path="reports" element={<Medical_reports />} />
             <Route path="symptom_checker" element={<Symptom_checker  />} />
+            <Route path="profile" element={<Profile/>  }/>
           </Route>
         
 

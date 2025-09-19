@@ -12,7 +12,7 @@ return new class extends Migration
     public function up()
 {
     Schema::table('doctors', function (Blueprint $table) {
-        $table->boolean('is_approved')->default(false); // false = pending
+        $table->boolean('is_approved')->default(false)->index(); // false = pending
     });
 }
 
