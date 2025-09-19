@@ -12,21 +12,23 @@ import SlotsBooking from "./Patients/Elements/SlotsBooking.jsx";
 import PatientLogin from "./Pages/PatientLogin.jsx";
 import PatientRegister from "./Pages/PatientRegister.jsx";
 import MyAppointments from "./Patients/Elements/MyAppointments.jsx";
+
 import PrivateRoute from "./PrivateRoute"; 
 import PatientPage from "./Doctors/Patient";
 import PrescriptionPage from "./Doctors/prescription";
 import AppointmentPage from "./Doctors/appoinment";
-import Medical_reports from "./Patients/Elements/Medical_reports";
-import Symptom_checker from "./Patients/Elements/Symptom_checker";
 
-
-
+import PrescriptionForm from "./Doctors/CreatePrescription.jsx"
 
 
 import AdminLogin from "./Pages/AdminLogin.jsx"
 import AdminDashboard from "./Pages/AdminDashboard.jsx"
+
 import Profile from "./Patients/Elements/Profile";
 import DoctorProfile from "./Doctors/DcotorProfile";
+
+import MyPrescriptions from "./Patients/Elements/MyPrescription";
+
 
 
 export default function App() {
@@ -51,6 +53,11 @@ export default function App() {
             <Route path="prescription" element={<PrescriptionPage />} />
             <Route path="appointment" element={<AppointmentPage />} />
            < Route path="profile" element={<DoctorProfile/>  }/>
+             <Route
+               path="prescription/:userId/:appointmentId"
+               element={<PrescriptionForm />}
+               />
+
           </Route>
         
         <Route 
@@ -59,9 +66,11 @@ export default function App() {
             <Route index element={<Navigate to ="doctors" replace />} />
             <Route path="doctors" element={<Find_Doctors  />} />
             <Route path="appointments" element={<MyAppointments />} />
-            <Route path="reports" element={<Medical_reports />} />
-            <Route path="symptom_checker" element={<Symptom_checker  />} />
+
             <Route path="profile" element={<Profile/>  }/>
+
+            <Route path="prescription" element={<MyPrescriptions />} />
+
           </Route>
         
 

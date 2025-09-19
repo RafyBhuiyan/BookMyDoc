@@ -51,22 +51,23 @@ class Doctor extends Authenticatable
     {
         return $this->hasMany(\App\Models\Appointment::class);
     }
+   
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes
-    |--------------------------------------------------------------------------
-    */
-    public function scopeApproved($q)
-    {
-        return $q->where('is_approved', true);
-    }
 
     public function scopeSearch($query, ?string $term)
     {
-        if (!$term) return $query;
+        if (!$term)
+            return $query;
 
-        $s = mb_strtolower($term, 'UTF-8');
+        $s = strtolower($term);
+        return $query->where(function ($q) use ($s) {
+            $q->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"])
+                ->orWhereRaw('LOWER(email) LIKE ?', ["%{$s}%"])
+                ->orWhereRaw('LOWER(specialization) LIKE ?', ["%{$s}%"])
+                ->orWhereRaw('LOWER(city) LIKE ?', ["%{$s}%"]);
+        });
+    }
+
 
         return $query->where(function ($q) use ($s) {
             $q->whereRaw('LOWER(name) LIKE ?', ["{$s}%"])
@@ -90,10 +91,15 @@ class Doctor extends Authenticatable
     /** Only doctors that have at least one availability on a given date (YYYY-MM-DD). */
     public function scopeHasAvailabilityOn($query, ?string $date)
     {
-        if (!$date) return $query;
+        if (!$date)
+            return $query;
 
         return $query->whereHas('availabilities', function ($w) use ($date) {
             $w->where('date', $date);
         });
     }
+    public function prescriptions()
+{
+    return $this->hasMany(\App\Models\Prescription::class, 'doctor_id');
+}
 }

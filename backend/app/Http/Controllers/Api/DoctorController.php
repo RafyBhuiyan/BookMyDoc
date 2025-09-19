@@ -15,7 +15,37 @@ class DoctorProfileController extends Controller
     public function show(Request $request)
     {
         try {
-            $doctor = $request->user(); // Sanctum-authenticated doctor
+
+            $validateDoctor = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:doctors,email',
+                'phone' => 'required|string|unique:doctors,phone',
+                'specialization' => 'required|string|max:255',
+                'password' => 'required|string|min:6',
+                'city' => 'nullable|string|max:255',  // Making city optional
+                'clinic_address' => 'nullable|string|max:255', 
+            ]);
+
+            if ($validateDoctor->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validateDoctor->errors()
+                ], 422); // <-- proper status code for validation errors
+            }
+
+            $doctor = Doctor::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'specialization' => $request->specialization,
+                'password' => Hash::make($request->password),
+                'city' => $request->city ?? null,  
+                'clinic_address' => $request->clinic_address ?? null ,              
+                'is_approved' => false, // <-- default to false
+
+            ]);
+
 
             return response()->json([
                 'status'  => true,

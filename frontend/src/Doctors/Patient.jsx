@@ -121,7 +121,10 @@ const PatientPage = () => {
                           <DropdownMenuItem className="text-gray-200 font-semibold">
                             Profile
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-gray-200 font-semibold">
+                             <DropdownMenuItem
+                             className="text-gray-200 font-semibold cursor-pointer hover:bg-black"
+                             onClick={() => navigate(`/doctor/prescription/${appt.patient.id}/${appt.id}`)}
+                              >
                             Prescription
                           </DropdownMenuItem>
                           <DropdownMenuItem className="text-gray-200 font-semibold">

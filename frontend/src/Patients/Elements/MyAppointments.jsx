@@ -2,22 +2,28 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+
 const API_BASE = "http://127.0.0.1:8000";
 
-export default function MyAppointments() {
+export default function MyAppointmentsTable() {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [newDateTime, setNewDateTime] = useState("");
+  const [filters, setFilters] = useState({
+    status: "all",
+    date: "",
+    specialization: "",
+  });
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -35,167 +41,155 @@ export default function MyAppointments() {
         });
         if (Array.isArray(data.appointments)) {
           setAppointments(data.appointments);
+          setFilteredAppointments(data.appointments);
         } else {
           setError("Failed to load appointments.");
         }
       } catch (err) {
+        console.error(err);
         setError("Failed to load appointments.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchAppointments();
   }, [navigate]);
 
+  // Filter logic
+  useEffect(() => {
+    let filtered = [...appointments];
+
+    if (filters.status !== "all") {
+      filtered = filtered.filter((a) => a.status === filters.status);
+    }
+
+    if (filters.date) {
+      filtered = filtered.filter(
+        (a) =>
+          new Date(a.starts_at).toLocaleDateString() ===
+          new Date(filters.date).toLocaleDateString()
+      );
+    }
+
+    if (filters.specialization) {
+      filtered = filtered.filter(
+        (a) =>
+          a.doctor?.specialization
+            .toLowerCase()
+            .includes(filters.specialization.toLowerCase())
+      );
+    }
+
+    setFilteredAppointments(filtered);
+  }, [filters, appointments]);
+
   const handleCancel = async (appointmentId) => {
     if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
-
     try {
       const token = localStorage.getItem("patientToken");
-      if (!token) {
-        alert("Please log in first.");
-        navigate("/user/login");
-        return;
-      }
-      await axios.patch(`${API_BASE}/api/user/appointments/${appointmentId}/cancel`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.patch(
+        `${API_BASE}/api/user/appointments/${appointmentId}/cancel`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setAppointments(appointments.filter((appt) => appt.id !== appointmentId));
-      alert("Appointment cancelled successfully.");
     } catch (err) {
+      console.error(err);
       setError("Failed to cancel appointment.");
     }
   };
 
   const handleReschedule = (appointmentId) => {
-    setSelectedAppointment(appointmentId);
+    alert(`Reschedule for appointment ID ${appointmentId}`);
   };
 
-  const handleRescheduleSubmit = async () => {
-    if (!newDateTime) {
-      setError("Please select a new date and time.");
-      return;
-    }
+  return (
+    <div className="min-h-screen w-full bg-neutral-900 text-white px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6 text-center lg:text-left">My Appointments</h1>
 
-    try {
-      const token = localStorage.getItem("patientToken");
-      if (!token) {
-        alert("Please log in first.");
-        navigate("/user/login");
-        return;
-      }
-
-      await axios.patch(
-        `${API_BASE}/api/user/appointments/${selectedAppointment}/reschedule`,
-        { starts_at: newDateTime },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      alert("Appointment rescheduled successfully.");
-      setSelectedAppointment(null);
-      setNewDateTime("");
-      setAppointments((prevAppointments) =>
-        prevAppointments.map((appt) =>
-          appt.id === selectedAppointment
-            ? { ...appt, starts_at: newDateTime }
-            : appt
-        )
-      );
-    } catch (err) {
-      setError("Failed to reschedule appointment.");
-    }
-  };
-return (
-  <div className="min-h-screen w-full bg-neutral-900 text-white flex justify-center px-4 py-8">
-    <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-6">
-      
-      {/* Appointments List */}
-      <div className={`flex-1 transition-all duration-300 ${selectedAppointment ? "lg:w-2/3" : "lg:w-full"}`}>
-        <h1 className="text-2xl font-bold mb-6 text-center lg:text-left">My Appointments</h1>
-
-        {loading && <p className="text-neutral-400">Loading your appointments...</p>}
-        {error && <p className="text-red-400">{error}</p>}
-
-        {appointments.length === 0 ? (
-          <p className="text-neutral-400 text-center">No appointments found.</p>
-        ) : (
-          <ul className="space-y-6">
-            {appointments.map((appt) => (
-<li key={appt.id}>
-  <Card className="flex flex-row items-start justify-between p-5 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg hover:shadow-xl transition">
-    {/* Left Side: Appointment Details */}
-    <CardContent className="flex-1 space-y-2 text-white">
-      <p>
-        <span className="font-semibold text-indigo-400">Doctor:</span>{" "}
-        {appt.doctor.name}
-      </p>
-      <p>
-        <span className="font-semibold text-indigo-400">Specialization:</span>{" "}
-        {appt.doctor.specialization}
-      </p>
-      <p>
-        <span className="font-semibold text-indigo-400">Date:</span>{" "}
-        {new Date(appt.starts_at).toLocaleString()}
-      </p>
-      <p>
-        <span className="font-semibold text-indigo-400">Status:</span>{" "}
-        <span
-          className={`px-2 py-1 rounded-md text-sm ${
-            appt.status === "confirmed"
-              ? "bg-green-600/20 text-green-400"
-              : "bg-yellow-600/20 text-yellow-400"
-          }`}
+      {/* Filters */}
+      <div className="flex flex-col lg:flex-row gap-4 mb-6">
+        <select
+          value={filters.status}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+          className="p-2 rounded bg-neutral-800 text-white w-full lg:w-1/4"
         >
-          {appt.status}
-        </span>
-      </p>
-    </CardContent>
-
-    {/* Right Side: Buttons */}
-    <CardFooter className="flex flex-col gap-3">
-      <Button
-        onClick={() => handleCancel(appt.id)}
-        variant="ghost"
-        className="w-32 bg-red-600/20 text-red-400 hover:bg-red-600/40 transition"
-      >
-        Cancel
-      </Button>
-      <Button
-        onClick={() => handleReschedule(appt.id)}
-        variant="ghost"
-        className="w-32 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/40 transition"
-      >
-        Reschedule
-      </Button>
-    </CardFooter>
-  </Card>
-</li>
-            ))}
-          </ul>
-        )}
+          <option value="all">All Status</option>
+          <option value="accepted">Accepted</option>
+          <option value="pending">Pending</option>
+          <option value="declined">Declined</option>
+        </select>
+        <input
+          type="date"
+          value={filters.date}
+          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+          className="p-2 rounded bg-neutral-800 text-white w-full lg:w-1/4"
+        />
+        <input
+          type="text"
+          placeholder="Filter by specialization"
+          value={filters.specialization}
+          onChange={(e) => setFilters({ ...filters, specialization: e.target.value })}
+          className="p-2 rounded bg-neutral-800 text-white w-full lg:w-1/4"
+        />
       </div>
 
-      {/* Side Panel for Reschedule */}
-      {selectedAppointment && (
-        <div className="flex-1 lg:w-1/3 p-6 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg transition-all duration-300">
-          <h2 className="text-lg font-bold mb-3">Reschedule Appointment</h2>
-          <p className="mb-4 text-neutral-400">Select a new date and time:</p>
-          <input
-            type="datetime-local"
-            value={newDateTime}
-            onChange={(e) => setNewDateTime(e.target.value)}
-            className="w-full h-14 px-5 text-lg bg-neutral-900/80 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white backdrop-blur-sm"
-          />
-          <button
-            onClick={handleRescheduleSubmit}
-            className="w-full h-14 mt-5 rounded-xl font-semibold bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-          >
-            Reschedule Appointment
-          </button>
-        </div>
-      )}
+      {loading && <p className="text-gray-400">Loading appointments...</p>}
+      {error && <p className="text-red-400">{error}</p>}
+
+      <div className="overflow-x-auto">
+        <Table className="min-w-[640px]">
+          <TableHeader className="bg-gray-900">
+            <TableRow>
+              <TableHead className="text-white">Doctor</TableHead>
+              <TableHead className="text-white">Specialization</TableHead>
+              <TableHead className="text-white">Date</TableHead>
+              <TableHead className="text-white">Status</TableHead>
+              <TableHead className="text-white">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredAppointments.length === 0 && !loading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-gray-400 text-center">
+                  No appointments found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredAppointments.map((appt) => (
+                <TableRow key={appt.id}>
+                  <TableCell>{appt.doctor?.name}</TableCell>
+                  <TableCell>{appt.doctor?.specialization}</TableCell>
+                  <TableCell>{new Date(appt.starts_at).toLocaleString()}</TableCell>
+                  <TableCell>{appt.status}</TableCell>
+                  <TableCell>
+                    {appt.status === "pending" ? (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-red-600"
+                          onClick={() => handleCancel(appt.id)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-indigo-600"
+                          onClick={() => handleReschedule(appt.id)}
+                        >
+                          Reschedule
+                        </Button>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">No actions available</span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
-  </div>
-);
+  );
 }
