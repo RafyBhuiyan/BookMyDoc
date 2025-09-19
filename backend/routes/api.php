@@ -7,11 +7,18 @@ use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\UserController;
 
+use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\MedicalDataController;
+use App\Http\Controllers\MedicalReportController;
+
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\DoctorBrowseController;   // list/show/slots
 use App\Http\Controllers\Api\AvailabilityController;   // doctor availabilities
 use App\Http\Controllers\Api\AppointmentController;    // bookings
+use App\Http\Controllers\PrescriptionController;
+
+
 
 
 use App\Http\Controllers\Api\DoctorProfileController;
@@ -28,16 +35,45 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::post('/doctor/register', [DoctorController::class, 'register']);
-Route::post('/doctor/login',    [DoctorController::class, 'login']);
+Route::post('/doctor/login', [DoctorController::class, 'login']);
 
+Route::post('/user/register', [UserController::class, 'createUser']);
+Route::post('/user/login', [UserController::class, 'loginUser']);
 
-Route::post('/user/register',   [UserController::class, 'createUser']);
-Route::post('/user/login',      [UserController::class, 'loginUser']);
+// Route::middleware(['auth:sanctum', 'verified'])
+//     ->post('/medical-report/generate', [MedicalReportController::class, 'generate'])
+//     ->name('medical.report.generate');
+
+Route::get('/medical-report/generate', [MedicalReportController::class, 'generate'])
+    ->name('medical.report.generate');
+
+Route::middleware('auth:sanctum')->group(function () {
+ 
+    Route::post('/prescriptions', [PrescriptionController::class, 'store'])
+        ->name('prescriptions.store');
+
+    Route::get('/users/{user}/prescriptions', [PrescriptionController::class, 'apiIndexForUser'])
+        ->name('prescriptions.indexForUser');
+
+    Route::get('/prescriptions/{prescription}', [PrescriptionController::class, 'apiShow'])
+        ->name('prescriptions.show');
+
+    Route::get('/prescriptions/{prescription}/pdf', [PrescriptionController::class, 'pdf'])
+        ->name('prescriptions.pdf');
+});
+Route::get('/users/{user}/prescriptions', [PrescriptionController::class, 'apiIndexForUser']);
+    
+Route::middleware(['auth'])->group(function () {
+    Route::post('/medical-data', [MedicalDataController::class, 'store'])->name('medical-data.store');
+    Route::get('/medical-data/{medicalData}', [MedicalDataController::class, 'show'])->name('medical-data.show');
+    Route::get('/users/{user}/medical-data', [MedicalDataController::class, 'indexForUser'])->name('medical-data.index');
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/doctor/logout', [DoctorController::class, 'logout']);
-    Route::post('/user/logout',   [UserController::class, 'logout']);
+    Route::post('/user/logout', [UserController::class, 'logout']);
 });
+
 
 Route::get('/health', fn() => response()->json(['ok' => true], 200));
 Route::middleware('auth:sanctum')->get('/auth-check', function () {
@@ -46,6 +82,7 @@ Route::middleware('auth:sanctum')->get('/auth-check', function () {
 Route::get('/doctors',                    [DoctorBrowseController::class, 'index']);
 Route::get('/doctors/{doctor}',           [DoctorBrowseController::class, 'show']);
 Route::get('/doctors/{doctor}/slots',     [DoctorBrowseController::class, 'slots']);    
+
 Route::get('/doctors/{doctor}/slots/all', [DoctorBrowseController::class, 'allSlots']);
     
 Route::post('/message', [MessageController::class, 'store']);
@@ -53,13 +90,18 @@ Route::get('/message',  [MessageController::class, 'index']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::get('/doctor/availabilities',                       [AvailabilityController::class, 'index']);
-    Route::post('/doctor/availabilities',                      [AvailabilityController::class, 'store']);
-    Route::delete('/doctor/availabilities/{availability}',     [AvailabilityController::class, 'destroy']);
+    Route::get('/doctor/availabilities', [AvailabilityController::class, 'index']);
+    Route::post('/doctor/availabilities', [AvailabilityController::class, 'store']);
+    Route::delete('/doctor/availabilities/{availability}', [AvailabilityController::class, 'destroy']);
+
+    Route::post('/message', [MessageController::class, 'store']);
+
+    Route::get('/message', [MessageController::class, 'index']);
 
 
-    Route::patch('/doctor/appointments/{appointment}/accept',  [AppointmentController::class, 'accept']);
+    Route::patch('/doctor/appointments/{appointment}/accept', [AppointmentController::class, 'accept']);
     Route::patch('/doctor/appointments/{appointment}/decline', [AppointmentController::class, 'decline']);
+  
     Route::get('/doctor/appointments',                         [AppointmentController::class, 'myForDoctor']);
     Route::get('/doctor/appointments/day',                      [AppointmentController::class, 'day']);
 

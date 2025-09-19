@@ -25,6 +25,7 @@ export default function PatientDashboard() {
     navigate("/");
   };
 
+
   // NOTE: Logout has onClick -> treated as "action" (never active)
   const links = [
     { label: "Browse Doctors",  href: "/user/doctors",         icon: <FaUserDoctor className="h-5 w-5 shrink-0" /> },
@@ -55,6 +56,7 @@ export default function PatientDashboard() {
                   const isAction = Boolean(link.onClick);
                   const isActive =
                     !isAction && link.href !== "/" && location.pathname.startsWith(link.href);
+
 
                   return (
                     <SidebarLink
@@ -108,6 +110,7 @@ export default function PatientDashboard() {
         </main>
       </div>
     </div>
+
   );
 }
 

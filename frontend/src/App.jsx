@@ -12,6 +12,7 @@ import SlotsBooking from "./Patients/Elements/SlotsBooking.jsx";
 import PatientLogin from "./Pages/PatientLogin.jsx";
 import PatientRegister from "./Pages/PatientRegister.jsx";
 import MyAppointments from "./Patients/Elements/MyAppointments.jsx";
+
 import PrivateRoute from "./PrivateRoute"; 
 import PatientPage from "./Doctors/Patient";
 import PrescriptionPage from "./Doctors/prescription";
