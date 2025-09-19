@@ -20,7 +20,9 @@ class DoctorController extends Controller
                 'email' => 'required|email|unique:doctors,email',
                 'phone' => 'required|string|unique:doctors,phone',
                 'specialization' => 'required|string|max:255',
-                'password' => 'required|string|min:6'
+                'password' => 'required|string|min:6',
+                'city' => 'nullable|string|max:255',  // Making city optional
+                'clinic_address' => 'nullable|string|max:255', 
             ]);
 
             if ($validateDoctor->fails()) {
@@ -28,7 +30,7 @@ class DoctorController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateDoctor->errors()
-                ], 401);
+                ], 422); // <-- proper status code for validation errors
             }
 
             $doctor = Doctor::create([
@@ -37,12 +39,17 @@ class DoctorController extends Controller
                 'phone' => $request->phone,
                 'specialization' => $request->specialization,
                 'password' => Hash::make($request->password),
+                'city' => $request->city ?? null,  
+                'clinic_address' => $request->clinic_address ?? null               
+                'is_approved' => false, // <-- default to false
+
             ]);
 
             return response()->json([
                 'status' => true,
-                'message' => 'Doctor Registered Successfully',
-               'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
+                'message' => 'Doctor Registered Successfully. Waiting for admin approval.',
+                'token' => $doctor->createToken('doctor-token', ['doctor'])->plainTextToken,
+
             ], 200);
 
         } catch (\Throwable $th) {
@@ -52,6 +59,7 @@ class DoctorController extends Controller
             ], 500);
         }
     }
+
 
     public function login(Request $request)
     {
@@ -66,17 +74,25 @@ class DoctorController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateDoctor->errors()
-                ], 401);
+                ], 422);
             }
 
-            if (!Auth::guard('doctor')->attempt($request->only(['email', 'password']))) {
+            $doctor = Doctor::where('email', $request->email)->first();
+
+            if (!$doctor || !Auth::guard('doctor')->attempt($request->only(['email', 'password']))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password do not match our records.',
                 ], 401);
             }
 
-            $doctor = Doctor::where('email', $request->email)->first();
+            // Prevent login if not approved
+            if (!$doctor->is_approved) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Your account is pending admin approval.'
+                ], 403);
+            }
 
             return response()->json([
                 'status' => true,
@@ -91,6 +107,7 @@ class DoctorController extends Controller
             ], 500);
         }
     }
+
 
     public function logout(Request $request)
     {
@@ -111,4 +128,3 @@ class DoctorController extends Controller
     }
     
 }
-

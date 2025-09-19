@@ -35,31 +35,34 @@ export default function RescheduleAppointment() {
 
     fetchAppointment();
   }, [appointmentId, navigate]);
+ const isoDateTime = new Date(newDateTime).toISOString(); 
+const handleReschedule = async () => {
+  if (!newDateTime) {
+    setError("Please select a new date and time.");
+    return;
+  }
 
-  const handleReschedule = async () => {
-    if (!newDateTime) {
-      setError("Please select a new date and time.");
+  try {
+    const token = localStorage.getItem("patientToken");
+    if (!token) {
+      alert("Please log in first.");
+      navigate("/user/login");
       return;
     }
 
-    try {
-      const token = localStorage.getItem("patientToken");
-      if (!token) {
-        alert("Please log in first.");
-        navigate("/user/login");
-      }
+    const { data } = await axios.patch(
+      `${API_BASE}/api/user/appointments/${appointmentId}/reschedule`,
+      { starts_at: newDateTime },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-      await axios.patch(
-        `${API_BASE}/api/user/appointments/${appointmentId}/reschedule`,
-        { starts_at: newDateTime },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert("Appointment rescheduled successfully.");
-      navigate("/my/appointments"); // Redirect back to appointments list
-    } catch (err) {
-      setError("Failed to reschedule appointment.");
-    }
-  };
+    alert(data.message || "Appointment rescheduled successfully.");
+    navigate("/my/appointments");
+  } catch (err) {
+    console.error(err.response?.data);
+    setError(err.response?.data?.message || "Failed to reschedule appointment.");
+  }
+};
 
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -69,7 +72,7 @@ export default function RescheduleAppointment() {
       {error && <p className="text-red-600">{error}</p>}
 
       {appointment && (
-        <div>
+        <div className="h-auto">
           <p><strong>Doctor:</strong> {appointment.doctor.name}</p>
           <p><strong>Original Date:</strong> {new Date(appointment.starts_at).toLocaleString()}</p>
           <label className="block text-sm font-medium text-gray-700 mb-2">New Date & Time</label>

@@ -70,6 +70,34 @@ class AppointmentController extends Controller
         ], 201);
     }
 
+
+    public function day(Request $r)
+    {
+        $this->ensureDoctor($r);
+
+        // If ?date is missing, default to "today" in app timezone
+        $date = $r->query('date');
+        if (!$date) {
+            $date = now(config('app.timezone'))->toDateString();
+        }
+
+        // Normalize to a date string (handles random inputs safely)
+        $d = \Carbon\Carbon::parse($date, config('app.timezone'))->toDateString();
+
+        // Fetch every appointment that starts on that calendar date, any status
+        $items = \App\Models\Appointment::with(['patient:id,name,email'])
+            ->where('doctor_id', $r->user()->id)
+            ->whereDate('starts_at', $d)
+            ->orderBy('starts_at')
+            ->get(['id','doctor_id','patient_id','starts_at','ends_at','status','reason']);
+
+        return response()->json([
+            'status' => true,
+            'date'   => $d,
+            'count'  => $items->count(),
+            'data'   => $items,     // each item includes its current `status`
+        ]);
+    }
     /**
      * Patient cancels: HARD DELETE (only pending)
      * PATCH /api/appointments/{appointment}/cancel
@@ -211,39 +239,47 @@ class AppointmentController extends Controller
     /**
      * Doctor’s queue (default = upcoming pending+accepted)
      */
-    public function myForDoctor(Request $r)
-    {
-        $this->ensureDoctor($r);
+public function myForDoctor(Request $r)
+{
+    $this->ensureDoctor($r);
 
-        $status = $r->query('status', 'inbox'); // inbox|pending|accepted|cancelled|declined|all
-        $q = Appointment::where('doctor_id', $r->user()->id);
+    $status = $r->query('status', 'inbox'); // inbox|pending|accepted|declined|all
 
-        switch ($status) {
-            case 'pending':
-                $q->where('status','pending')->where('starts_at','>=', now());
-                break;
-            case 'accepted':
-                $q->where('status','accepted')->where('starts_at','>=', now());
-                break;
-            case 'declined':
-                $q->where('status','declined');
-                break;
-            case 'inbox': // default
-                $q->whereIn('status',['pending','accepted'])->where('starts_at','>=', now());
-                break;
-            case 'all':
-            default:
-                // no extra filters
-                break;
-        }
+    // eager-load patient details
+    $q = \App\Models\Appointment::with([
+            'patient:id,name,email'
+        ])
+        ->where('doctor_id', $r->user()->id);
 
-        return $q->orderBy('starts_at')->paginate(20)->appends(['status'=>$status]);
+    switch ($status) {
+        case 'pending':
+            $q->where('status','pending')->where('starts_at','>=', now());
+            break;
+        case 'accepted':
+            $q->where('status','accepted')->where('starts_at','>=', now());
+            break;
+        case 'declined':
+            $q->where('status','declined');
+            break;
+        case 'inbox': // default: upcoming pending + accepted
+            $q->whereIn('status',['pending','accepted'])->where('starts_at','>=', now());
+            break;
+        case 'all':
+        default:
+            // no extra filter
+            break;
     }
+
+    return $q->orderBy('starts_at')
+        ->paginate(min(max((int)$r->integer('per_page', 20), 1), 100))
+        ->appends(['status'=>$status] + $r->query());
+}
+
 
     /**
      * Patient’s history
      */
-   public function myForPatient(Request $r)
+public function myForPatient(Request $r)
 {
     $this->ensurePatient($r);
 
@@ -258,5 +294,36 @@ class AppointmentController extends Controller
         'appointments' => $appointments->items(),
     ]);
 }
+
+public function accepted(Request $r)
+{
+    $this->ensureDoctor($r);
+
+    $includePast = (bool) $r->boolean('include_past', false);
+
+    // eager-load patient details
+    $q = \App\Models\Appointment::with([
+            'patient:id,name,email' // add more columns if your users table has them (e.g., phone)
+        ])
+        ->where('doctor_id', $r->user()->id)
+        ->where('status', 'accepted');
+
+    if (!$includePast) {
+        $q->where('starts_at', '>=', now());
+    }
+
+    if ($r->filled('date')) {
+        $q->whereDate('starts_at', $r->query('date'));
+    }
+    if ($r->filled('patient_id')) {
+        $q->where('patient_id', (int)$r->query('patient_id'));
+    }
+
+    return $q->orderBy('starts_at')
+        ->paginate(min(max((int)$r->integer('per_page', 20), 1), 100))
+        ->appends($r->query());
+}
+
+
 
 }

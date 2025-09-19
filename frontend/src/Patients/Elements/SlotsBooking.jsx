@@ -55,7 +55,7 @@ export default function SlotsBooking() {
         { headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` } }
       );
       alert("Appointment booked successfully!");
-      navigate("/Patient/Dashboard"); // adjust if you have a different target
+      navigate("/user/appointments"); 
     } catch (e) {
       const status = e?.response?.status;
       if (status === 409) setError("This slot was just taken. Please pick another.");
@@ -77,11 +77,11 @@ export default function SlotsBooking() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-900">
       <div className="max-w-3xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold">Confirm Appointment</h1>
-          <Link to={`/doctors/${id}`} className="text-blue-600 hover:underline">Back to slots</Link>
+          <h1 className="text-2xl font-semibold text-white">Confirm Appointment</h1>
+          <Link to={`/doctors/${id}`} className="text-shadow-2xs hover:underline">Back to slots</Link>
         </div>
 
         <div className="bg-white rounded-2xl shadow p-5">

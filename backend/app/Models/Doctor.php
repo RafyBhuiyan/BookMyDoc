@@ -18,7 +18,9 @@ class Doctor extends Authenticatable
         'specialization',
         'password',
         'city',            // optional: used for filtering
-        'clinic_address',  // optional: display only
+        'clinic_address',
+        'is_approved',  // optional: display only
+
     ];
 
     protected $hidden = [
@@ -28,6 +30,7 @@ class Doctor extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'education_certificates' => 'array', //this ensures certificates are arrays
     ];
 
     /*
@@ -49,7 +52,6 @@ class Doctor extends Authenticatable
         return $this->hasMany(\App\Models\Prescription::class, 'doctor_id', 'id');
     }
 
-
     public function scopeSearch($query, ?string $term)
     {
         if (!$term)
@@ -63,6 +65,7 @@ class Doctor extends Authenticatable
                 ->orWhereRaw('LOWER(city) LIKE ?', ["%{$s}%"]);
         });
     }
+
 
     /**
      * Filter by exact specialization.
