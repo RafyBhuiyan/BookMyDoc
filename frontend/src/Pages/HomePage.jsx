@@ -9,14 +9,11 @@ import WhyChoose from "../Components/WhyChoose";
 
 const Homepage = () => {
   const location = useLocation();
-
-  const homeRef = useRef(null); // HeroSection top
+  const homeRef = useRef(null); 
   const howItWorksRef = useRef(null);
-
   const scrollToHome = () => {
     if (homeRef.current) homeRef.current.scrollIntoView({ behavior: "smooth" });
   };
-
   const scrollToHowItWorks = () => {
     if (howItWorksRef.current) howItWorksRef.current.scrollIntoView({ behavior: "smooth" });
   };
@@ -29,12 +26,10 @@ const Homepage = () => {
       scrollToHowItWorks();
     }
   }, [location.state]);
-
+  localStorage.removeItem("chakra-ui-color-mode");
   return (
     <Box bg="white" minH="100vh">
-   
       <Navbar scrollToHome={scrollToHome} scrollToHowItWorks={scrollToHowItWorks} />
-
       <div ref={homeRef}>
         <HeroSection />
       </div>

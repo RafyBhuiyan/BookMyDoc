@@ -22,7 +22,6 @@ const WhoCanJoin = () => {
         </VStack>
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={10}>
-          {/* Patients */}
           <Card bg="gray.700" boxShadow="xl" borderRadius="2xl" overflow="hidden" _hover={{ transform: "translateY(-6px)", transition: "0.3s" }}>
             <Box bgGradient="linear(to-r, teal.400, blue.500)" p={6}>
               <HStack spacing={3}>
@@ -49,7 +48,6 @@ const WhoCanJoin = () => {
             </CardBody>
           </Card>
 
-          {/* Doctors */}
           <Card bg="gray.700" boxShadow="xl" borderRadius="2xl" overflow="hidden" _hover={{ transform: "translateY(-6px)", transition: "0.3s" }}>
             <Box bgGradient="linear(to-r, purple.400, pink.500)" p={6}>
               <HStack spacing={3}>

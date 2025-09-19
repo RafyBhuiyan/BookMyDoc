@@ -10,10 +10,29 @@ import {
   Link as ChakraLink,
   Icon,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaHeart, FaUserMd, FaUser } from "react-icons/fa";
-
+import logo from "../assets/logo_white.png"; // Adjust the path as necessary
 const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
+  const navigate = useNavigate();
+
+  // Check if doctorToken or patientToken is present
+  const doctorToken = localStorage.getItem("doctorToken");
+  const patientToken = localStorage.getItem("patientToken");
+
+    // Determine the correct dashboard URL
+  let dashboardLink = null;
+  if (doctorToken) {
+    dashboardLink = "/doctor"; // Doctor's Dashboard
+  } else if (patientToken) {
+    dashboardLink = "/user"; // Patient's Dashboard
+  }
+
+  const handleLogout = () => {
+    localStorage.clear(); // Clear the token from localStorage
+    navigate("/"); // Redirect to the home page
+  };
+
   return (
     <Box
       bg="white"
@@ -31,25 +50,13 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
         <Flex alignItems="center" justifyContent="space-between">
           {/* Logo */}
           <HStack spacing={2}>
-            <Box
-              bg="blue.100"
-              p={2}
-              borderRadius="full"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <FaHeart color="#3182CE" size="18px" />
-            </Box>
-            <Text
-              fontSize="24px"
-              fontWeight="extrabold"
-              color="blue.600"
-              fontFamily="Poppins, sans-serif"
-              letterSpacing="tight"
-            >
-              <Link to="/">BookMyDoc</Link>
-            </Text>
+<Box as={Link} to="/" display="flex" alignItems="center">
+  <img 
+    src={logo} 
+    alt="BookMyDoc1" 
+    style={{ height: "50px", objectFit: "contain" }} 
+  />
+</Box>
           </HStack>
 
           <Spacer />
@@ -101,48 +108,99 @@ const Navbar = ({ scrollToHome, scrollToHowItWorks }) => {
 
           <Spacer />
 
-          {/* Register Buttons with Icons */}
+          {/* Conditional Render for Login/Logout */}
           <HStack spacing={4}>
-            <Button
-              as={Link}
-              to="/doctor/login"
-              colorScheme="blue"
-              size="md"
-              rounded="full"
-              fontFamily="Poppins, sans-serif"
-              fontWeight="700"
-              px={6}
-              leftIcon={<Icon as={FaUserMd} />}
-              bg="white" 
-              color="blue.600" 
-              _hover={{
-                bg: "white", 
-                transform: "scale(1.05)", 
-              }}
-              boxShadow="md" 
-            >
-              Doctor
-            </Button>
-            <Button
-              as={Link}
-              to="/Patient/Dashboard"
-              colorScheme="blue"
-              size="md"
-              rounded="full"
-              fontFamily="Poppins, sans-serif"
-              fontWeight="700"
-              px={6}
-              leftIcon={<Icon as={FaUser} />}
-              bg="blue.500" 
-              color="white" 
-              _hover={{
-                bg: "blue.600", 
-                transform: "scale(1.05)", 
-              }}
-              boxShadow="md" 
-            >
-              Patient
-            </Button>
+            {doctorToken || patientToken ? (
+              <>
+                {/* Dashboard Button - Only show if the user is logged in */}
+                {dashboardLink && (
+                  <Button
+                    as={Link}
+                    to={dashboardLink} // Navigate to the correct dashboard
+                    colorScheme="blue"
+                    size="md"
+                    rounded="full"
+                    fontFamily="Poppins, sans-serif"
+                    fontWeight="700"
+                    px={6}
+                    leftIcon={<Icon as={FaUserMd} />}
+                    bg="white"
+                    color="blue.600"
+                    _hover={{
+                      bg: "white",
+                      transform: "scale(1.05)",
+                    }}
+                    boxShadow="md"
+                  >
+                    Dashboard
+                  </Button>
+                )}
+                {/* Logout Button */}
+                <Button
+                  onClick={handleLogout} // Trigger logout
+                  colorScheme="red"
+                  size="md"
+                  rounded="full"
+                  fontFamily="Poppins, sans-serif"
+                  fontWeight="700"
+                  px={6}
+                  leftIcon={<Icon as={FaUser} />}
+                  bg="white"
+                  color="blue.600"
+                  _hover={{
+                    bg: "white",
+                    transform: "scale(1.05)",
+                  }}
+                  boxShadow="md"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              // If not logged in, show login buttons for doctor and patient
+              <>
+                <Button
+                  as={Link}
+                  to="/doctor/login"
+                  colorScheme="blue"
+                  size="md"
+                  rounded="full"
+                  fontFamily="Poppins, sans-serif"
+                  fontWeight="700"
+                  px={6}
+                  leftIcon={<Icon as={FaUserMd} />}
+                  bg="white" 
+                  color="blue.600" 
+                  _hover={{
+                    bg: "white", 
+                    transform: "scale(1.05)", 
+                  }}
+                  boxShadow="md" 
+                >
+                  Doctor
+                </Button>
+                <Button
+                  as={Link}
+                  to="/user/login"
+                  colorScheme="blue"
+                  size="md"
+                  rounded="full"
+                  fontFamily="Poppins, sans-serif"
+                  fontWeight="700"
+                  px={6}
+                  leftIcon={<Icon as={FaUser} />}
+                  bg="blue.500" 
+                  color="white" 
+                  _hover={{
+                    bg: "blue.600", 
+                    transform: "scale(1.05)", 
+                  }}
+                  boxShadow="md" 
+                >
+                  Patient
+                </Button>
+              </>
+            )}
           </HStack>
         </Flex>
       </Container>

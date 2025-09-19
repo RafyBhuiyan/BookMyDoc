@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export default function DoctorLogin() {
   const navigate = useNavigate();
@@ -22,83 +24,96 @@ export default function DoctorLogin() {
     setError("");
 
     try {
+      localStorage.removeItem("patientToken");
       const { data } = await axios.post(
         "http://127.0.0.1:8000/api/doctor/login",
         formData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
 
       if (data.status) {
+        // ✅ login success
         localStorage.setItem("doctorToken", data.token);
-        navigate("/Dashboard");
+        navigate("/doctor");
       } else {
+        // ✅ backend returned status=false
         setError(data.message || "Login failed, please try again.");
       }
     } catch (err) {
       console.error(err);
-      setError("Something went wrong. Please try again.");
+
+      if (err.response) {
+        // Backend returned a response
+        if (err.response.status === 401) {
+          setError("Account not found or wrong password."); // ❌ no account
+        } else if (err.response.status === 403) {
+          setError("Your account is not approved yet. Please wait for admin approval."); // ⏳ not approved
+        } else if (err.response.status === 422) {
+          setError("Validation failed. Please check your inputs.");
+        } else {
+          setError(err.response.data.message || "Something went wrong.");
+        }
+      } else {
+        // Network or other error
+        setError("Server unreachable. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="bg-white shadow-xl rounded-2xl p-10 w-full max-w-lg">
-        {/* Smaller title */}
-        <h1 className="text-xl font-bold text-center text-gray-800 mb-8">
-          Doctor Login
-        </h1>
 
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="shadow-input mx-auto w-full max-w-md rounded-none bg-white p-6 md:rounded-2xl md:p-8">
+        <h2 className="text-xl font-bold text-neutral-900">Doctor Login</h2>
+        <p className="mt-2 max-w-sm text-sm text-neutral-900">
+          Please enter your email and password to login.
+        </p>
+
+
+        {/* Error Alert */}
         {error && (
-          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-md mb-6 text-center font-medium">
+          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-md my-4 text-center font-medium">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+
           <div>
-            <label
-              htmlFor="email"
-              className="block text-gray-700 mb-2 font-semibold"
-            >
-              Email
-            </label>
-            <input
-              type="email"
+            <Label className ="text-black">Email</Label>
+            <Input
+              id="email"
               name="email"
+              type="email"
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
               required
+              className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
             />
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-gray-700 mb-2 font-semibold"
-            >
-              Password
-            </label>
-            <input
-              type="password"
+            <Label htmlFor="password" className="text-black">Password</Label>
+            <Input
+              id="password"
               name="password"
+              type="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
-              className="w-full h-14 px-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
               required
+              className="border border-black bg-white text-black placeholder-gray-500 focus:border-black focus:ring-0"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className={`w-full h-14 rounded-xl text-white font-semibold bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${
+            className={`w-full h-11 rounded-md text-white font-semibold bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -106,10 +121,10 @@ export default function DoctorLogin() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-500 text-sm">
-          Don't have an account?{" "}
+        <p className="mt-6 text-center text-neutral-900 text-sm">
+          Don’t have an account?{" "}
           <span
-            className="text-indigo-600 hover:underline cursor-pointer"
+            className="text-indigo-400 hover:underline cursor-pointer"
             onClick={() => navigate("/doctor/register")}
           >
             Sign up

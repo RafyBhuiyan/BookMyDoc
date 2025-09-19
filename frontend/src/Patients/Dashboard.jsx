@@ -1,121 +1,131 @@
-import * as React from 'react';
-import PermIdentityIcon from '@mui/icons-material/PermIdentity';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import { createTheme } from '@mui/material/styles';
-import DescriptionIcon from '@mui/icons-material/Description';
-import { AppProvider } from '@toolpad/core/AppProvider';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { DemoProvider, useDemoRouter } from '@toolpad/core/internal';
-import SickSharpIcon from '@mui/icons-material/SickSharp';
-import CalendarMonthSharpIcon from '@mui/icons-material/CalendarMonthSharp';
-import '../index.css'
-import Find_Doctors from './Elements/Find_Doctors';
-import Appointments from './Elements/Appointments';
-import Symptom_checker from './Elements/Symptom_checker';
-import Medical_reports from './Elements/Medical_reports';
-const demoTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: 'data-toolpad-color-scheme',
-  },
-  colorSchemes: { light: true, dark: true },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-});
+// PatientDashboard.jsx
+"use client";
+import React, { useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
+import {
+  FaUserDoctor,
+  FaCalendarPlus,
+  FaFileLines,
+  FaStethoscope,
+  FaArrowLeft,
+} from "react-icons/fa6";
+import logo_white from "@/assets/logo_white.png";
+import iconlogo from "@/assets/iconlogo.png";
 
-function DemoPageContent({ pathname }) {
-    let content;
+export default function PatientDashboard() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
-  switch (pathname) {
-    case '/doctors':
-      content = <Find_Doctors />;
-      break;
-    case '/appointments':
-      content = <Appointments />;
-      break;
-    case '/reports':
-      content = <Medical_reports />;
-      break;
-    case '/symptom_checker':
-      content = <Symptom_checker />;
-      break;
-    default:
-      content = <Find_Doctors />;
-  }
+  const handleLogout = () => {
+    localStorage.removeItem("patientToken");
+    navigate("/");
+  };
+
+  // NOTE: Logout has onClick -> treated as "action" (never active)
+  const links = [
+    { label: "Browse Doctors",  href: "/user/doctors",         icon: <FaUserDoctor className="h-5 w-5 shrink-0" /> },
+    { label: "Appointments",    href: "/user/appointments",    icon: <FaCalendarPlus className="h-5 w-5 shrink-0" /> },
+    { label: "Reports",         href: "/user/reports",         icon: <FaFileLines className="h-5 w-5 shrink-0" /> },
+    { label: "Symptom Checker", href: "/user/symptom_checker", icon: <FaStethoscope className="h-5 w-5 shrink-0" /> },
+    { label: "Logout",          href: "/", icon: <FaArrowLeft className="h-5 w-5 shrink-0" />, onClick: handleLogout },
+  ];
+
   return (
-    <Box
-      sx={{
-        py: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}
-    >
-      {content}
-    </Box>
+    <div className="min-h-dvh w-full bg-neutral-900">
+      <div className="flex h-dvh w-full overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar
+          open={open}
+          setOpen={setOpen}
+          className="h-full bg-black w-[64px] md:w-[280px] lg:w-[300px]"
+        >
+          <SidebarBody
+            className="h-full justify-between gap-10 bg-black"
+            mobileLogo={<img src={logo_white} alt="BookMyDoc" className="h-6 w-auto" />}
+          >
+            <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+              {open ? <Logo /> : <LogoIcon />}
+
+              <div className="mt-6 flex flex-col gap-1">
+                {links.map((link, idx) => {
+                  const isAction = Boolean(link.onClick);
+                  const isActive =
+                    !isAction && link.href !== "/" && location.pathname.startsWith(link.href);
+
+                  return (
+                    <SidebarLink
+                      key={idx}
+                      // Prevent navigation for actions; never mark them active
+                      link={{
+                        ...link,
+                        href: isAction ? "#" : link.href,
+                        active: isActive,
+                      }}
+                      className={cn(
+                        // entire box hover/active handled in SidebarLink component
+                        "text-neutral-200 hover:text-white"
+                      )}
+                      onClick={(e) => {
+                        if (isAction) {
+                          e.preventDefault();
+                          link.onClick?.();
+                        }
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div>
+              <SidebarLink
+                link={{
+                  label: "Patient",
+                  href: "/user/profile",
+                  icon: (
+                    <img
+                      src="https://37assets.37signals.com/svn/765-default-avatar.png"
+                      className="h-7 w-7 shrink-0 rounded-full"
+                      alt="Avatar"
+                    />
+                  ),
+                  active: location.pathname.startsWith("/user/profile"),
+                }}
+                className="text-neutral-200 hover:text-white"
+              />
+            </div>
+          </SidebarBody>
+        </Sidebar>
+
+        {/* Main */}
+        <main className="flex-1 min-w-0 overflow-auto pt-12 md:pt-0">
+          <Outlet />
+        </main>
+      </div>
+    </div>
   );
 }
 
-DemoPageContent.propTypes = {
-  pathname: PropTypes.string.isRequired,
-};
+/* Logos */
+const Logo = () => (
+  <a href="/" className="relative z-20 flex items-center space-x-2 py-1">
+    <motion.img
+      src={logo_white}
+      alt="BookMyDoc"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="h-10 w-auto"
+    />
+  </a>
+);
 
-function PatientDashboard(props) {
-  const { window } = props;
-
-  const router = useDemoRouter('/doctors');
-
-  const demoWindow = window !== undefined ? window() : undefined;
-          {/* 
-            kind: 'header',
-            title: 'Animals',
-          */}
-  return (
-    <DemoProvider window={demoWindow}>
-      <AppProvider
-        navigation={[
-
-          {
-            segment: 'doctors',
-            title: <span className="text-lg font-semibold">Find Doctors</span>,
-            icon: <PermIdentityIcon/>,
-          },
-          {
-            segment: 'appointments',
-            title:<span className="text-lg font-semibold">Appointments</span>,
-            icon: <CalendarMonthSharpIcon />,
-          },{
-            segment: 'reports',
-            title:<span className="text-lg font-semibold">Medical Reports</span>,
-            icon: <DescriptionIcon />,
-          },{
-            segment: 'symptom_checker',
-            title:<span className="text-lg font-semibold">Symptom Checker</span>,
-            icon: <SickSharpIcon />,
-          }
-        ]}
-        router={router}
-        theme={demoTheme}
-        window={demoWindow}
-        branding={{
-            title: 'Patient Dashboard',   
-             logo: <DescriptionIcon />,   
-          }}
-      >
-        <DashboardLayout  >
-          <DemoPageContent pathname={router.pathname} />
-        </DashboardLayout>
-      </AppProvider>
-    </DemoProvider>
-  );
-}
-
-export default PatientDashboard;
+const LogoIcon = () => (
+  <a href="/" className="relative z-20 flex items-center space-x-2 py-1">
+    <img src={iconlogo} alt="BMD" className="h-10" />
+  </a>
+);
