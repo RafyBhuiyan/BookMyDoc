@@ -15,7 +15,7 @@ import {
 } from "react-icons/fa6";
 import logo_white from "@/assets/logo_white.png";
 import iconlogo from "@/assets/iconlogo.png";
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "http://localhost:8000";
 export default function PatientDashboard() {
   const location = useLocation();
   const navigate = useNavigate();

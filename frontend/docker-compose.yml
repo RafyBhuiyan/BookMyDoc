@@ -1,0 +1,50 @@
+
+
+services:
+  frontend:
+    build:
+      context: ./frontend  # Path to the frontend directory
+    container_name: frontend-app
+    ports:
+      - "3000:3000"  # Expose port 3000 inside the container for Vite
+    volumes:
+      - ./frontend:/app  # Mount frontend code inside the container
+    networks:
+      - app-network
+    environment:
+      - API_URL=http://backend:8000/api  # API URL to backend service
+    depends_on:
+      - backend  # Ensure frontend waits for backend
+
+  # Backend (Laravel App)
+  backend:
+    build:
+      context: ./backend  # Path to the backend Dockerfile
+    container_name: backend-app
+    ports:
+      - "8000:8000"  # Expose backend port
+    volumes:
+      - ./backend:/var/www  # Mount backend code inside the container
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=mysql-db  # Point to MySQL container
+      - DB_DATABASE=bookmydoc3
+      - DB_USERNAME=root
+      - DB_PASSWORD=  # Optional MySQL password
+
+  # MySQL Database
+  mysql-db:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Set the root password for MySQL
+      MYSQL_DATABASE: bookmydoc3  # Database name
+    networks:
+      - app-network
+    ports:
+      - "3306:3306"  # Expose MySQL port
+
+networks:
+  app-network:
+    driver: bridge  # Create a bridge network for container communication

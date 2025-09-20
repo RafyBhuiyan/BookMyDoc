@@ -18,7 +18,7 @@ export default function DoctorLogin() {
     try {
       localStorage.removeItem("doctorToken");
       const { data } = await axios.post(
-        "http://127.0.0.1:8000/api/user/login",
+        "http://localhost:8000/api/user/login",
         formData,
         { headers: { "Content-Type": "application/json" } }
       );

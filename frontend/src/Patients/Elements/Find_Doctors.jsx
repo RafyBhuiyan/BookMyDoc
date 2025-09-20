@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ExpandableDoctorCard from "@/components/expandable-card-demo-standard";
 
-const API_BASE = import.meta?.env?.VITE_API_BASE || "http://127.0.0.1:8000";
+const API_BASE = import.meta?.env?.VITE_API_BASE || "http://localhost:8000";
 
 async function getJSON(url, params = {}) {
   const usp = new URLSearchParams();

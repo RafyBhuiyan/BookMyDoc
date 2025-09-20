@@ -38,9 +38,9 @@ class Doctor extends Authenticatable
     ];
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Relationships
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     */
     public function availabilities()
     {
@@ -51,41 +51,36 @@ class Doctor extends Authenticatable
     {
         return $this->hasMany(\App\Models\Appointment::class);
     }
-   
 
-    public function scopeSearch($query, ?string $term)
+    public function prescriptions()
     {
-        if (!$term)
-            return $query;
-
-        $s = strtolower($term);
-        return $query->where(function ($q) use ($s) {
-            $q->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"])
-                ->orWhereRaw('LOWER(email) LIKE ?', ["%{$s}%"])
-                ->orWhereRaw('LOWER(specialization) LIKE ?', ["%{$s}%"])
-                ->orWhereRaw('LOWER(city) LIKE ?', ["%{$s}%"]);
-        });
+        return $this->hasMany(\App\Models\Prescription::class, 'doctor_id');
     }
+
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Scopes
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     */
-    public function scopeApproved($q)
+
+    /** Filter by approved doctors. */
+    public function scopeApproved($query)
     {
-        return $q->where('is_approved', true);
+        return $query->where('is_approved', true);
     }
 
+    /** General search by name, email, specialization, or city. */
     public function scopeSearch($query, ?string $term)
     {
         if (!$term) return $query;
 
-        $s = mb_strtolower($term, 'UTF-8');
+        $s = mb_strtolower($term, 'UTF-8'); // UTF-8 support for multi-byte characters
 
         return $query->where(function ($q) use ($s) {
-            $q->whereRaw('LOWER(name) LIKE ?', ["{$s}%"])
-              ->orWhereRaw('LOWER(specialization) LIKE ?', ["{$s}%"])
-              ->orWhereRaw('LOWER(city) LIKE ?', ["{$s}%"]);
+            $q->whereRaw('LOWER(name) LIKE ?', ["%{$s}%"])
+              ->orWhereRaw('LOWER(email) LIKE ?', ["%{$s}%"])
+              ->orWhereRaw('LOWER(specialization) LIKE ?', ["%{$s}%"])
+              ->orWhereRaw('LOWER(city) LIKE ?', ["%{$s}%"]);
         });
     }
 
@@ -111,8 +106,4 @@ class Doctor extends Authenticatable
             $w->where('date', $date);
         });
     }
-    public function prescriptions()
-{
-    return $this->hasMany(\App\Models\Prescription::class, 'doctor_id');
-}
 }

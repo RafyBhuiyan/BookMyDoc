@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Backend (Laravel App)
+  backend:
+    build:
+      context: ./  # Path to the backend directory (Dockerfile inside /backend)
+    container_name: laravel-app
+    ports:
+      - "8000:8000"  # Expose backend port on host and container
+    volumes:
+      - ./:/var/www  # Mount the backend code inside the container for live updates
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=mysql-db  # Connect to MySQL (mysql-db service)
+      - DB_DATABASE=bookmydoc3
+      - DB_USERNAME=root
+      - DB_PASSWORD=  # Optional password if necessary
+
+  # MySQL Database
+  mysql-db:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Allow empty password for MySQL
+      MYSQL_DATABASE: bookmydoc3  # Create the required database
+    ports:
+      - "3306:3306"  # Expose MySQL port
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge  # Network configuration for container communication

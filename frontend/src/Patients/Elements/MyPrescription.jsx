@@ -11,7 +11,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, X } from "lucide-react";
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "http://localhost:8000";
 
 export default function MyPrescriptions() {
   const [appointments, setAppointments] = useState([]);

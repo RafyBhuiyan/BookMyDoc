@@ -51,7 +51,7 @@ export default function App() {
             <Route path="appointment" element={<AppointmentPage />} />
              <Route
                path="prescription/:userId/:appointmentId"
-               element={<PrescriptionForm />}
+               element={<PrescriptionForm  />}
                />
            < Route path="profile" element={<DoctorProfile/>  }/>
           </Route>
@@ -64,7 +64,6 @@ export default function App() {
             <Route path="appointments" element={<MyAppointments />} />
             <Route path="prescription" element={<MyPrescriptions />} />
             <Route path="profile" element={<Profile/>  }/>
-
           </Route>
         
 

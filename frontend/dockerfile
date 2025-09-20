@@ -1,0 +1,21 @@
+# Set base image for Node.js React environment
+FROM node:20.13.1
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copy the rest of the application files
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Expose the port React will run on
+EXPOSE 3000
+
+# Start the application
+CMD ["npm", "start"]

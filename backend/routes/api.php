@@ -96,10 +96,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/doctor/availabilities',                  [AvailabilityController::class, 'store']);
     Route::delete('/doctor/availabilities/{availability}', [AvailabilityController::class, 'destroy']);
 
-    // Message (dup kept as you had it)
-    Route::post('/message', [MessageController::class, 'store']);
-    Route::get('/message',  [MessageController::class, 'index']);
-
     // Appointments
     Route::patch('/doctor/appointments/{appointment}/accept',   [AppointmentController::class, 'accept']);
     Route::patch('/doctor/appointments/{appointment}/decline',  [AppointmentController::class, 'decline']);

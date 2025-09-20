@@ -1,0 +1,57 @@
+
+services:
+  # Backend (Laravel App)
+  backend:
+    build:
+      context: ./  # Path to the backend directory (Dockerfile inside /backend)
+    container_name: laravel-app
+    ports:
+      - "8000:8000"  # Expose backend port on host and container
+    volumes:
+      - ./backend:/var/www  # Mount the backend code inside the container for live updates
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=mysql-db  # Connect to MySQL (mysql-db service)
+      - DB_DATABASE=bookmydoc3  # Database name
+      - DB_USERNAME=root  # Database user
+      - DB_PASSWORD=  # Optional password (leave empty if not needed)
+    depends_on:
+      - mysql-db  # Ensure MySQL is ready before starting the backend
+
+  # Frontend (React App)
+  frontend:
+    build:
+      context: ./frontend  # Path to the frontend directory (Dockerfile inside /frontend)
+    container_name: react-app
+    ports:
+      - "3000:3000"  # Expose frontend port on host and container
+    volumes:
+      - ./frontend:/app  # Mount the frontend code inside the container for live updates
+    networks:
+      - app-network
+    depends_on:
+      - backend  # Ensure backend is ready before starting the frontend
+
+  # MySQL Database
+  mysql-db:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Set root password for MySQL (adjust as necessary)
+      MYSQL_DATABASE: bookmydoc3  # Create the required database
+    ports:
+      - "3306:3306"  # Expose MySQL port
+    volumes:
+      - mysql-data:/var/lib/mysql  # Persist MySQL data across container restarts
+    networks:
+      - app-network
+
+# Define volumes to persist data
+volumes:
+  mysql-data:
+
+# Define networks for communication between services
+networks:
+  app-network:
+    driver: bridge

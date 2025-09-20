@@ -94,30 +94,34 @@ export default function Contact() {
               }}
               validationSchema={validationSchema}
               onSubmit={async (values, actions) => {
-                try {
-                  const response = await fetch("http://127.0.0.1:8000/api/message", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      name: values.name,
-                      email: values.email,
-                      user_type: values.userType,
-                      subject: values.subject,
-                      message: values.message,
-                    }),
-                  });
+                 try {
+    // Prepare the message data to be sent to the API
+    const response = await fetch("http://localhost:8000/api/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: values.name,
+        email: values.email,
+        user_type: values.userType,
+        subject: values.subject,
+        message: values.message,
+      }),
+    });
 
-                  const data = await response.json();
+    const data = await response.json(); // Parse the response JSON
 
-                  if (response.ok) {
-                    actions.resetForm();
-                    alert("✅ Message sent! We will get back to you soon.");
-                  } else {
-                    alert("❌ " + (data.message || "Failed to send message."));
-                  }
-                } catch {
-                  alert("❌ Network error. Please try again.");
-                }
+    if (response.ok) {
+      // If message was successfully sent
+      actions.resetForm(); // Reset the form
+      alert("✅ Message sent! We will get back to you soon.");
+    } else {
+      // Handle the error if the response is not OK
+      setError(data.message || "Failed to send message.");
+    }
+  } catch (error) {
+    // Catch any network or server errors
+    setError("❌ Network error. Please try again.");
+  }
               }}
             >
               {({ errors, touched }) => (

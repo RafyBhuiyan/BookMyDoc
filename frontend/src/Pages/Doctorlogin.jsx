@@ -17,50 +17,52 @@ export default function DoctorLogin() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  try {
+    localStorage.removeItem("patientToken"); // Ensure you're not mixing patient token with doctor token
+    const { data } = await axios.post(
+      "http://localhost:8000/api/doctor/login",
+      formData,
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-    try {
-      localStorage.removeItem("patientToken");
-      const { data } = await axios.post(
-        "http://127.0.0.1:8000/api/doctor/login",
-        formData,
-        { headers: { "Content-Type": "application/json" } }
-      );
+    console.log("Login Response:", data); // Log to check the structure
 
-      if (data.status) {
-        // ✅ login success
+    if (data.status) {
+      // Check if token exists
+      if (data && data.token) {
         localStorage.setItem("doctorToken", data.token);
         navigate("/doctor");
       } else {
-        // ✅ backend returned status=false
-        setError(data.message || "Login failed, please try again.");
+        setError("Login failed. Token not received.");
       }
-    } catch (err) {
-      console.error(err);
-
-      if (err.response) {
-        // Backend returned a response
-        if (err.response.status === 401) {
-          setError("Account not found or wrong password."); // ❌ no account
-        } else if (err.response.status === 403) {
-          setError("Your account is not approved yet. Please wait for admin approval."); // ⏳ not approved
-        } else if (err.response.status === 422) {
-          setError("Validation failed. Please check your inputs.");
-        } else {
-          setError(err.response.data.message || "Something went wrong.");
-        }
-      } else {
-        // Network or other error
-        setError("Server unreachable. Please try again later.");
-      }
-    } finally {
-      setLoading(false);
+    } else {
+      setError(data.message || "Login failed, please try again.");
     }
-  };
+  } catch (err) {
+    console.error(err);
+
+    if (err.response) {
+      if (err.response.status === 401) {
+        setError("Account not found or wrong password.");
+      } else if (err.response.status === 403) {
+        setError("Your account is not approved yet. Please wait for admin approval.");
+      } else if (err.response.status === 422) {
+        setError("Validation failed. Please check your inputs.");
+      } else {
+        setError(err.response.data.message || "Something went wrong.");
+      }
+    } else {
+      setError("Server unreachable. Please try again later.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
 

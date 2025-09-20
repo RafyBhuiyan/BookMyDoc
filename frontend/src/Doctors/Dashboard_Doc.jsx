@@ -8,7 +8,7 @@ import { FaUserInjured, FaPrescriptionBottle, FaClock, FaArrowLeft } from "react
 import logo_white from "@/assets/logo_white.png";
 import iconlogo from "@/assets/iconlogo.png";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "http://localhost:8000";
 
 export default function DoctorDashboard() {
   const location = useLocation();

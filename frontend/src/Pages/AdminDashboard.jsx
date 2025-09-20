@@ -17,8 +17,8 @@ export default function AdminDashboard() {
     try {
       const url =
         type === "pending"
-          ? "http://127.0.0.1:8000/api/admin/pending-doctors"
-          : "http://127.0.0.1:8000/api/admin/approved-doctors";
+          ? "http://localhost:8000/api/admin/pending-doctors"
+          : "http://localhost:8000/api/admin/approved-doctors";
 
       const { data } = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   const approveDoctor = async (id) => {
     try {
       const { data } = await axios.post(
-        `http://127.0.0.1:8000/api/admin/approve-doctor/${id}`,
+        `http://localhost:8000/api/admin/approve-doctor/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -65,7 +65,7 @@ export default function AdminDashboard() {
   const logout = async () => {
     try {
       await axios.post(
-        "http://127.0.0.1:8000/api/admin/logout",
+        "http://localhost:8000/api/admin/logout",
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

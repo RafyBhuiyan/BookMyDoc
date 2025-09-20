@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import AvailabilityManager from "./AvailabilityManager";
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "http://localhost:8000";
 
 const PatientPage = () => {
   const [appointments, setAppointments] = useState([]);
@@ -119,7 +119,7 @@ const PatientPage = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="bg-gray-700 border border-gray-600">
                           <DropdownMenuItem className="text-gray-200 font-semibold">
-                            Profile
+                            Profile 
                           </DropdownMenuItem>
                              <DropdownMenuItem
                              className="text-gray-200 font-semibold cursor-pointer hover:bg-black"

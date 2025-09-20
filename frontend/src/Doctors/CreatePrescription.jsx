@@ -1,5 +1,6 @@
 // src/pages/PrescriptionForm.jsx
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import {
@@ -15,11 +16,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-const API_BASE = "http://127.0.0.1:8000/api"; // change if needed
+const API_BASE = "http://localhost:8000/api"; // change if needed
 
 export default function PrescriptionForm() {
   const { userId, appointmentId } = useParams();
-
+  const navigate=useNavigate();
   const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
   const [formData, setFormData] = useState({
