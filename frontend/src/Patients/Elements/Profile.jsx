@@ -1,14 +1,9 @@
 // src/Patients/Profile.jsx
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import apiClient from "@/apiClient"; // We will use the centralized client
 
-const API_BASE = "http://localhost:8000";
-const authHeaders = () => {
-  const token = localStorage.getItem("patientToken");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
+// List of constant options for dropdowns
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["male", "female", "other", "prefer_not_to_say"];
 
@@ -32,15 +27,14 @@ export default function Profile() {
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
-  // Load profile
+  // Load profile data when the component mounts
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
         setError("");
-        const { data } = await axios.get(`${API_BASE}/api/user/profile`, {
-          headers: authHeaders(),
-        });
+        // apiClient automatically adds the auth token, so no headers are needed here
+        const { data } = await apiClient.get(`/user/profile`);
         const p = data?.profile || {};
         setForm((f) => ({
           ...f,
@@ -73,7 +67,7 @@ export default function Profile() {
     setError("");
     setSaving(true);
     try {
-      // Only send fields the backend accepts (exclude email)
+      // Prepare the data payload, excluding empty fields
       const payload = {
         name: form.name || undefined,
         phone: form.phone || undefined,
@@ -84,9 +78,9 @@ export default function Profile() {
         blood_group: form.blood_group || undefined,
         emergency_contact: form.emergency_contact || undefined,
       };
-      const { data } = await axios.put(`${API_BASE}/api/user/profile`, payload, {
-        headers: { "Content-Type": "application/json", ...authHeaders() },
-      });
+      
+      // apiClient automatically adds auth and content-type headers for a PUT request
+      const { data } = await apiClient.put(`/user/profile`, payload);
       setSuccess(data?.message || "Profile updated successfully");
     } catch (e) {
       setError(e?.response?.data?.message || "Failed to update profile");
@@ -98,7 +92,6 @@ export default function Profile() {
   return (
     <div className="min-h-dvh w-full bg-neutral-950 text-neutral-100">
       <div className="max-w-4xl mx-auto p-4 md:p-6">
-        {/* Heading */}
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold">My Profile</h1>
@@ -106,13 +99,11 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Card */}
         <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4 md:p-6">
           {loading ? (
             <p className="text-neutral-300">Loading…</p>
           ) : (
             <form onSubmit={onSubmit} className="space-y-5">
-              {/* Top grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Name */}
                 <div>

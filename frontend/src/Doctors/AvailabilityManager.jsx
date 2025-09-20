@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import apiClient from "../apiClient";
 import {
   Sheet,
   SheetTrigger,
@@ -23,8 +23,7 @@ import {
 import { Label } from "@radix-ui/react-label";
 import { Trash2, Plus } from "lucide-react";
 
-const API_BASE = "http://localhost:8000";
-
+// Token helper
 const authHeaders = () => {
   const token = localStorage.getItem("doctorToken");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -34,29 +33,29 @@ export default function AvailabilityManager() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [errorDialog, setErrorDialog] = useState(""); // instead of plain error
-  const [confirmId, setConfirmId] = useState(null); // for delete confirm
+  const [errorDialog, setErrorDialog] = useState("");
+  const [confirmId, setConfirmId] = useState(null);
+
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const tomorrow = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
     return d.toISOString().slice(0, 10);
   }, []);
+
   const [date, setDate] = useState(tomorrow);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
   const [slotMinutes, setSlotMinutes] = useState(30);
 
+  // Load availability list
   const load = async () => {
     try {
       setLoading(true);
       setErrorDialog("");
-      const { data } = await axios.get(
-        `${API_BASE}/api/doctor/availabilities`,
-        {
-          headers: authHeaders(),
-        }
-      );
+      const { data } = await apiClient.get(`/doctor/availabilities`, {
+        headers: authHeaders(),
+      });
       setItems(Array.isArray(data) ? data : []);
     } catch (e) {
       setErrorDialog(
@@ -71,6 +70,7 @@ export default function AvailabilityManager() {
     load();
   }, []);
 
+  // Create new availability
   const createAvailability = async (e) => {
     e.preventDefault();
     setErrorDialog("");
@@ -103,8 +103,8 @@ export default function AvailabilityManager() {
         end_time: endTime,
         ...(slotMinutes ? { slot_minutes: Number(slotMinutes) } : {}),
       };
-      const { data } = await axios.post(
-        `${API_BASE}/api/doctor/availabilities`,
+      const { data } = await apiClient.post(
+        `/doctor/availabilities`,
         payload,
         {
           headers: { "Content-Type": "application/json", ...authHeaders() },
@@ -124,6 +124,7 @@ export default function AvailabilityManager() {
     closeBtn?.click();
   };
 
+  // Ask for delete confirmation
   const remove = async (id) => {
     setConfirmId(id);
   };
@@ -131,7 +132,6 @@ export default function AvailabilityManager() {
   return (
     <div className="w-full px-4 md:px-6 lg:px-8 py-4 text-neutral-100">
       <div className="mb-4 flex items-center gap-2">
-        <h1 className="text-xl font-semibold"></h1>
         <Sheet>
           <SheetTrigger asChild>
             <button
@@ -215,6 +215,8 @@ export default function AvailabilityManager() {
                   </SheetFooter>
                 </div>
               </form>
+
+              {/* Availability list */}
               <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-3">
                 {loading ? (
                   <p className="text-neutral-300">Loading…</p>
@@ -287,13 +289,10 @@ export default function AvailabilityManager() {
               onClick={async () => {
                 try {
                   setBusy(true);
-                  await axios.delete(
-                    `${API_BASE}/api/doctor/availabilities/${confirmId}`,
-                    { headers: authHeaders() }
-                  );
-                  setItems((prev) =>
-                    prev.filter((x) => x.id !== confirmId)
-                  );
+                  await apiClient.delete(`/doctor/availabilities/${confirmId}`, {
+                    headers: authHeaders(),
+                  });
+                  setItems((prev) => prev.filter((x) => x.id !== confirmId));
                 } catch (e) {
                   setErrorDialog(
                     e?.response?.data?.message || "Failed to delete"

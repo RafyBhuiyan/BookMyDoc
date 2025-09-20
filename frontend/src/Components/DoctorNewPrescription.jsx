@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import apiClient from "../../apiClient";
 
 export default function DoctorNewPrescription() {
   const [patientId, setPatientId] = useState('');
@@ -35,7 +35,7 @@ export default function DoctorNewPrescription() {
         refill_count: 0,
         is_private: true,
       };
-      const res = await axios.post('/api/prescriptions', payload);
+      const res = await apiClient.post('/api/prescriptions', payload);
       const created = res.data;
       window.open(`/api/prescriptions/${created.p_id}/pdf`, '_blank');
     } catch (err) {

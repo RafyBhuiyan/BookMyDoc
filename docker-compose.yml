@@ -1,57 +1,55 @@
+version: '3.8'
 
 services:
-  # Backend (Laravel App)
-  backend:
+  # Laravel App Service (PHP)
+  app:
     build:
-      context: ./  # Path to the backend directory (Dockerfile inside /backend)
-    container_name: laravel-app
-    ports:
-      - "8000:8000"  # Expose backend port on host and container
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: laravel_app
+    restart: unless-stopped
     volumes:
-      - ./backend:/var/www  # Mount the backend code inside the container for live updates
+      - ./backend:/var/www # Sync local backend code with container
     networks:
       - app-network
+
+  # MySQL Database Service
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
     environment:
-      - DB_HOST=mysql-db  # Connect to MySQL (mysql-db service)
-      - DB_DATABASE=bookmydoc3  # Database name
-      - DB_USERNAME=root  # Database user
-      - DB_PASSWORD=  # Optional password (leave empty if not needed)
-    depends_on:
-      - mysql-db  # Ensure MySQL is ready before starting the backend
-
-  # Frontend (React App)
-  frontend:
-    build:
-      context: ./frontend  # Path to the frontend directory (Dockerfile inside /frontend)
-    container_name: react-app
-    ports:
-      - "3000:3000"  # Expose frontend port on host and container
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_USER: ${DB_USERNAME}
     volumes:
-      - ./frontend:/app  # Mount the frontend code inside the container for live updates
-    networks:
-      - app-network
-    depends_on:
-      - backend  # Ensure backend is ready before starting the frontend
-
-  # MySQL Database
-  mysql-db:
-    image: mysql:5.7
-    container_name: mysql-db
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Set root password for MySQL (adjust as necessary)
-      MYSQL_DATABASE: bookmydoc3  # Create the required database
-    ports:
-      - "3306:3306"  # Expose MySQL port
-    volumes:
-      - mysql-data:/var/lib/mysql  # Persist MySQL data across container restarts
+      - db-data:/var/lib/mysql
     networks:
       - app-network
 
-# Define volumes to persist data
-volumes:
-  mysql-data:
+  # Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_server
+    restart: unless-stopped
+    ports:
+      - "80:80" # Map host port 80 to container port 80
+    volumes:
+      - ./frontend:/var/www/frontend # Sync local frontend code
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+      - db
+    networks:
+      - app-network
 
-# Define networks for communication between services
+# Define the network
 networks:
   app-network:
     driver: bridge
+
+# Define the volume for persistent DB data
+volumes:
+  db-data:
+    driver: local

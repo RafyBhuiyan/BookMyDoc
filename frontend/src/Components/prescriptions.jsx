@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import apiClient from "../../apiClient";
 
 function Medical_reports({ user }) {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -7,7 +7,7 @@ function Medical_reports({ user }) {
 
   useEffect(() => {
     if (!userId) return;
-    axios
+    apiClient
       .get(`/api/users/${userId}/prescriptions`, { withCredentials: true })
       .then((res) => setPrescriptions(res.data.prescriptions?.data ?? []))
       .catch((err) => console.error(err));

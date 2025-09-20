@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import apiClient from "../apiClient";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -37,8 +37,8 @@ const PatientPage = () => {
           return;
         }
 
-        const { data } = await axios.get(
-          `${API_BASE}/api/doctor/appointments/accepted`,
+        const { data } = await apiClient.get(
+          `/doctor/appointments/accepted`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

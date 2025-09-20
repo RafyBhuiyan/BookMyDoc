@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import apiClient from "../apiClient";
 import {
   Table,
   TableBody,
@@ -27,7 +27,7 @@ const Prescription = () => {
       return;
     }
 
-    const url = `${API_BASE}/api/prescriptions/${prescriptionId}/pdf`;
+    const url = `/api/prescriptions/${prescriptionId}/pdf`;
 
     // Fetch the PDF file
     fetch(url, {
@@ -71,7 +71,7 @@ const Prescription = () => {
           return;
         }
 
-        const { data } = await axios.get(`${API_BASE}/api/doctor/prescriptions`, {
+        const { data } = await apiClient.get(`/doctor/prescriptions`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

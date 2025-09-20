@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import axios from "axios";
+// Correct path: Go up one level from 'Doctors' to 'src'
+import apiClient from "../apiClient";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -30,7 +31,6 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-const API_BASE = "http://localhost:8000";
 
 const AppointmentPage = () => {
   const [appointments, setAppointments] = useState([]);
@@ -50,8 +50,8 @@ const AppointmentPage = () => {
         return;
       }
 
-      const { data } = await axios.get(
-        `${API_BASE}/api/doctor/appointments?status=pending`,
+      const { data } = await apiClient.get(
+        `/doctor/appointments?status=pending`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -77,8 +77,8 @@ const AppointmentPage = () => {
     setBusyIds((prev) => [...prev, id]);
     try {
       const token = localStorage.getItem("doctorToken");
-      await axios.patch(
-        `${API_BASE}/api/doctor/appointments/${id}/accept`,
+      await apiClient.patch(
+        `/doctor/appointments/${id}/accept`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -95,8 +95,8 @@ const AppointmentPage = () => {
     setBusyIds((prev) => [...prev, id]);
     try {
       const token = localStorage.getItem("doctorToken");
-      await axios.patch(
-        `${API_BASE}/api/doctor/appointments/${id}/decline`,
+      await apiClient.patch(
+        `/doctor/appointments/${id}/decline`,
         { reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

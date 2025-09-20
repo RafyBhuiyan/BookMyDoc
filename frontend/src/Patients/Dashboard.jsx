@@ -27,7 +27,7 @@ export default function PatientDashboard() {
     if (!token) return;
     (async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/user/profile`, {
+        const res = await fetch(`/api/user/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json().catch(() => ({}));

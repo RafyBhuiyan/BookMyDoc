@@ -1,8 +1,9 @@
+import apiClient from "@/apiClient";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 
-const API_BASE = "http://localhost:8000";
+
+//const API_BASE = "http://localhost:8000";
 
 export default function RescheduleAppointment() {
   const { appointmentId } = useParams();
@@ -22,7 +23,7 @@ export default function RescheduleAppointment() {
           alert("Please log in first.");
           navigate("/user/login");
         }
-        const { data } = await axios.get(`${API_BASE}/api/user/appointments/${appointmentId}`, {
+        const { data } = await apiClient.get(`/user/appointments/${appointmentId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAppointment(data.data);
@@ -50,8 +51,8 @@ const handleReschedule = async () => {
       return;
     }
 
-    const { data } = await axios.patch(
-      `${API_BASE}/api/user/appointments/${appointmentId}/reschedule`,
+    const { data } = await apiClient.patch(
+      `/user/appointments/${appointmentId}/reschedule`,
       { starts_at: newDateTime },
       { headers: { Authorization: `Bearer ${token}` } }
     );

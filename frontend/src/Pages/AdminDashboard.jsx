@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../apiClient";
 
 export default function AdminDashboard() {
   const [pendingDoctors, setPendingDoctors] = useState([]);
@@ -17,10 +17,10 @@ export default function AdminDashboard() {
     try {
       const url =
         type === "pending"
-          ? "http://localhost:8000/api/admin/pending-doctors"
-          : "http://localhost:8000/api/admin/approved-doctors";
+          ? "/admin/pending-doctors"
+          : "/admin/approved-doctors";
 
-      const { data } = await axios.get(url, {
+      const { data } = await apiClient.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -45,8 +45,8 @@ export default function AdminDashboard() {
 
   const approveDoctor = async (id) => {
     try {
-      const { data } = await axios.post(
-        `http://localhost:8000/api/admin/approve-doctor/${id}`,
+      const { data } = await apiClient.post(
+        `/admin/approve-doctor/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -64,8 +64,8 @@ export default function AdminDashboard() {
 
   const logout = async () => {
     try {
-      await axios.post(
-        "http://localhost:8000/api/admin/logout",
+      await apiClient.post(
+        "/admin/logout",
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

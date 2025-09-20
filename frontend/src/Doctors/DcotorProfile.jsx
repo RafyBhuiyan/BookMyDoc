@@ -1,7 +1,7 @@
 // src/Doctors/DoctorProfile.jsx
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import apiClient from "../apiClient";
 
 const API_BASE = "http://localhost:8000";
 const authHeaders = () => {
@@ -36,7 +36,7 @@ export default function DoctorProfile() {
       try {
         setLoading(true);
         setError("");
-        const { data } = await axios.get(`${API_BASE}/api/doctor/profile`, {
+        const { data } = await apiClient.get(`/doctor/profile`, {
           headers: authHeaders(),
         });
         const d = data?.data || {};
@@ -86,7 +86,7 @@ const onSubmit = async (e) => {
       bio: form.bio || undefined,
     };
 
-    const { data } = await axios.put(`${API_BASE}/api/doctor/profile`, payload, {
+    const { data } = await apiClient.put(`/doctor/profile`, payload, {
       headers: { "Content-Type": "application/json", ...authHeaders() },
     });
 
