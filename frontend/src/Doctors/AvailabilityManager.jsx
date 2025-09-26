@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import apiClient from "../apiClient";
+import axios from "axios";
 import {
   Sheet,
   SheetTrigger,
@@ -53,7 +53,7 @@ export default function AvailabilityManager() {
     try {
       setLoading(true);
       setErrorDialog("");
-      const { data } = await apiClient.get(`/doctor/availabilities`, {
+      const { data } = await axios.get(`http://localhost:8000/api/doctor/availabilities`, {
         headers: authHeaders(),
       });
       setItems(Array.isArray(data) ? data : []);
@@ -103,8 +103,8 @@ export default function AvailabilityManager() {
         end_time: endTime,
         ...(slotMinutes ? { slot_minutes: Number(slotMinutes) } : {}),
       };
-      const { data } = await apiClient.post(
-        `/doctor/availabilities`,
+      const { data } = await axios.post(
+        `http://localhost:8000/api/doctor/availabilities`,
         payload,
         {
           headers: { "Content-Type": "application/json", ...authHeaders() },
@@ -289,7 +289,7 @@ export default function AvailabilityManager() {
               onClick={async () => {
                 try {
                   setBusy(true);
-                  await apiClient.delete(`/doctor/availabilities/${confirmId}`, {
+                  await axios.delete(`/doctor/availabilities/${confirmId}`, {
                     headers: authHeaders(),
                   });
                   setItems((prev) => prev.filter((x) => x.id !== confirmId));

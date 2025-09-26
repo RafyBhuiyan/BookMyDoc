@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import apiClient from "../apiClient";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import AvailabilityManager from "./AvailabilityManager";
-const API_BASE = "http://localhost:8000";
+
 
 const PatientPage = () => {
   const [appointments, setAppointments] = useState([]);
@@ -37,8 +37,8 @@ const PatientPage = () => {
           return;
         }
 
-        const { data } = await apiClient.get(
-          `/doctor/appointments/accepted`,
+        const { data } = await axios.get(
+          `http://localhost:8000/api/doctor/appointments/accepted`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

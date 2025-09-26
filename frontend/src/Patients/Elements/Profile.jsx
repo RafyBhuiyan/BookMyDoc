@@ -1,9 +1,9 @@
 // src/Patients/Profile.jsx
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import apiClient from "@/apiClient"; // We will use the centralized client
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-// List of constant options for dropdowns
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["male", "female", "other", "prefer_not_to_say"];
 
@@ -12,7 +12,6 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -22,19 +21,30 @@ export default function Profile() {
     city: "",
     blood_group: "",
     emergency_contact: "",
-    email: "", // read-only display
+    email: "",
   });
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const navigate = useNavigate();
 
-  // Load profile data when the component mounts
+  // ✅ Load profile only if token exists
   useEffect(() => {
+    const token = localStorage.getItem("patientToken");
+    if (!token) {
+      navigate("/"); // redirect to home if no token
+      return;
+    }
+
     (async () => {
       try {
         setLoading(true);
         setError("");
-        // apiClient automatically adds the auth token, so no headers are needed here
-        const { data } = await apiClient.get(`/user/profile`);
+        const { data } = await axios.get(
+          "http://localhost:8000/api/user/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const p = data?.profile || {};
         setForm((f) => ({
           ...f,
@@ -49,25 +59,37 @@ export default function Profile() {
           email: p.email ?? "",
         }));
       } catch (e) {
-        setError(e?.response?.data?.message || "Failed to load profile");
+        if (e.response?.status === 401) {
+          localStorage.removeItem("patientToken");
+          navigate("/");
+        } else {
+          setError(e?.response?.data?.message || "Failed to load profile");
+        }
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [navigate]);
 
   const onChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
 
+  // ✅ Save changes
   const onSubmit = async (e) => {
     e.preventDefault();
     setSuccess("");
     setError("");
     setSaving(true);
+
+    const token = localStorage.getItem("patientToken");
+    if (!token) {
+      navigate("/user/login");
+      return;
+    }
+
     try {
-      // Prepare the data payload, excluding empty fields
       const payload = {
         name: form.name || undefined,
         phone: form.phone || undefined,
@@ -78,12 +100,26 @@ export default function Profile() {
         blood_group: form.blood_group || undefined,
         emergency_contact: form.emergency_contact || undefined,
       };
-      
-      // apiClient automatically adds auth and content-type headers for a PUT request
-      const { data } = await apiClient.put(`/user/profile`, payload);
+
+      const { data } = await axios.put(
+        "http://localhost:8000/api/user/profile",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       setSuccess(data?.message || "Profile updated successfully");
     } catch (e) {
-      setError(e?.response?.data?.message || "Failed to update profile");
+      if (e.response?.status === 401) {
+        localStorage.removeItem("patientToken");
+        navigate("/");
+      } else {
+        setError(e?.response?.data?.message || "Failed to update profile");
+      }
     } finally {
       setSaving(false);
     }
@@ -95,7 +131,9 @@ export default function Profile() {
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold">My Profile</h1>
-            <p className="text-sm text-neutral-400">Update your personal information</p>
+            <p className="text-sm text-neutral-400">
+              Update your personal information
+            </p>
           </div>
         </div>
 
@@ -107,7 +145,9 @@ export default function Profile() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Full name</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    Full name
+                  </label>
                   <input
                     name="name"
                     value={form.name}
@@ -119,7 +159,9 @@ export default function Profile() {
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Phone</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    Phone
+                  </label>
                   <input
                     name="phone"
                     value={form.phone}
@@ -129,9 +171,11 @@ export default function Profile() {
                   />
                 </div>
 
-                {/* Email (read-only) */}
+                {/* Email */}
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Email</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    Email
+                  </label>
                   <input
                     value={form.email}
                     disabled
@@ -141,7 +185,9 @@ export default function Profile() {
 
                 {/* DOB */}
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Date of birth</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    Date of birth
+                  </label>
                   <input
                     type="date"
                     name="date_of_birth"
@@ -154,7 +200,9 @@ export default function Profile() {
 
                 {/* Gender */}
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Gender</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    Gender
+                  </label>
                   <select
                     name="gender"
                     value={form.gender || ""}
@@ -172,7 +220,9 @@ export default function Profile() {
 
                 {/* Blood group */}
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Blood group</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    Blood group
+                  </label>
                   <select
                     name="blood_group"
                     value={form.blood_group || ""}
@@ -190,7 +240,9 @@ export default function Profile() {
 
                 {/* City */}
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">City</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    City
+                  </label>
                   <input
                     name="city"
                     value={form.city}
@@ -202,7 +254,9 @@ export default function Profile() {
 
                 {/* Emergency contact */}
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Emergency contact</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    Emergency contact
+                  </label>
                   <input
                     name="emergency_contact"
                     value={form.emergency_contact}
@@ -212,9 +266,11 @@ export default function Profile() {
                   />
                 </div>
 
-                {/* Address (full width on md) */}
+                {/* Address */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm text-neutral-300 mb-1">Address</label>
+                  <label className="block text-sm text-neutral-300 mb-1">
+                    Address
+                  </label>
                   <textarea
                     name="address"
                     value={form.address}
@@ -226,11 +282,9 @@ export default function Profile() {
                 </div>
               </div>
 
-              {/* Status messages */}
               {error && <p className="text-red-400 text-sm">{error}</p>}
               {success && <p className="text-emerald-400 text-sm">{success}</p>}
 
-              {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <button
                   type="button"

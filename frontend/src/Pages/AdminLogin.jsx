@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../apiClient";
+import axios from "axios";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -22,8 +22,8 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      const { data } = await apiClient.post(
-        "/admin/login",
+      const { data } = await axios.post(
+        "http://localhost:8000/api/admin/login",
         formData,
         {
           headers: { "Content-Type": "application/json" },

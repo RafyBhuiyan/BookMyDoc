@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import apiClient from "@/apiClient";
-
+import axios from 'axios';
 export default function DoctorLogin() {
   const navigate = useNavigate();
 
@@ -25,8 +24,8 @@ const handleSubmit = async (e) => {
 
   try {
     localStorage.removeItem("patientToken"); // Ensure you're not mixing patient token with doctor token
-    const { data } = await apiClient.post(
-      "/doctor/login",
+    const { data } = await axios.post(
+      "http://localhost:8000/api/doctor/login",
       formData,
       { headers: { "Content-Type": "application/json" } }
     );

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useMemo } from "react";
-// Correct path: Go up one level from 'Doctors' to 'src'
-import apiClient from "../apiClient";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -50,8 +49,8 @@ const AppointmentPage = () => {
         return;
       }
 
-      const { data } = await apiClient.get(
-        `/doctor/appointments?status=pending`,
+      const { data } = await axios.get(
+        `http://localhost:8000/api/doctor/appointments?status=pending`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -77,8 +76,8 @@ const AppointmentPage = () => {
     setBusyIds((prev) => [...prev, id]);
     try {
       const token = localStorage.getItem("doctorToken");
-      await apiClient.patch(
-        `/doctor/appointments/${id}/accept`,
+      await axios.patch(
+        `http://localhost:8000/api/doctor/appointments/${id}/accept`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -95,8 +94,8 @@ const AppointmentPage = () => {
     setBusyIds((prev) => [...prev, id]);
     try {
       const token = localStorage.getItem("doctorToken");
-      await apiClient.patch(
-        `/doctor/appointments/${id}/decline`,
+      await axios.patch(
+        `http://localhost:8000/api/doctor/appointments/${id}/decline`,
         { reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

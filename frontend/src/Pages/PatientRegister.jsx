@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
-import apiClient from "@/apiClient";
 
 
 export default function PatientRegister() {
@@ -30,8 +30,8 @@ export default function PatientRegister() {
     }
 
     try {
-      const { data } = await apiClient.post(
-        `/user/register`,
+      const { data } = await axios.post(
+        `http://localhost:8000/api/user/register`,
         formData,
         { headers: { "Content-Type": "application/json" } }
       );

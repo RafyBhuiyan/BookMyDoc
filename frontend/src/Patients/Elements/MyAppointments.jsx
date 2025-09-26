@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import apiClient from "../../apiClient";
+import axios from "axios";
 
 
 
@@ -39,7 +39,7 @@ export default function MyAppointmentsTable() {
           navigate("/user/login");
           return;
         }
-        const { data } = await apiClient.get(`/my/appointments`, {
+        const { data } = await axios.get(`http://localhost:8000/api/my/appointments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (Array.isArray(data.appointments)) {
@@ -82,8 +82,8 @@ export default function MyAppointmentsTable() {
     if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
     try {
       const token = localStorage.getItem("patientToken");
-      await apiClient.patch(
-        `/user/appointments/${appointmentId}/cancel`,
+      await axios.patch(
+        `http://localhost:8000/api/user/appointments/${appointmentId}/cancel`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -116,8 +116,8 @@ export default function MyAppointmentsTable() {
       // Ensure that the `newDateTime` is in the correct format before sending
       const formattedDate = new Date(newDateTime).toISOString(); // Converts to ISO 8601 format
 
-      const response = await apiClient.patch(
-        `/user/appointments/${selectedAppointment}/reschedule`,
+      const response = await axios.patch(
+        `http://localhost:8000/api/user/appointments/${selectedAppointment}/reschedule`,
         { starts_at: formattedDate },
         { headers: { Authorization: `Bearer ${token}` } }
       );

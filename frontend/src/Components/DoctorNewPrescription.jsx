@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import apiClient from "../../apiClient";
+import axios from 'axios';
 
 export default function DoctorNewPrescription() {
   const [patientId, setPatientId] = useState('');
@@ -35,9 +35,9 @@ export default function DoctorNewPrescription() {
         refill_count: 0,
         is_private: true,
       };
-      const res = await apiClient.post('/api/prescriptions', payload);
+      const res = await axios.post('http://localhost:8000/api/prescriptions', payload);
       const created = res.data;
-      window.open(`/api/prescriptions/${created.p_id}/pdf`, '_blank');
+      window.open(`http://localhost:8000/api/prescriptions/${created.p_id}/pdf`, '_blank');
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || err.message || 'Failed to create prescription');

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import apiClient from "../apiClient";
+import axios from 'axios';
 
 export default function DoctorRegister() {
   const navigate = useNavigate();
@@ -37,8 +37,8 @@ export default function DoctorRegister() {
     setSuccess("");
 
     try {
-      const { data } = await apiClient.post(
-        "/doctor/register",
+      const { data } = await axios.post(
+        "http://localhost:8000/api/doctor/register",
         formData,
         { headers: { "Content-Type": "application/json" } }
       );

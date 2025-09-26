@@ -1,7 +1,7 @@
 // src/pages/PrescriptionForm.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../apiClient";
+import axios from "axios";
 import { useParams } from "react-router-dom";
 import {
   Card,
@@ -71,7 +71,7 @@ export default function PrescriptionForm() {
 
     try {
       const token = localStorage.getItem("doctorToken"); // Sanctum token
-      const res = await apiClient.post(`/prescriptions`, formData, {
+      const res = await axios.post(`http://localhost:8000/api/prescriptions`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("Prescription created successfully ✅");

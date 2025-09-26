@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 
-import apiClient from "@/apiClient";
+import axios from "axios";
 
 const API_BASE = "http://localhost:8000";
 
@@ -27,7 +27,7 @@ export default function SlotsBooking() {
     if (!starts_at) return;
     (async () => {
       try {
-        const { data } = await apiClient.get(`/doctors/${id}`);
+        const { data } = await axios.get(`http://localhost:8000/api/doctors/${id}`);
         setDoctor(data?.data || data);
       } catch {
         /* ignore */}
@@ -50,8 +50,8 @@ export default function SlotsBooking() {
 
     setSubmitting(true);
     try {
-      await apiClient.post(
-  `/user/appointments`, // <-- change this
+      await axios.post(
+  `http://localhost:8000/api/user/appointments`, // <-- change this
   { doctor_id: Number(id), starts_at, reason: reason || undefined },
   { headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` } }
 );

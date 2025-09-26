@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 
-import apiClient from "@/apiClient";
+import axios from "axios";
 
 export default function DoctorSlots() {
   const { id } = useParams();
@@ -24,7 +24,7 @@ export default function DoctorSlots() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await apiClient.get(`/doctors/${id}`);
+        const { data } = await axios.get(`http://localhost:8000/api/doctors/${id}`);
         setDoctor(data?.data || data);
       } catch {
         /* ignore */
@@ -42,7 +42,7 @@ export default function DoctorSlots() {
     (async () => {
       try {
         if (date) {
-          const { data } = await apiClient.get(`/doctors/${id}/slots`, { params: { date } });
+          const { data } = await axios.get(`http://localhost:8000/api/doctors/${id}/slots`, { params: { date } });
           const list = (data?.slots || []).map((s) => ({
             id: s.starts_at,
             starts_at: s.starts_at,
@@ -51,7 +51,7 @@ export default function DoctorSlots() {
           }));
           setSlots(list);
         } else {
-          const { data } = await apiClient.get(`/doctors/${id}/slots/all`);
+          const { data } = await axios.get(`http://localhost:8000/api/doctors/${id}/slots/all`);
           const normalized = (data?.days || []).map((d) => ({
             date: d.date,
             slots: (d.slots || []).map((s) => ({

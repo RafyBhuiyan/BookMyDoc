@@ -10,7 +10,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, X } from "lucide-react";
-import apiClient from "../../apiClient";
+import axios from "axios";
 const API_BASE = "http://localhost:8000";
 
 export default function MyPrescriptions() {
@@ -34,7 +34,7 @@ export default function MyPrescriptions() {
           return;
         }
 
-        const res = await apiClient.get(`/my/appointments`, {
+        const res = await axios.get(`http://localhost:8000/api/my/appointments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -43,11 +43,10 @@ export default function MyPrescriptions() {
         );
         setAppointments(accepted);
 
-        // প্রতিটি appointment এর জন্য prescription চেক করা
         accepted.forEach(async (appt) => {
           try {
-            const presRes = await apiClient.get(
-              `/appointments/${appt.id}/prescriptions`,
+            const presRes = await axios.get(
+              `http://localhost:8000/api/appointments/${appt.id}/prescriptions`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
             const list = presRes.data?.data ?? [];
@@ -77,7 +76,7 @@ export default function MyPrescriptions() {
     setPdfLoading(true);
     try {
       const token = localStorage.getItem("patientToken");
-      const res = await apiClient.get(`/prescriptions/${p_id}/pdf`, {
+      const res = await axios.get(`http://localhost:8000/api/prescriptions/${p_id}/pdf`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "blob",
       });
