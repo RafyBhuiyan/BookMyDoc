@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@radix-ui/react-label";
 import { Trash2, Plus } from "lucide-react";
-
+const API = import.meta.env.VITE_API_BASE;
 // Token helper
 const authHeaders = () => {
   const token = localStorage.getItem("doctorToken");

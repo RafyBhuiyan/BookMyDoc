@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 const API_BASE = "http://localhost:8000/api"; // change if needed
-
+const API = import.meta.env.VITE_API_BASE;
 export default function PrescriptionForm() {
   const { userId, appointmentId } = useParams();
   const navigate=useNavigate();

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 
-
+const API = import.meta.env.VITE_API_BASE;
 export default function PatientRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({

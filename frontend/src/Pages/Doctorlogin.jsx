@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import axios from 'axios';
+
+const API = import.meta.env.VITE_API_BASE;
 export default function DoctorLogin() {
   const navigate = useNavigate();
 

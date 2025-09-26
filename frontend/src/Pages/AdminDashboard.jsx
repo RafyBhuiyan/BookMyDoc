@@ -10,7 +10,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("pending"); // pending or approved
   const navigate = useNavigate();
   const token = localStorage.getItem("adminToken");
-
+const API = import.meta.env.VITE_API_BASE;
   const fetchDoctors = async (type) => {
     setLoading(true);
     setError("");

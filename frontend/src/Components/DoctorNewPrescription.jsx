@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
+const API = import.meta.env.VITE_API_BASE;
 export default function DoctorNewPrescription() {
   const [patientId, setPatientId] = useState('');
   const [issuedDate, setIssuedDate] = useState('');

@@ -3,7 +3,7 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/navbar";
-
+const API = import.meta.env.VITE_API_BASE;
 export default function Contact() {
   const navigate = useNavigate();
 

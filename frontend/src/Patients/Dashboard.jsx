@@ -15,7 +15,7 @@ import {
 } from "react-icons/fa6";
 import logo_white from "@/assets/logo_white.png";
 import iconlogo from "@/assets/iconlogo.png";
-const API_BASE = "http://localhost:8000";
+const API = import.meta.env.VITE_API_BASE;
 export default function PatientDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ export default function PatientDashboard() {
     if (!token) return;
     (async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/user/profile`, {
+        const res = await fetch(`${API}/user/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json().catch(() => ({}));

@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, X } from "lucide-react";
 import axios from "axios";
-const API_BASE = "http://localhost:8000";
+const API = import.meta.env.VITE_API_BASE;
 
 export default function MyPrescriptions() {
   const [appointments, setAppointments] = useState([]);
@@ -52,7 +52,7 @@ export default function MyPrescriptions() {
             const list = presRes.data?.data ?? [];
             setPrescriptionsMap((prev) => ({
               ...prev,
-              [appt.id]: list.length > 0 ? list[0] : null, // শুধু প্রথম prescription ধরলাম
+              [appt.id]: list.length > 0 ? list[0] : null, 
             }));
           } catch (err) {
             console.error("Error fetching prescription:", err);

@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import axios from 'axios';
-
+const API = import.meta.env.VITE_API_BASE;
 export default function DoctorRegister() {
   const navigate = useNavigate();
 

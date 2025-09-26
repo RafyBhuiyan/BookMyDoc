@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 
-//const API_BASE = "http://localhost:8000";
-
+const API = import.meta.env.VITE_API_BASE;
 export default function RescheduleAppointment() {
   const { appointmentId } = useParams();
   const navigate = useNavigate();

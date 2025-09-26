@@ -1,55 +1,55 @@
-version: '3.8'
-
 services:
-  # Laravel App Service (PHP)
-  app:
+  php:
     build:
-      context: .
-      dockerfile: docker/php/Dockerfile
-    container_name: laravel_app
-    restart: unless-stopped
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bmd-php
     volumes:
-      - ./backend:/var/www # Sync local backend code with container
-    networks:
-      - app-network
+      - ./backend:/var/www/html
+    networks: [bmd]
 
-  # MySQL Database Service
+  nginx:
+    image: nginx:stable-alpine
+    container_name: bmd-nginx
+    ports:
+      - "8000:80"         # API reachable at http://localhost:8000
+    volumes:
+      - ./backend:/var/www/html:ro
+      - ./nginx/laravel.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [php]
+    networks: [bmd]
+
   db:
     image: mysql:8.0
-    container_name: mysql_db
-    restart: unless-stopped
+    container_name: bmd-db
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_PASSWORD: password
-      MYSQL_USER: ${DB_USERNAME}
-    volumes:
-      - db-data:/var/lib/mysql
-    networks:
-      - app-network
-
-  # Nginx Service
-  nginx:
-    image: nginx:alpine
-    container_name: nginx_server
-    restart: unless-stopped
+      MYSQL_DATABASE: bookmydoc3
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"   # you said: no password
+      # MYSQL_ROOT_PASSWORD: ""            # (not needed when allow empty)
     ports:
-      - "80:80" # Map host port 80 to container port 80
+      - "3306:3306"       # optional: connect from host tools
     volumes:
-      - ./frontend:/var/www/frontend # Sync local frontend code
-      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-      - db
-    networks:
-      - app-network
+      - bmd_mysql:/var/lib/mysql
+    networks: [bmd]
 
-# Define the network
-networks:
-  app-network:
-    driver: bridge
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bmd-front
+    ports:
+      - "5173:5173"       # Vite dev server
+    environment:
+      # Let your React app call the API in Docker
+      - VITE_API_BASE=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks: [bmd]
 
-# Define the volume for persistent DB data
 volumes:
-  db-data:
-    driver: local
+  bmd_mysql:
+
+networks:
+  bmd:
+    driver: bridge

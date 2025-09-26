@@ -1,30 +1,18 @@
-# Set the base image for the PHP Laravel environment
-FROM php:8.2-fpm
+#syntax=docker/dockerfile:1.7
+FROM node:22-alpine
+WORKDIR /app
 
-# Set working directory
-WORKDIR /var/www
+# Optimize npm cache location (and enable cache mounts with BuildKit)
+ENV NPM_CONFIG_CACHE=/root/.npm
 
-# Install dependencies
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev zip git && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install gd pdo pdo_mysql && \
-    pecl install xdebug && \
-    docker-php-ext-enable xdebug
+# Install deps based on lockfile if present
+COPY package*.json ./
+# Use cache mount when BuildKit is on; still works fine when it's off
+RUN --mount=type=cache,target=/root/.npm \
+    sh -c 'if [ -f package-lock.json ]; then npm ci --no-audit --progress=false; else npm install --no-audit --progress=false; fi'
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copy Laravel files
+# Now copy the rest
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Set environment variables
-ENV APACHE_DOCUMENT_ROOT /var/www/public
-
-# Expose the port Laravel will run on
-EXPOSE 8000
-
-# Start the Laravel application
-CMD ["php-fpm"]
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]

@@ -2,8 +2,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-
-const API_BASE = "http://localhost:8000";
+const API = import.meta.env.VITE_API_BASE;
 const authHeaders = () => {
   const token = localStorage.getItem("doctorToken");
   return token ? { Authorization: `Bearer ${token}` } : {};

@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 
 import axios from "axios";
+const API = import.meta.env.VITE_API_BASE;
 
-const API_BASE = "http://localhost:8000";
 
 export default function SlotsBooking() {
   const { id } = useParams();
@@ -27,7 +27,7 @@ export default function SlotsBooking() {
     if (!starts_at) return;
     (async () => {
       try {
-        const { data } = await axios.get(`http://localhost:8000/api/doctors/${id}`);
+        const { data } = await axios.get(`${API}/doctors/${id}`);
         setDoctor(data?.data || data);
       } catch {
         /* ignore */}
@@ -51,7 +51,7 @@ export default function SlotsBooking() {
     setSubmitting(true);
     try {
       await axios.post(
-  `http://localhost:8000/api/user/appointments`, // <-- change this
+  `${API}/user/appointments`, // <-- change this
   { doctor_id: Number(id), starts_at, reason: reason || undefined },
   { headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` } }
 );

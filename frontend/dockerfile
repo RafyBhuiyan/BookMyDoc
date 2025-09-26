@@ -1,21 +1,10 @@
-# Set base image for Node.js React environment
-FROM node:20.13.1
-
-# Set working directory
+FROM node:22-alpine
 WORKDIR /app
+ENV NPM_CONFIG_CACHE=/root/.npm
 
-# Copy package.json and install dependencies
-COPY package.json package-lock.json ./
-RUN npm install
+COPY package*.json ./
+RUN sh -c 'if [ -f package-lock.json ]; then npm ci --no-audit --progress=false; else npm install --no-audit --progress=false; fi'
 
-# Copy the rest of the application files
 COPY . .
-
-# Build the application
-RUN npm run build
-
-# Expose the port React will run on
-EXPOSE 3000
-
-# Start the application
-CMD ["npm", "start"]
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]

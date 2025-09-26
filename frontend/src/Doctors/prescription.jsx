@@ -26,8 +26,7 @@ const Prescription = () => {
       return;
     }
 
-    const url = `http://localhost:8000/api/prescriptions/${prescriptionId}/pdf`;
-
+const API = import.meta.env.VITE_API_BASE;
     // Fetch the PDF file
     fetch(url, {
       method: "GET",

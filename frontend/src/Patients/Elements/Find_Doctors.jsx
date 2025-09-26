@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import ExpandableDoctorCard from "@/components/expandable-card-demo-standard";
-
+const API = import.meta.env.VITE_API_BASE;
 // Helper function to fetch JSON data using a relative path
 async function getJSON(url, params = {}) {
   const usp = new URLSearchParams();

@@ -8,8 +8,7 @@ import { FaUserInjured, FaPrescriptionBottle, FaClock, FaArrowLeft } from "react
 import logo_white from "@/assets/logo_white.png";
 import iconlogo from "@/assets/iconlogo.png";
 
-const API_BASE = "http://localhost:8000";
-
+const API = import.meta.env.VITE_API_BASE;
 export default function DoctorDashboard() {
   const location = useLocation();
   const navigate = useNavigate();

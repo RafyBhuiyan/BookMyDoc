@@ -1,6 +1,12 @@
-node_modules
 vendor
-.env
+node_modules
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
 .git
-.idea
-.vscode
+.gitignore
+Dockerfile
+docker-compose.yml
+*.log
+**/.DS_Store

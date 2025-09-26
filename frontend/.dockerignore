@@ -1,5 +1,9 @@
 node_modules
-build
+dist
+.build
 .git
-.idea
-.vscode
+.gitignore
+Dockerfile
+docker-compose.yml
+*.log
+**/.DS_Store

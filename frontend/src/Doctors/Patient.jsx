@@ -18,7 +18,7 @@ import {
 import { MoreVertical } from "lucide-react";
 import AvailabilityManager from "./AvailabilityManager";
 
-
+const API = import.meta.env.VITE_API_BASE;
 const PatientPage = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
