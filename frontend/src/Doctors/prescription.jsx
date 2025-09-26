@@ -69,7 +69,7 @@ const API = import.meta.env.VITE_API_BASE;
           return;
         }
 
-        const { data } = await axios.get(`http://localhost:8000/api/doctor/prescriptions`, {
+        const { data } = await axios.get(`${API}/doctor/prescriptions`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

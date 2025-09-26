@@ -38,7 +38,7 @@ const PatientPage = () => {
         }
 
         const { data } = await axios.get(
-          `http://localhost:8000/api/doctor/appointments/accepted`,
+          `${API}/doctor/appointments/accepted`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

@@ -40,7 +40,7 @@ export default function Profile() {
         setLoading(true);
         setError("");
         const { data } = await axios.get(
-          "http://localhost:8000/api/user/profile",
+          `${API}/user/profile`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -102,7 +102,7 @@ export default function Profile() {
       };
 
       const { data } = await axios.put(
-        "http://localhost:8000/api/user/profile",
+        `${API}/user/profile`,
         payload,
         {
           headers: {

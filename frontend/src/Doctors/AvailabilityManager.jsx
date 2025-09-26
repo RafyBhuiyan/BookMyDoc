@@ -53,7 +53,7 @@ export default function AvailabilityManager() {
     try {
       setLoading(true);
       setErrorDialog("");
-      const { data } = await axios.get(`http://localhost:8000/api/doctor/availabilities`, {
+      const { data } = await axios.get(`${API}/doctor/availabilities`, {
         headers: authHeaders(),
       });
       setItems(Array.isArray(data) ? data : []);
@@ -104,7 +104,7 @@ export default function AvailabilityManager() {
         ...(slotMinutes ? { slot_minutes: Number(slotMinutes) } : {}),
       };
       const { data } = await axios.post(
-        `http://localhost:8000/api/doctor/availabilities`,
+        `${API}/doctor/availabilities`,
         payload,
         {
           headers: { "Content-Type": "application/json", ...authHeaders() },

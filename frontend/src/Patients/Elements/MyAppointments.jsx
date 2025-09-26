@@ -39,7 +39,7 @@ export default function MyAppointmentsTable() {
           navigate("/user/login");
           return;
         }
-        const { data } = await axios.get(`http://localhost:8000/api/my/appointments`, {
+        const { data } = await axios.get(`${API}/my/appointments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (Array.isArray(data.appointments)) {
@@ -83,7 +83,7 @@ export default function MyAppointmentsTable() {
     try {
       const token = localStorage.getItem("patientToken");
       await axios.patch(
-        `http://localhost:8000/api/user/appointments/${appointmentId}/cancel`,
+        `${API}/user/appointments/${appointmentId}/cancel`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -117,7 +117,7 @@ export default function MyAppointmentsTable() {
       const formattedDate = new Date(newDateTime).toISOString(); // Converts to ISO 8601 format
 
       const response = await axios.patch(
-        `http://localhost:8000/api/user/appointments/${selectedAppointment}/reschedule`,
+        `${API}/user/appointments/${selectedAppointment}/reschedule`,
         { starts_at: formattedDate },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -22,7 +22,7 @@ export default function DoctorDashboard() {
     if (!token) return;
     (async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/doctor/profile`, {
+        const res = await fetch(`${API}/doctor/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json().catch(() => ({}));

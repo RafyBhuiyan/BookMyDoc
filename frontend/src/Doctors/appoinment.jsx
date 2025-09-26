@@ -50,7 +50,7 @@ const AppointmentPage = () => {
       }
 
       const { data } = await axios.get(
-        `http://localhost:8000/api/doctor/appointments?status=pending`,
+        `${API}/doctor/appointments?status=pending`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -77,7 +77,7 @@ const AppointmentPage = () => {
     try {
       const token = localStorage.getItem("doctorToken");
       await axios.patch(
-        `http://localhost:8000/api/doctor/appointments/${id}/accept`,
+        `${API}/doctor/appointments/${id}/accept`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -95,7 +95,7 @@ const AppointmentPage = () => {
     try {
       const token = localStorage.getItem("doctorToken");
       await axios.patch(
-        `http://localhost:8000/api/doctor/appointments/${id}/decline`,
+        `${API}/doctor/appointments/${id}/decline`,
         { reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

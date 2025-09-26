@@ -22,7 +22,7 @@ export default function RescheduleAppointment() {
           alert("Please log in first.");
           navigate("/user/login");
         }
-        const { data } = await axios.get(`http://localhost:8000/api/user/appointments/${appointmentId}`, {
+        const { data } = await axios.get(`${API}/user/appointments/${appointmentId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAppointment(data.data);
@@ -51,7 +51,7 @@ const handleReschedule = async () => {
     }
 
     const { data } = await axios.patch(
-      `http://localhost:8000/api/user/appointments/${appointmentId}/reschedule`,
+      `${API}/user/appointments/${appointmentId}/reschedule`,
       { starts_at: newDateTime },
       { headers: { Authorization: `Bearer ${token}` } }
     );

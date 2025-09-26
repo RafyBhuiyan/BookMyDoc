@@ -51,7 +51,7 @@ export default function Find_Doctors() {
     setLoading(true);
     setErr("");
     try {
-      const data = await getJSON(`http://localhost:8000/api/doctors`, {
+      const data = await getJSON(`${API}/doctors`, {
         search: search || "",
         specialization: specialization || "",
         city: city || "",

@@ -23,7 +23,7 @@ export default function AdminLogin() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/admin/login",
+        `${API}/admin/login`,
         formData,
         {
           headers: { "Content-Type": "application/json" },

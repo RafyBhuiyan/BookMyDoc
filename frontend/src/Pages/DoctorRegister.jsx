@@ -38,7 +38,7 @@ export default function DoctorRegister() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/doctor/register",
+        `${API}/doctor/register`,
         formData,
         { headers: { "Content-Type": "application/json" } }
       );

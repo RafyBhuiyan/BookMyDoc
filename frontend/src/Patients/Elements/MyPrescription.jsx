@@ -34,7 +34,7 @@ export default function MyPrescriptions() {
           return;
         }
 
-        const res = await axios.get(`http://localhost:8000/api/my/appointments`, {
+        const res = await axios.get(`${API}/my/appointments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -46,7 +46,7 @@ export default function MyPrescriptions() {
         accepted.forEach(async (appt) => {
           try {
             const presRes = await axios.get(
-              `http://localhost:8000/api/appointments/${appt.id}/prescriptions`,
+              `${API}/appointments/${appt.id}/prescriptions`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
             const list = presRes.data?.data ?? [];
@@ -76,7 +76,7 @@ export default function MyPrescriptions() {
     setPdfLoading(true);
     try {
       const token = localStorage.getItem("patientToken");
-      const res = await axios.get(`http://localhost:8000/api/prescriptions/${p_id}/pdf`, {
+      const res = await axios.get(`${API}/prescriptions/${p_id}/pdf`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "blob",
       });

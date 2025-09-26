@@ -35,7 +35,7 @@ export default function DoctorProfile() {
       try {
         setLoading(true);
         setError("");
-        const { data } = await axios.get(`http://localhost:8000/api/doctor/profile`, {
+        const { data } = await axios.get(`${API}/doctor/profile`, {
           headers: authHeaders(),
         });
         const d = data?.data || {};
@@ -85,7 +85,7 @@ const onSubmit = async (e) => {
       bio: form.bio || undefined,
     };
 
-    const { data } = await axios.put(`http://localhost:8000/api/doctor/profile`, payload, {
+    const { data } = await axios.put(`${API}/doctor/profile`, payload, {
       headers: { "Content-Type": "application/json", ...authHeaders() },
     });
 

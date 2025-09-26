@@ -8,7 +8,7 @@ function Medical_reports({ user }) {
   useEffect(() => {
     if (!userId) return;
     axios
-      .get(`http://localhost:8000/api/users/${userId}/prescriptions`, { withCredentials: true })
+      .get(`${API}users/${userId}/prescriptions`, { withCredentials: true })
       .then((res) => setPrescriptions(res.data.prescriptions?.data ?? []))
       .catch((err) => console.error(err));
   }, [userId]);

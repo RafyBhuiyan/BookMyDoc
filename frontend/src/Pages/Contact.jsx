@@ -96,7 +96,7 @@ export default function Contact() {
               onSubmit={async (values, actions) => {
                  try {
     // Prepare the message data to be sent to the API
-    const response = await fetch("http://localhost:8000/api/api/message", {
+    const response = await fetch(`${API}/message`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

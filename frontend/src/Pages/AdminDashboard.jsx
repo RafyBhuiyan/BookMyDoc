@@ -17,8 +17,8 @@ const API = import.meta.env.VITE_API_BASE;
     try {
       const url =
         type === "pending"
-          ? "http://localhost:8000/api/admin/pending-doctors"
-          : "http://localhost:8000/api/admin/approved-doctors";
+          ? `${API}/admin/pending-doctors`
+          : `${API}/admin/approved-doctors`;
 
       const { data } = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -45,7 +45,7 @@ const API = import.meta.env.VITE_API_BASE;
   const approveDoctor = async (id) => {
     try {
       const { data } = await axios.post(
-        `http://localhost:8000/api/admin/approve-doctor/${id}`,
+        `${API}/admin/approve-doctor/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -64,7 +64,7 @@ const API = import.meta.env.VITE_API_BASE;
   const logout = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/api/admin/logout",
+        `${API}/admin/logout`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

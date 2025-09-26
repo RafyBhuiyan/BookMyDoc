@@ -27,7 +27,7 @@ const handleSubmit = async (e) => {
   try {
     localStorage.removeItem("patientToken"); // Ensure you're not mixing patient token with doctor token
     const { data } = await axios.post(
-      "http://localhost:8000/api/doctor/login",
+      `${API}/doctor/login`,
       formData,
       { headers: { "Content-Type": "application/json" } }
     );
