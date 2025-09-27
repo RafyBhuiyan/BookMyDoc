@@ -1,26 +1,39 @@
 # syntax=docker/dockerfile:1.7
-FROM php:8.3-fpm-alpine
+FROM php:8.3-cli-alpine
 
-# System deps + PHP extensions
+# System deps + PHP extensions needed by Laravel and dompdf
 RUN apk add --no-cache \
-    bash git curl zip unzip icu-dev oniguruma-dev libzip-dev libpng-dev \
-    mysql-client tzdata \
-  && docker-php-ext-install pdo pdo_mysql mbstring zip intl exif gd bcmath
+    bash git curl zip unzip tzdata icu-dev oniguruma-dev libzip-dev \
+    libpng-dev freetype-dev libjpeg-turbo-dev libwebp-dev libxml2-dev \
+    ttf-dejavu fontconfig mysql-client \
+ && docker-php-ext-configure gd --with-jpeg --with-webp \
+ && docker-php-ext-install pdo pdo_mysql mbstring zip intl exif gd bcmath
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /app
 
 # Install PHP deps first (cacheable)
 COPY composer.json composer.lock* ./
-RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts || true
+RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts
 
-# Copy the rest of the app
+# App code
 COPY . .
 
-# Permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
+# Clean caches; ensure runtime dirs exist; safe permissions
+RUN php artisan config:clear || true \
+ && php artisan route:clear || true \
+ && php artisan view:clear  || true \
+ && mkdir -p storage/framework/{cache,sessions,views} \
+ && chown -R www-data:www-data storage bootstrap/cache
 
-EXPOSE 9000
-CMD ["php-fpm","-F"]
+# Railway provides $PORT; default to 8080 if not present
+ENV PORT=8080
+EXPOSE 8080
+
+# Start sequence:
+# - storage:link (idempotent)
+# - migrate --force (will run if DB is reachable)
+# - serve Laravel via PHP built-in web server (router = public/index.php)
+CMD sh -lc 'php artisan storage:link || true; php artisan migrate --force || true; php -d variables_order=EGPCS -S 0.0.0.0:${PORT} -t public public/index.php'
