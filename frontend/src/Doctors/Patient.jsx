@@ -18,7 +18,10 @@ import {
 import { MoreVertical } from "lucide-react";
 import AvailabilityManager from "./AvailabilityManager";
 
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
+
 const PatientPage = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,7 +41,7 @@ const PatientPage = () => {
         }
 
         const { data } = await axios.get(
-          `${API}/doctor/appointments/accepted`,
+          apiUrl(`doctor/appointments/accepted`),
           {
             headers: { Authorization: `Bearer ${token}` },
           }

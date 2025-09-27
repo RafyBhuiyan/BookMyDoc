@@ -3,7 +3,9 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/navbar";
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 export default function Contact() {
   const navigate = useNavigate();
 
@@ -96,7 +98,7 @@ export default function Contact() {
               onSubmit={async (values, actions) => {
                  try {
     // Prepare the message data to be sent to the API
-    const response = await fetch(`${API}/message`, {
+    const response = await fetch(apiUrl(`message`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

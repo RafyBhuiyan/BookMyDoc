@@ -12,7 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 
 export default function MyAppointmentsTable() {
   const navigate = useNavigate();
@@ -39,7 +41,7 @@ export default function MyAppointmentsTable() {
           navigate("/user/login");
           return;
         }
-        const { data } = await axios.get(`${API}/my/appointments`, {
+        const { data } = await axios.get(apiUrl(`my/appointments`), {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (Array.isArray(data.appointments)) {
@@ -83,7 +85,7 @@ export default function MyAppointmentsTable() {
     try {
       const token = localStorage.getItem("patientToken");
       await axios.patch(
-        `${API}/user/appointments/${appointmentId}/cancel`,
+        apiUrl(`user/appointments/${appointmentId}/cancel`),
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -117,7 +119,7 @@ export default function MyAppointmentsTable() {
       const formattedDate = new Date(newDateTime).toISOString(); // Converts to ISO 8601 format
 
       const response = await axios.patch(
-        `${API}/user/appointments/${selectedAppointment}/reschedule`,
+        apiUrl(`user/appointments/${selectedAppointment}/reschedule`),
         { starts_at: formattedDate },
         { headers: { Authorization: `Bearer ${token}` } }
       );

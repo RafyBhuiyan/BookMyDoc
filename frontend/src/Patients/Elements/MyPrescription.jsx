@@ -11,7 +11,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, X } from "lucide-react";
 import axios from "axios";
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 
 export default function MyPrescriptions() {
   const [appointments, setAppointments] = useState([]);
@@ -34,7 +36,7 @@ export default function MyPrescriptions() {
           return;
         }
 
-        const res = await axios.get(`${API}/my/appointments`, {
+        const res = await axios.get(apiUrl(`my/appointments`), {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -46,7 +48,7 @@ export default function MyPrescriptions() {
         accepted.forEach(async (appt) => {
           try {
             const presRes = await axios.get(
-              `${API}/appointments/${appt.id}/prescriptions`,
+              apiUrl(`appointments/${appt.id}/prescriptions`),
               { headers: { Authorization: `Bearer ${token}` } }
             );
             const list = presRes.data?.data ?? [];
@@ -76,7 +78,7 @@ export default function MyPrescriptions() {
     setPdfLoading(true);
     try {
       const token = localStorage.getItem("patientToken");
-      const res = await axios.get(`${API}/prescriptions/${p_id}/pdf`, {
+      const res = await axios.get(apiUrl(`prescriptions/${p_id}/pdf`), {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "blob",
       });

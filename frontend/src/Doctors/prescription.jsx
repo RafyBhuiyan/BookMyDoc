@@ -18,44 +18,61 @@ const Prescription = () => {
   const [error, setError] = useState("");
   const [selectedPrescription, setSelectedPrescription] = useState(null);
 
-  // Download PDF function
-  const downloadPDF = (prescriptionId) => {
-    const token = localStorage.getItem("doctorToken");  // or "patientToken"
-    if (!token) {
-      alert("Please log in first.");
-      return;
-    }
+  // put these at file top (outside the component) so they’re reusable across calls
+const API_BASE = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl   = (p) => `${API_BASE}/${String(p).replace(/^\/+/, "")}`;
 
-const API = import.meta.env.VITE_API_BASE;
-    // Fetch the PDF file
-    fetch(url, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Accept": "application/pdf",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to generate PDF.");
-        }
-        return response.blob();
-      })
-      .then((blob) => {
-        const fileURL = window.URL.createObjectURL(blob);
+const downloadPDF = async (prescriptionId) => {
+  const token = localStorage.getItem("doctorToken") || localStorage.getItem("patientToken");
+  if (!token) return alert("Please log in first.");
+
+  // Try likely backend paths — pick the first that returns a real PDF
+  const tryPaths = [    `prescriptions/${prescriptionId}/pdf`   ];
+
+  for (const path of tryPaths) {
+    const url = apiUrl(path);
+    try {
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/pdf",
+        },
+        responseType: "blob",
+        validateStatus: () => true, // let us inspect non-2xx responses
+      });
+
+      const ct = (res.headers?.["content-type"] || "").toLowerCase();
+      if (res.status < 400 && ct.includes("application/pdf")) {
+        // success: save the PDF
+        const blobUrl = window.URL.createObjectURL(res.data);
         const a = document.createElement("a");
-        a.href = fileURL;
-        a.download = `prescription-${prescriptionId}.pdf`; // Filename
-        a.style.display = "none";
+        a.href = blobUrl;
+        a.download = `prescription-${prescriptionId}.pdf`;
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(fileURL);
-      })
-      .catch((error) => {
-        console.error("Error generating PDF:", error);
-        alert("An error occurred while generating the PDF.");
-      });
-  };
+        a.remove();
+        window.URL.revokeObjectURL(blobUrl);
+        return;
+      }
+
+      // Not a PDF: try to read the body as text/JSON to show a clear reason
+      const text = await new Response(res.data).text().catch(() => "");
+      let msg = `PDF download failed (${res.status})`;
+      try {
+        const json = text ? JSON.parse(text) : null;
+        if (json?.message) msg = json.message;
+      } catch (_) {}
+      console.warn(`Failed on ${url}: ${msg}`);
+      // continue loop and try next path
+    } catch (e) {
+      console.warn(`Request error on ${url}:`, e);
+      // continue loop
+    }
+  }
+
+  alert("Could not download PDF. Check the ID/route or see backend logs for details.");
+};
+
 
   // Fetch prescriptions
   useEffect(() => {
@@ -69,7 +86,7 @@ const API = import.meta.env.VITE_API_BASE;
           return;
         }
 
-        const { data } = await axios.get(`${API}/doctor/prescriptions`, {
+        const { data } = await axios.get(apiUrl(`doctor/prescriptions`), {
           headers: { Authorization: `Bearer ${token}` },
         });
 

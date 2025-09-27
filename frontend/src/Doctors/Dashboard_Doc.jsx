@@ -8,7 +8,9 @@ import { FaUserInjured, FaPrescriptionBottle, FaClock, FaArrowLeft } from "react
 import logo_white from "@/assets/logo_white.png";
 import iconlogo from "@/assets/iconlogo.png";
 
-const API = import.meta.env.VITE_API_BASE;
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
+
 export default function DoctorDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ export default function DoctorDashboard() {
     if (!token) return;
     (async () => {
       try {
-        const res = await fetch(`${API}/doctor/profile`, {
+        const res = await fetch(apiUrl(`doctor/profile`), {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json().catch(() => ({}));

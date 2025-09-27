@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 
-const API = import.meta.env.VITE_API_BASE;
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 export default function PatientRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -31,7 +32,7 @@ export default function PatientRegister() {
 
     try {
       const { data } = await axios.post(
-        `${API}/user/register`,
+        apiUrl(`user/register`),
         formData,
         { headers: { "Content-Type": "application/json" } }
       );

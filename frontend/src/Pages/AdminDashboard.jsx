@@ -10,15 +10,18 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("pending"); // pending or approved
   const navigate = useNavigate();
   const token = localStorage.getItem("adminToken");
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
+
   const fetchDoctors = async (type) => {
     setLoading(true);
     setError("");
     try {
       const url =
         type === "pending"
-          ? `${API}/admin/pending-doctors`
-          : `${API}/admin/approved-doctors`;
+          ? apiUrl(`admin/pending-doctors`)
+          : apiUrl(`admin/approved-doctors`);
 
       const { data } = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -45,7 +48,7 @@ const API = import.meta.env.VITE_API_BASE;
   const approveDoctor = async (id) => {
     try {
       const { data } = await axios.post(
-        `${API}/admin/approve-doctor/${id}`,
+        apiUrl(`admin/approve-doctor/${id}`),
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -64,7 +67,7 @@ const API = import.meta.env.VITE_API_BASE;
   const logout = async () => {
     try {
       await axios.post(
-        `${API}/admin/logout`,
+        apiUrl(`admin/logout`),
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

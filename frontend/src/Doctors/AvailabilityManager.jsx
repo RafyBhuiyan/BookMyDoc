@@ -22,8 +22,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@radix-ui/react-label";
 import { Trash2, Plus } from "lucide-react";
-const API = import.meta.env.VITE_API_BASE;
-// Token helper
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
+
 const authHeaders = () => {
   const token = localStorage.getItem("doctorToken");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -53,7 +55,7 @@ export default function AvailabilityManager() {
     try {
       setLoading(true);
       setErrorDialog("");
-      const { data } = await axios.get(`${API}/doctor/availabilities`, {
+      const { data } = await axios.get(apiUrl(`doctor/availabilities`), {
         headers: authHeaders(),
       });
       setItems(Array.isArray(data) ? data : []);
@@ -104,7 +106,7 @@ export default function AvailabilityManager() {
         ...(slotMinutes ? { slot_minutes: Number(slotMinutes) } : {}),
       };
       const { data } = await axios.post(
-        `${API}/doctor/availabilities`,
+        apiUrl(`doctor/availabilities`),
         payload,
         {
           headers: { "Content-Type": "application/json", ...authHeaders() },

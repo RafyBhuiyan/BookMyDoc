@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 
 export default function DoctorLogin() {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ export default function DoctorLogin() {
       localStorage.removeItem("doctorToken");
       
       const { data } = await axios.post(
-        `${API}/user/login`,
+        apiUrl(`user/login`),
         formData,
         { headers: { "Content-Type": "application/json" } }
       );

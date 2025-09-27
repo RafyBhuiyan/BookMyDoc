@@ -2,7 +2,9 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 const authHeaders = () => {
   const token = localStorage.getItem("doctorToken");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -35,7 +37,7 @@ export default function DoctorProfile() {
       try {
         setLoading(true);
         setError("");
-        const { data } = await axios.get(`${API}/doctor/profile`, {
+        const { data } = await axios.get(apiUrl(`doctor/profile`), {
           headers: authHeaders(),
         });
         const d = data?.data || {};
@@ -85,7 +87,7 @@ const onSubmit = async (e) => {
       bio: form.bio || undefined,
     };
 
-    const { data } = await axios.put(`${API}/doctor/profile`, payload, {
+    const { data } = await axios.put(apiUrl(`doctor/profile`), payload, {
       headers: { "Content-Type": "application/json", ...authHeaders() },
     });
 

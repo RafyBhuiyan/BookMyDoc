@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 import axios from "axios";
 
 export default function DoctorSlots() {
@@ -24,7 +26,7 @@ export default function DoctorSlots() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(`${API}/doctors/${id}`);
+        const { data } = await axios.get(apiUrl(`/doctors/${id}`));
         setDoctor(data?.data || data);
       } catch {
         /* ignore */
@@ -51,7 +53,7 @@ export default function DoctorSlots() {
           }));
           setSlots(list);
         } else {
-          const { data } = await axios.get(`${API}/doctors/${id}/slots/all`);
+          const { data } = await axios.get(apiUrl(`doctors/${id}/slots/all`));
           const normalized = (data?.days || []).map((d) => ({
             date: d.date,
             slots: (d.slots || []).map((s) => ({

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-const API = import.meta.env.VITE_API_BASE;
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 export default function DoctorNewPrescription() {
   const [patientId, setPatientId] = useState('');
   const [issuedDate, setIssuedDate] = useState('');
@@ -35,7 +36,7 @@ export default function DoctorNewPrescription() {
         refill_count: 0,
         is_private: true,
       };
-      const res = await axios.post(`${API}/prescriptions`, payload);
+      const res = await axios.post(apiUrl(`prescriptions`), payload);
       const created = res.data;
       window.open(`${API}/prescriptions/${created.p_id}/pdf`, '_blank');
     } catch (err) {

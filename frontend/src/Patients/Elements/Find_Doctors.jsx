@@ -1,8 +1,10 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import ExpandableDoctorCard from "@/components/expandable-card-demo-standard";
-const API = import.meta.env.VITE_API_BASE;
-// Helper function to fetch JSON data using a relative path
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
+
 async function getJSON(url, params = {}) {
   const usp = new URLSearchParams();
   Object.entries(params).forEach(([k, v]) => {
@@ -51,7 +53,7 @@ export default function Find_Doctors() {
     setLoading(true);
     setErr("");
     try {
-      const data = await getJSON(`${API}/doctors`, {
+      const data = await getJSON(apiUrl(`doctors`), {
         search: search || "",
         specialization: specialization || "",
         city: city || "",

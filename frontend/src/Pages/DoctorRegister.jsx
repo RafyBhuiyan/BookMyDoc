@@ -5,7 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import axios from 'axios';
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 export default function DoctorRegister() {
   const navigate = useNavigate();
 
@@ -38,7 +40,7 @@ export default function DoctorRegister() {
 
     try {
       const { data } = await axios.post(
-        `${API}/doctor/register`,
+        apiUrl(`doctor/register`),
         formData,
         { headers: { "Content-Type": "application/json" } }
       );

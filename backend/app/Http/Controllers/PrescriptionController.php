@@ -140,10 +140,7 @@ public function store(Request $request): JsonResponse
         ]);
     }
 
-    /* ----------------------------------------------------
-     | GET /api/doctor/prescriptions
-     | Doctor: list ALL prescriptions they have issued
-     | ---------------------------------------------------- */
+
     public function doctorIssued(Request $request): JsonResponse
     {
         $doctor = $this->actingDoctor($request);
@@ -172,10 +169,6 @@ public function store(Request $request): JsonResponse
         ]);
     }
 
-    /* ----------------------------------------------------
-     | GET /api/prescriptions/{prescription}
-     | Visible to the owner patient OR the issuing doctor
-     | ---------------------------------------------------- */
     public function apiShow(Request $request, Prescription $prescription): JsonResponse
     {
         $patient = $this->actingPatient($request);

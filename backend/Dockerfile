@@ -1,18 +1,26 @@
-#syntax=docker/dockerfile:1.7
-FROM node:22-alpine
-WORKDIR /app
+# syntax=docker/dockerfile:1.7
+FROM php:8.3-fpm-alpine
 
-# Optimize npm cache location (and enable cache mounts with BuildKit)
-ENV NPM_CONFIG_CACHE=/root/.npm
+# System deps + PHP extensions
+RUN apk add --no-cache \
+    bash git curl zip unzip icu-dev oniguruma-dev libzip-dev libpng-dev \
+    mysql-client tzdata \
+  && docker-php-ext-install pdo pdo_mysql mbstring zip intl exif gd bcmath
 
-# Install deps based on lockfile if present
-COPY package*.json ./
-# Use cache mount when BuildKit is on; still works fine when it's off
-RUN --mount=type=cache,target=/root/.npm \
-    sh -c 'if [ -f package-lock.json ]; then npm ci --no-audit --progress=false; else npm install --no-audit --progress=false; fi'
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Now copy the rest
+WORKDIR /var/www/html
+
+# Install PHP deps first (cacheable)
+COPY composer.json composer.lock* ./
+RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts || true
+
+# Copy the rest of the app
 COPY . .
 
-EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+# Permissions
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+EXPOSE 9000
+CMD ["php-fpm","-F"]

@@ -16,8 +16,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-const API_BASE = "${API}"; // change if needed
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 export default function PrescriptionForm() {
   const { userId, appointmentId } = useParams();
   const navigate=useNavigate();
@@ -71,7 +72,7 @@ export default function PrescriptionForm() {
 
     try {
       const token = localStorage.getItem("doctorToken"); // Sanctum token
-      const res = await axios.post(`${API}/prescriptions`, formData, {
+      const res = await axios.post(apiUrl(`prescriptions`), formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("Prescription created successfully ✅");

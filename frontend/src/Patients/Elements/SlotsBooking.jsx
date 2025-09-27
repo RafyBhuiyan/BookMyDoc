@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 
 import axios from "axios";
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 
 
 export default function SlotsBooking() {
@@ -27,7 +29,7 @@ export default function SlotsBooking() {
     if (!starts_at) return;
     (async () => {
       try {
-        const { data } = await axios.get(`${API}/doctors/${id}`);
+        const { data } = await axios.get(apiUrl(`doctors/${id}`));
         setDoctor(data?.data || data);
       } catch {
         /* ignore */}
@@ -51,7 +53,7 @@ export default function SlotsBooking() {
     setSubmitting(true);
     try {
       await axios.post(
-  `${API}/user/appointments`, // <-- change this
+  apiUrl(`user/appointments`), // <-- change this
   { doctor_id: Number(id), starts_at, reason: reason || undefined },
   { headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` } }
 );

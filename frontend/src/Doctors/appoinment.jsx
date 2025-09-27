@@ -29,7 +29,9 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-const API = import.meta.env.VITE_API_BASE;
+
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
 
 const AppointmentPage = () => {
   const [appointments, setAppointments] = useState([]);
@@ -50,7 +52,7 @@ const AppointmentPage = () => {
       }
 
       const { data } = await axios.get(
-        `${API}/doctor/appointments?status=pending`,
+        apiUrl(`doctor/appointments?status=pending`),
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -77,7 +79,7 @@ const AppointmentPage = () => {
     try {
       const token = localStorage.getItem("doctorToken");
       await axios.patch(
-        `${API}/doctor/appointments/${id}/accept`,
+        apiUrl(`doctor/appointments/${id}/accept`),
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -95,7 +97,7 @@ const AppointmentPage = () => {
     try {
       const token = localStorage.getItem("doctorToken");
       await axios.patch(
-        `${API}/doctor/appointments/${id}/decline`,
+        apiUrl(`doctor/appointments/${id}/decline`),
         { reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

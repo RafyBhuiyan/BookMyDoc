@@ -5,7 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_BASE;
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
+
 export default function DoctorLogin() {
   const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ const handleSubmit = async (e) => {
   try {
     localStorage.removeItem("patientToken"); // Ensure you're not mixing patient token with doctor token
     const { data } = await axios.post(
-      `${API}/doctor/login`,
+      apiUrl(`doctor/login`),
       formData,
       { headers: { "Content-Type": "application/json" } }
     );

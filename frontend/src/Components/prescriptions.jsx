@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-const API = import.meta.env.VITE_API_BASE;
+
 function Medical_reports({ user }) {
   const [prescriptions, setPrescriptions] = useState([]);
   const userId = user?.id;

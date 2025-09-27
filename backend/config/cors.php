@@ -2,18 +2,7 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Laravel CORS Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Here you can configure your settings for Cross-Origin Resource Sharing
-    | or "CORS". This determines what cross-origin operations may execute
-    | in web browsers.
-    |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-    |
-    */
+
 
     'paths' => ['api/*'],  // Apply to all API routes
 

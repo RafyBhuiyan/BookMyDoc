@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 
-const API = import.meta.env.VITE_API_BASE;
+const API = (import.meta.env.VITE_API_ORIGIN || "http://localhost:8000/api").replace(/\/$/, "");
+const apiUrl = (p) => `${API}/${String(p).replace(/^\/+/, "")}`;
+
 export default function RescheduleAppointment() {
   const { appointmentId } = useParams();
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ export default function RescheduleAppointment() {
           alert("Please log in first.");
           navigate("/user/login");
         }
-        const { data } = await axios.get(`${API}/user/appointments/${appointmentId}`, {
+        const { data } = await axios.get(apiUrl(`user/appointments/${appointmentId}`), {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAppointment(data.data);
@@ -51,7 +53,7 @@ const handleReschedule = async () => {
     }
 
     const { data } = await axios.patch(
-      `${API}/user/appointments/${appointmentId}/reschedule`,
+     apiUrl(`user/appointments/${appointmentId}/reschedule`),
       { starts_at: newDateTime },
       { headers: { Authorization: `Bearer ${token}` } }
     );

@@ -56,8 +56,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/prescriptions/{prescription}/pdf', [PrescriptionController::class, 'pdf'])
         ->name('prescriptions.pdf');
 
-    // (Optional legacy route — keep only if you still want it)
-    // Route::get('/users/{user}/prescriptions', [PrescriptionController::class, 'apiIndexForUser']);
 });
 // =================== END PRESCRIPTIONS ===================
 
