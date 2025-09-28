@@ -1,31 +1,31 @@
 import { Routes, Route,Navigate } from "react-router-dom";
-import Contact from "./Pages/Contact";
+import Contact from "./pages/Contact";
 import { Box } from "@chakra-ui/react";
-import Homepage from "./Pages/HomePage";
-import DoctorDashboard from "./Doctors/Dashboard_Doc";
-import PatientDashboard from "./Patients/Dashboard.jsx";
-import DoctorLogin from "./Pages/Doctorlogin.jsx";
-import DoctorRegister from "./Pages/DoctorRegister.jsx";
-import Find_Doctors from "./Patients/Elements/Find_Doctors.jsx";
-import DoctorSlots from "./Patients/Elements/DoctorSlots.jsx";
-import SlotsBooking from "./Patients/Elements/SlotsBooking.jsx";
-import PatientLogin from "./Pages/PatientLogin.jsx";
-import PatientRegister from "./Pages/PatientRegister.jsx";
-import MyAppointments from "./Patients/Elements/MyAppointments.jsx";
+import Homepage from "./pages/HomePage";
+import DoctorDashboard from "./doctors/Dashboard_Doc";
+import PatientDashboard from "./patients/Dashboard.jsx";
+import DoctorLogin from "./pages/Doctorlogin.jsx";
+import DoctorRegister from "./pages/DoctorRegister.jsx";
+import Find_Doctors from "./patients/elements/Find_Doctors.jsx";
+import DoctorSlots from "./patients/elements/DoctorSlots.jsx";
+import SlotsBooking from "./patients/elements/SlotsBooking.jsx";
+import PatientLogin from "./pages/PatientLogin.jsx";
+import PatientRegister from "./pages/PatientRegister.jsx";
+import MyAppointments from "./patients/elements/MyAppointments.jsx";
 
 import PrivateRoute from "./PrivateRoute"; 
-import PatientPage from "./Doctors/Patient";
-import PrescriptionPage from "./Doctors/prescription";
-import AppointmentPage from "./Doctors/appoinment";
+import PatientPage from "./doctors/Patient";
+import PrescriptionPage from "./doctors/prescription";
+import AppointmentPage from "./doctors/appoinment";
 
-import PrescriptionForm from "./Doctors/CreatePrescription.jsx"
+import PrescriptionForm from "./doctors/CreatePrescription.jsx"
 
 
-import AdminLogin from "./Pages/AdminLogin.jsx"
-import AdminDashboard from "./Pages/AdminDashboard.jsx"
-import MyPrescriptions from "./Patients/Elements/MyPrescription";
-import Profile from "./Patients/Elements/Profile";
-import DoctorProfile from "./Doctors/DcotorProfile";
+import AdminLogin from "./pages/AdminLogin.jsx"
+import AdminDashboard from "./pages/AdminDashboard.jsx"
+import MyPrescriptions from "./patients/elements/MyPrescription";
+import Profile from "./patients/elements/Profile";
+import DoctorProfile from "./doctors/DcotorProfile";
 
 
 export default function App() {
