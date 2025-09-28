@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from "react";
 import { Box } from "@chakra-ui/react";
 import { useLocation } from "react-router-dom";
-import Navbar from "../Components/navbar";
-import HeroSection from "../Components/HeroSection";
-import HowItWorks from "../Components/HowItWorks";
-import WhoCanJoin from "../Components/WhoCanJoin";
-import WhyChoose from "../Components/WhyChoose";
+import Navbar from "../components/navbar";
+import HeroSection from "../components/HeroSection";
+import HowItWorks from "../components/HowItWorks";
+import WhoCanJoin from "../components/WhoCanJoin";
+import WhyChoose from "../components/WhyChoose";
 
 const Homepage = () => {
   const location = useLocation();
